@@ -1,902 +1,764 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>React Native Complete End-to-End Cheatsheet (Levels 1 to 14)</title>
-  <style>
-    :root {
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text: #0f172a;
-      --text-muted: #64748b;
-      --primary: #0284c7;
-      --primary-light: #e0f2fe;
-      --accent: #059669;
-      --border: #e2e8f0;
-      --code-bg: #0f172a;
-      --code-text: #f8fafc;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>React Native — Complete Masterclass Field Guide (Levels 1 to 14)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0E1320;
+    --bg-raised: #161D30;
+    --bg-code: #0A0E19;
+    --line: #262F49;
+    --text: #E9ECF6;
+    --text-dim: #8A93B3;
+    --teal: #52D9C4;
+    --teal-dim: #1E3A38;
+    --coral: #FF7A66;
+    --amber: #F2B84B;
+    --amber-dim: #3A2E15;
+    --android: #7EC77E;
+    --ios: #8FB4FF;
+    --radius: 10px;
+    --max: 820px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15.5px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: 'Sora', sans-serif; color: var(--text); margin: 0; }
+  code, pre, .mono { font-family: 'IBM Plex Mono', monospace; }
+  a { color: var(--teal); text-decoration: none; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  /* ---------- Top header + tab nav ---------- */
+  header.top {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(14,19,32,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+  }
+  .top-inner {
+    max-width: 1140px; margin: 0 auto; padding: 16px 20px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .brand .notch {
+    width: 48px; height: 14px; background: var(--bg-code); border: 1px solid var(--line);
+    border-top: none; border-radius: 0 0 8px 8px; position: relative; flex-shrink: 0;
+  }
+  .brand .notch::before {
+    content: ''; position: absolute; left: 50%; top: 3px; transform: translateX(-50%);
+    width: 4px; height: 4px; border-radius: 50%; background: var(--text-dim);
+  }
+  .brand h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; color: #ffffff; }
+  .brand .brand-sub { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--teal); margin-top: 1px; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-    }
+  nav.tabs {
+    display: flex; gap: 4px; overflow-x: auto; padding-bottom: 0;
+    scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+  }
+  nav.tabs::-webkit-scrollbar { height: 4px; }
+  nav.tabs::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+  nav.tabs button {
+    flex-shrink: 0;
+    background: none; border: none;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.83rem;
+    color: var(--text-dim);
+    padding: 10px 14px 12px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+  }
+  nav.tabs button .num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--teal);
+    margin-right: 5px;
+  }
+  nav.tabs button:hover { color: var(--text); }
+  nav.tabs button.active { color: #ffffff; border-color: var(--teal); font-weight: 600; }
 
-    /* TOP STICKY NAVBAR */
-    .top-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.96);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border);
-      padding: 12px 24px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-    }
+  /* ---------- Layout ---------- */
+  main { max-width: var(--max); margin: 0 auto; padding: 40px 20px 100px; }
+  .module-panel { display: none; }
+  .module-panel.active { display: block; animation: fadeIn 0.2s ease-in-out; }
 
-    .header-main {
-      max-width: 1300px;
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    .title-area h1 {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary);
-    }
+  .module-intro { margin-bottom: 40px; }
+  .module-intro .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .chip {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem;
+    padding: 3px 10px; border: 1px solid var(--line); border-radius: 100px; color: var(--text-dim);
+    background: var(--bg-raised);
+  }
+  .module-intro h2 { font-size: 1.65rem; font-weight: 800; letter-spacing: -0.01em; color: #ffffff; }
+  .module-intro p { margin-top: 8px; color: var(--text-dim); max-width: 65ch; font-size: 0.96rem; }
 
-    .title-area p {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
+  section.mod { margin-bottom: 60px; scroll-margin-top: 100px; }
+  section.mod:last-child { margin-bottom: 0; }
+  .mod-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .mod-num { font-family: 'IBM Plex Mono', monospace; color: var(--teal); font-size: 0.88rem; font-weight: 600; }
+  .mod h3.title { font-size: 1.22rem; font-weight: 700; color: #ffffff; }
+  .mod-sub { color: var(--text-dim); margin: 4px 0 20px; max-width: 65ch; font-size: 0.92rem; }
 
-    .search-box {
-      flex: 1;
-      max-width: 380px;
-      position: relative;
-    }
+  p { color: #C7CCE0; }
+  p.tight { margin: 0 0 12px; }
+  ul.plain { margin: 0 0 18px; padding-left: 20px; color: #C7CCE0; }
+  ul.plain li { margin-bottom: 6px; font-size: 0.92rem; }
 
-    .search-box input {
-      width: 100%;
-      padding: 8px 16px;
-      border-radius: 9999px;
-      border: 1px solid var(--border);
-      background: #f1f5f9;
-      font-size: 13px;
-      outline: none;
-      transition: all 0.2s;
-    }
+  /* ---------- Tables ---------- */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0 24px; border: 1px solid var(--line); border-radius: var(--radius); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.86rem; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th:last-child, td:last-child { white-space: normal; }
+  tr:last-child td { border-bottom: none; }
+  thead th { font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; color: var(--text-dim); background: var(--bg-raised); font-weight: 600; text-transform: uppercase; }
+  td { color: #C7CCE0; }
+  td code, th code { font-size: 0.85em; color: var(--teal); background: none; }
 
-    .search-box input:focus {
-      background: #ffffff;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-    }
+  /* ---------- Code / diagram blocks ---------- */
+  .code {
+    background: var(--bg-code); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 18px; margin: 14px 0 24px; overflow-x: auto;
+    font-size: 0.82rem; line-height: 1.65; color: #C3CAE8;
+    position: relative;
+  }
+  .code .cm { color: #6272A4; }
+  .code .kw { color: var(--teal); font-weight: 600; }
+  .code .tag { color: var(--amber); }
+  .code .str { color: var(--android); }
+  
+  .diagram {
+    background: var(--bg-code); border: 1px dashed var(--line); border-radius: var(--radius);
+    padding: 14px 16px; margin: 14px 0 24px; overflow-x: auto;
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem; line-height: 1.65; color: var(--text-dim);
+    white-space: pre;
+  }
+  .diagram .hi { color: var(--teal); }
+  .diagram .bad { color: var(--coral); }
+  .diagram .ok { color: var(--android); }
 
-    /* HORIZONTAL LEVEL NAV PILLS */
-    .nav-pills {
-      max-width: 1300px;
-      margin: 10px auto 0 auto;
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      scrollbar-width: thin;
-    }
+  /* ---------- Callouts ---------- */
+  .safe-zone, .crash, .quiz {
+    border-left: 3px solid var(--teal); border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 12px 16px; margin: 16px 0 22px;
+  }
+  .safe-zone { background: linear-gradient(90deg, var(--teal-dim), transparent 75%); }
+  .crash { border-left-color: var(--coral); background: linear-gradient(90deg, rgba(255,122,102,0.12), transparent 75%); }
+  .quiz { border-left-color: var(--amber); background: linear-gradient(90deg, var(--amber-dim), transparent 75%); }
+  .safe-zone p, .crash p, .quiz p { margin: 0; color: var(--text); font-size: 0.90rem; }
+  .safe-zone .label { color: var(--teal); }
+  .crash .label { color: var(--coral); }
+  .quiz .label { color: var(--amber); }
+  .safe-zone .label, .crash .label, .quiz .label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.72rem; display: block; margin-bottom: 5px; font-weight: 600; text-transform: uppercase;
+  }
 
-    .nav-pills a {
-      text-decoration: none;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 6px 12px;
-      border-radius: 9999px;
-      background: #f1f5f9;
-      color: #334155;
-      white-space: nowrap;
-      transition: all 0.2s;
-    }
+  /* ---------- OS chips ---------- */
+  .os { font-family: 'IBM Plex Mono', monospace; font-size: 0.68rem; padding: 2px 7px; border-radius: 4px; font-weight: 600; }
+  .os.ios { color: var(--ios); background: rgba(143,180,255,0.12); }
+  .os.android { color: var(--android); background: rgba(126,199,126,0.12); }
 
-    .nav-pills a:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
+  /* ---------- Checklist ---------- */
+  .checklist { list-style: none; padding: 0; margin: 16px 0 0; display: flex; flex-direction: column; gap: 8px; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px;
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-raised);
+    font-size: 0.88rem; color: #C7CCE0;
+  }
+  .checklist input { margin-top: 3px; accent-color: var(--teal); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; }
+  .checklist li:has(input:checked) { color: var(--text-dim); }
+  .checklist li:has(input:checked) span { text-decoration: line-through; text-decoration-color: var(--line); }
 
-    /* MAIN CONTAINER */
-    .container {
-      max-width: 1300px;
-      margin: 24px auto;
-      padding: 0 20px;
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 24px;
-    }
+  footer {
+    border-top: 1px solid var(--line); padding: 24px; text-align: center;
+    color: var(--text-dim); font-size: 0.8rem; font-family: 'IBM Plex Mono', monospace;
+  }
 
-    @media (max-width: 900px) {
-      .container {
-        grid-template-columns: 1fr;
-      }
-      .sidebar {
-        display: none;
-      }
-    }
-
-    /* SIDEBAR NAVIGATION */
-    .sidebar {
-      position: sticky;
-      top: 130px;
-      height: calc(100vh - 150px);
-      overflow-y: auto;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-
-    .sidebar h3 {
-      font-size: 12px;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-    }
-
-    .sidebar li {
-      margin-bottom: 6px;
-    }
-
-    .sidebar a {
-      display: block;
-      padding: 6px 10px;
-      border-radius: 6px;
-      text-decoration: none;
-      font-size: 12px;
-      color: #334155;
-      font-weight: 600;
-      transition: all 0.15s;
-    }
-
-    .sidebar a:hover {
-      background: var(--primary-light);
-      color: var(--primary);
-    }
-
-    /* CHEATSHEET LEVEL CARDS */
-    .content-area {
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
-    }
-
-    .level-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 24px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
-      scroll-margin-top: 130px;
-    }
-
-    .level-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 10px;
-    }
-
-    .level-title {
-      font-size: 18px;
-      font-weight: 800;
-      color: #0f172a;
-    }
-
-    .level-badge {
-      background: var(--primary-light);
-      color: var(--primary);
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 9999px;
-    }
-
-    .concept-text {
-      font-size: 13.5px;
-      color: #334155;
-      margin-bottom: 14px;
-    }
-
-    .tenglish-box {
-      background: #fffbeb;
-      border-left: 4px solid #f59e0b;
-      padding: 10px 14px;
-      border-radius: 0 8px 8px 0;
-      font-size: 12.5px;
-      color: #78350f;
-      margin-bottom: 14px;
-    }
-
-    .tenglish-box strong {
-      color: #92400e;
-    }
-
-    /* CODE BLOCK WITH COPY BUTTON */
-    .code-container {
-      position: relative;
-      margin-bottom: 16px;
-    }
-
-    pre {
-      background: var(--code-bg);
-      color: var(--code-text);
-      padding: 16px;
-      border-radius: 10px;
-      font-family: 'JetBrains Mono', 'Fira Code', Menlo, monospace;
-      font-size: 12px;
-      line-height: 1.5;
-      overflow-x: auto;
-    }
-
-    .copy-btn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-      padding: 4px 10px;
-      border-radius: 6px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .copy-btn:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* KEY TAKEAWAYS TABLE */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 12.5px;
-    }
-
-    th, td {
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      text-align: left;
-    }
-
-    th {
-      background: #f8fafc;
-      font-weight: 700;
-      color: #1e293b;
-    }
-
-    /* TOAST NOTIFICATION */
-    #toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #0f172a;
-      color: #ffffff;
-      padding: 10px 18px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      display: none;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      z-index: 999;
-    }
-  </style>
+  @media (max-width: 640px) {
+    .top-inner { padding: 14px 14px 0; }
+    main { padding: 28px 14px 70px; }
+  }
+</style>
 </head>
 <body>
 
-  <!-- TOP STICKY NAVBAR -->
-  <header class="top-header">
-    <div class="header-main">
-      <div class="title-area">
-        <h1>React Native Master Cheatsheet 📱</h1>
-        <p>Complete End-to-End Guide across Levels 1 to 14 • Zero CSS Plain Code</p>
-      </div>
-
-      <div class="search-box">
-        <input type="text" id="searchInput" placeholder="🔍 Search topics (e.g. SQLite, JSI, FlatList)..." oninput="filterCards()">
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="notch"></div>
+      <div>
+        <h1>React Native Field Guide</h1>
+        <div class="brand-sub">Expo SDK 54 · React 19 · RN 0.81 · ES6+</div>
       </div>
     </div>
-
-    <!-- HORIZONTAL LEVEL JUMP PILLS -->
-    <nav class="nav-pills">
-      <a href="#level1">L1: Primitives</a>
-      <a href="#level2">L2: Lists & Keyboard</a>
-      <a href="#level3">L3: Hooks & Memory</a>
-      <a href="#level4">L4: Navigation</a>
-      <a href="#level5">L5: Network & Keystores</a>
-      <a href="#level6">L6: Zustand & MMKV</a>
-      <a href="#level7">L7: Gestures & Reanimated</a>
-      <a href="#level8">L8: Hardware & Camera</a>
-      <a href="#level9">L9: FlashList & Perf</a>
-      <a href="#level10">L10: JSI & Fabric</a>
-      <a href="#level11">L11: Push & Deep Links</a>
-      <a href="#level12">L12: Offline & SQLite</a>
-      <a href="#level13">L13: EAS Build & CI/CD</a>
-      <a href="#level14">L14: OTA & Rollbacks</a>
+    <nav class="tabs" id="tabNav" aria-label="Module selector">
+      <button class="active" data-target="level1"><span class="num">01</span>Foundations</button>
+      <button data-target="level2"><span class="num">02</span>Lists &amp; Keyboard</button>
+      <button data-target="level3"><span class="num">03</span>Hooks</button>
+      <button data-target="level4"><span class="num">04</span>Navigation</button>
+      <button data-target="level5"><span class="num">05</span>Networking</button>
+      <button data-target="level6"><span class="num">06</span>Global State</button>
+      <button data-target="level7"><span class="num">07</span>Gestures &amp; Animation</button>
+      <button data-target="level8"><span class="num">08</span>Hardware &amp; Sensors</button>
+      <button data-target="level9"><span class="num">09</span>Performance</button>
+      <button data-target="level10"><span class="num">10</span>JSI &amp; New Arch</button>
+      <button data-target="level11"><span class="num">11</span>Push Notifications</button>
+      <button data-target="level12"><span class="num">12</span>Offline &amp; SQLite</button>
+      <button data-target="level13"><span class="num">13</span>EAS &amp; App Store</button>
+      <button data-target="level14"><span class="num">14</span>OTA Live Updates</button>
     </nav>
-  </header>
+  </div>
+</header>
 
-  <div class="container">
-    
-    <!-- SIDEBAR NAVIGATION -->
-    <aside class="sidebar">
-      <h3>Course Sitemap</h3>
-      <ul>
-        <li><a href="#level1">1. Primitives & Flexbox</a></li>
-        <li><a href="#level2">2. Lists & Keyboard</a></li>
-        <li><a href="#level3">3. Hooks & AppState</a></li>
-        <li><a href="#level4">4. Navigation & Linking</a></li>
-        <li><a href="#level5">5. Axios & SecureStore</a></li>
-        <li><a href="#level6">6. Zustand & MMKV</a></li>
-        <li><a href="#level7">7. Gestures & Reanimated</a></li>
-        <li><a href="#level8">8. Hardware & Sensors</a></li>
-        <li><a href="#level9">9. Performance & 16.6ms</a></li>
-        <li><a href="#level10">10. JSI, TurboModules, Fabric</a></li>
-        <li><a href="#level11">11. Push Notifications</a></li>
-        <li><a href="#level12">12. SQLite & WatermelonDB</a></li>
-        <li><a href="#level13">13. EAS Build & Keystores</a></li>
-        <li><a href="#level14">14. OTA Live Updates</a></li>
-      </ul>
-    </aside>
+<main>
 
-    <!-- CONTENT CARDS AREA -->
-    <main class="content-area" id="contentArea">
+<!-- ============================================================ LEVEL 1 -->
+<div class="module-panel active" id="level1">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 01</span><span class="chip">Phase 1 · Core Foundations</span></div>
+    <h2>Foundations, Hardware Boundaries &amp; Flexbox</h2>
+    <p>JSX primitives, hardware safe areas, the flexbox layout engine, and platform touch targets.</p>
+  </div>
 
-      <!-- LEVEL 1 -->
-      <section class="level-card" id="level1">
-        <div class="level-header">
-          <div class="level-title">1. Primitives &amp; Flexbox Architecture</div>
-          <span class="level-badge">Phase 1: Foundations</span>
-        </div>
-        <p class="concept-text">
-          React Native does not use HTML DOM (<code>&lt;div&gt;</code>, <code>&lt;span&gt;</code>). It compiles directly to native host views (<code>UIView</code> on iOS, <code>ViewGroup</code> on Android). Default flex direction is always <strong>column</strong>.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> React Native lo HTML div undadu; `View` and `Text` vadatham. By default `flexDirection: column` untundi (Top to Bottom). Notch and Home bar lopala content padakunda `SafeAreaView` vadali.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+  <section class="mod" id="l1-1">
+    <div class="mod-head"><span class="mod-num">1.1</span><h3 class="title">Core Primitives vs HTML DOM</h3></div>
+    <p class="mod-sub">React Native compiles JSX components directly into native host views without browser DOM trees.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Web (HTML)</th><th>React Native</th><th>Android Native</th><th>iOS Native</th></tr></thead>
+        <tbody>
+          <tr><td><code>&lt;div&gt;</code></td><td><code>&lt;View&gt;</code></td><td>ViewGroup</td><td>UIView</td></tr>
+          <tr><td><code>&lt;p&gt; &lt;h1&gt;</code></td><td><code>&lt;Text&gt;</code></td><td>TextView</td><td>UILabel</td></tr>
+          <tr><td><code>&lt;img&gt;</code></td><td><code>&lt;Image&gt;</code></td><td>ImageView</td><td>UIImageView</td></tr>
+          <tr><td><code>&lt;button&gt;</code></td><td><code>&lt;Pressable&gt;</code></td><td>Touch Listener</td><td>UIControl</td></tr>
+          <tr><td><code>&lt;input&gt;</code></td><td><code>&lt;TextInput&gt;</code></td><td>EditText</td><td>UITextField</td></tr>
+          <tr><td>Spinner</td><td><code>&lt;ActivityIndicator&gt;</code></td><td>ProgressBar</td><td>UIActivityIndicatorView</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="crash"><span class="label">Fatal Crash Rule</span><p>All raw strings and numbers must sit inside <code>&lt;Text&gt;</code>. Placing raw text directly inside <code>&lt;View&gt;</code> causes an instant fatal crash.</p></div>
+    <div class="quiz"><span class="label">Tenglish Insight</span><p>React Native lo HTML `&lt;div&gt;` undadu; `View` and `Text` vadatham. Text eppudu `&lt;Text&gt;` tag lopalane undali, lekunte app direct ga crash avthundi.</p></div>
+  </section>
 
-export const Level1Primitives = () => (
-  &lt;SafeAreaProvider&gt;
-    &lt;SafeAreaView&gt;
-      &lt;View&gt;
-        &lt;Text&gt;React Native Primitive Tree&lt;/Text&gt;
-        &lt;Image source={{ uri: 'https://reactnative.dev/img/tiny_logo.png' }} /&gt;
-        &lt;Pressable onPress={() =&gt; console.log('Tapped!')}&gt;
-          &lt;Text&gt;Tap Here&lt;/Text&gt;
-        &lt;/Pressable&gt;
-      &lt;/View&gt;
-    &lt;/SafeAreaView&gt;
-  &lt;/SafeAreaProvider&gt;
-);</code></pre>
-        </div>
-      </section>
+  <section class="mod" id="l1-2">
+    <div class="mod-head"><span class="mod-num">1.2</span><h3 class="title">Hardware Boundaries &amp; Safe Area Insets</h3></div>
+    <p class="mod-sub">Top camera cutouts and bottom gesture bars will obscure plain views without safe area insets.</p>
+    <div class="code"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { View, Text, StatusBar } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { SafeAreaProvider, SafeAreaView } <span class="kw">from</span> <span class="str">'react-native-safe-area-context'</span>;
 
-      <!-- LEVEL 2 -->
-      <section class="level-card" id="level2">
-        <div class="level-header">
-          <div class="level-title">2. Virtualized Lists &amp; Keyboard Handling</div>
-          <span class="level-badge">Phase 1: Foundations</span>
-        </div>
-        <p class="concept-text">
-          <code>ScrollView</code> mounts all children in RAM at once. <code>FlatList</code> recycles cells outside the viewport to prevent OOM crashes. Use <code>KeyboardAvoidingView</code> to prevent keyboards from hiding inputs.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> ScrollView lo 10,000 items pedithe app crash avthundi. FlatList screen meeda kanipinche items ni mathrame RAM lo unchi migilivativi recycle chesthundi (Virtualization).
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React from 'react';
-import { FlatList, Text, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+<span class="kw">export const</span> App = () =&gt; (
+  &lt;<span class="tag">SafeAreaProvider</span>&gt;
+    &lt;<span class="tag">StatusBar</span> barStyle=<span class="str">"light-content"</span> /&gt;
+    &lt;<span class="tag">SafeAreaView</span>&gt;
+      &lt;<span class="tag">Text</span>&gt;Protected from camera notch and gesture pill&lt;/<span class="tag">Text</span>&gt;
+    &lt;/<span class="tag">SafeAreaView</span>&gt;
+  &lt;/<span class="tag">SafeAreaProvider</span>&gt;
+);</div>
+  </section>
 
-export const Level2Lists = ({ items }) => (
-  &lt;KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}&gt;
-    &lt;FlatList
-      data={items}
-      keyExtractor={(item) =&gt; item.id.toString()}
-      renderItem={({ item }) =&gt; &lt;Text&gt;{item.title}&lt;/Text&gt;}
-      initialNumToRender={10}
-      maxToRenderPerBatch={5}
-      windowSize={5}
-      removeClippedSubviews={true}
-    /&gt;
-    &lt;TextInput placeholder="Type here..." /&gt;
-  &lt;/KeyboardAvoidingView&gt;
-);</code></pre>
-        </div>
-      </section>
+  <section class="mod" id="l1-3">
+    <div class="mod-head"><span class="mod-num">1.3</span><h3 class="title">Flexbox Engine Differences</h3></div>
+    <p class="mod-sub">Mobile Flexbox defaults differ from CSS in two critical architectural ways.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Web CSS Default</th><th>React Native Default</th></tr></thead>
+        <tbody>
+          <tr><td><code>flexDirection</code></td><td><code>row</code></td><td><code>column</code> (top to bottom)</td></tr>
+          <tr><td><code>display</code></td><td><code>block</code></td><td><code>flex</code> (all Views are flex containers)</td></tr>
+          <tr><td><code>flex: 1</code></td><td>Relative to sibling elements</td><td>Requires parent container to have <code>flex: 1</code> too</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <!-- LEVEL 3 -->
-      <section class="level-card" id="level3">
-        <div class="level-header">
-          <div class="level-title">3. Mobile React Hooks, AppState &amp; Memory Leaks</div>
-          <span class="level-badge">Phase 1: Foundations</span>
-        </div>
-        <p class="concept-text">
-          Mobile apps pause and resume via <code>AppState</code> (<code>active</code> vs <code>background</code>). Clean up all intervals and event listeners in <code>useEffect</code> return callbacks to avoid silent memory leaks.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> User Home screen ki vellinappudu (`background`), GPS timers and subscriptions stop cheyali. `useEffect` cleanup function lo unsubscribe cheyakapothe battery drain and memory leaks vasthayi.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React, { useState, useEffect, useRef } from 'react';
-import { Text, AppState } from 'react-native';
+  <section class="mod" id="l1-check">
+    <div class="mod-head"><h3 class="title" style="font-size:1.02rem;">Module 01 Checklist</h3></div>
+    <ul class="checklist">
+      <li><input type="checkbox" id="l1c1"><label for="l1c1"><span>Raw text always wrapped inside <code>&lt;Text&gt;</code></span></label></li>
+      <li><input type="checkbox" id="l1c2"><label for="l1c2"><span>Root wrapped in <code>SafeAreaProvider</code> and <code>SafeAreaView</code></span></label></li>
+      <li><input type="checkbox" id="l1c3"><label for="l1c3"><span>Default flex direction is <code>column</code></span></label></li>
+      <li><input type="checkbox" id="l1c4"><label for="l1c4"><span><code>Pressable</code> with <code>hitSlop</code> for comfortable touch targets</span></label></li>
+    </ul>
+  </section>
+</div>
 
-export const Level3Lifecycle = () => {
-  const [appState, setAppState] = useState(AppState.currentState);
-  const timerRef = useRef(null);
+<!-- ============================================================ LEVEL 2 -->
+<div class="module-panel" id="level2">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 02</span><span class="chip">Phase 1 · Core Foundations</span></div>
+    <h2>Virtualized Lists, Forms &amp; Keyboard Handling</h2>
+    <p>FlatList cell recycling, SectionList sticky headers, and preventing keyboard occlusion.</p>
+  </div>
 
-  useEffect(() => {
-    const sub = AppState.addEventListener('change', (next) => setAppState(next));
-    timerRef.current = setInterval(() => console.log('Heartbeat'), 1000);
+  <section class="mod" id="l2-1">
+    <div class="mod-head"><span class="mod-num">2.1</span><h3 class="title">ScrollView vs FlatList Memory Recycling</h3></div>
+    <p class="mod-sub">ScrollView mounts all items at once; FlatList recycles unmounted cells outside the viewport.</p>
+    <div class="diagram">ScrollView <span class="bad">(Eager: 10,000 items in RAM → OOM Crash)</span>:
+[Item 1][Item 2][Item 3] ... [Item 10000]
 
-    return () => {
+FlatList <span class="ok">(Virtualized: only ~10 visible rows in RAM)</span>:
+  ▲ unmounted, memory freed
+  ┌──────────────────┐
+  │ Item 4  (visible) │
+  │ Item 5  (visible) │  ← constant memory footprint
+  │ Item 6  (visible) │
+  └──────────────────┘
+  ▼ queued for recycling</div>
+    <div class="code"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { FlatList, Text } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export const</span> FeedList = ({ data }) =&gt; (
+  &lt;<span class="tag">FlatList</span>
+    data={data}
+    keyExtractor={(item) =&gt; item.id.toString()}
+    renderItem={({ item }) =&gt; &lt;<span class="tag">Text</span>&gt;{item.title}&lt;/<span class="tag">Text</span>&gt;}
+    initialNumToRender={10}
+    maxToRenderPerBatch={5}
+    windowSize={5}
+    removeClippedSubviews={<span class="kw">true</span>}
+  /&gt;
+);</div>
+  </section>
+
+  <section class="mod" id="l2-2">
+    <div class="mod-head"><span class="mod-num">2.2</span><h3 class="title">Keyboard Management &amp; Focus</h3></div>
+    <p class="mod-sub">Software keyboards cover 50% of the screen when text inputs gain focus.</p>
+    <div class="code"><span class="kw">import</span> { KeyboardAvoidingView, ScrollView, TextInput, Platform } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export const</span> FormScreen = () =&gt; (
+  &lt;<span class="tag">KeyboardAvoidingView</span> behavior={Platform.OS === <span class="str">'ios'</span> ? <span class="str">'padding'</span> : <span class="str">'height'</span>}&gt;
+    &lt;<span class="tag">ScrollView</span> keyboardShouldPersistTaps=<span class="str">"handled"</span>&gt;
+      &lt;<span class="tag">TextInput</span> autoCapitalize=<span class="str">"none"</span> autoCorrect={<span class="kw">false</span>} /&gt;
+    &lt;/<span class="tag">ScrollView</span>&gt;
+  &lt;/<span class="tag">KeyboardAvoidingView</span>&gt;
+);</div>
+    <div class="safe-zone"><span class="label">Golden Rule</span><p>Always set <code>keyboardShouldPersistTaps="handled"</code> so submit buttons register touches on the first tap while the keyboard is open.</p></div>
+  </section>
+</div>
+
+<!-- ============================================================ LEVEL 3 -->
+<div class="module-panel" id="level3">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 03</span><span class="chip">Phase 1 · Core Foundations</span></div>
+    <h2>Mobile React Hooks, AppState &amp; Memory Leaks</h2>
+    <p>Background state transitions, useEffect cleanup garbage collection, and useRef silent memory.</p>
+  </div>
+
+  <section class="mod" id="l3-1">
+    <div class="mod-head"><span class="mod-num">3.1</span><h3 class="title">AppState Lifecycle &amp; Memory Garbage Collection</h3></div>
+    <p class="mod-sub">Screens in the mobile navigation stack remain mounted in memory when left.</p>
+    <div class="code"><span class="kw">import</span> React, { useState, useEffect, useRef } <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> { AppState } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export const</span> LocationTracker = () =&gt; {
+  <span class="kw">const</span> [state, setState] = useState(AppState.currentState);
+  <span class="kw">const</span> timerRef = useRef(<span class="kw">null</span>);
+
+  useEffect(() =&gt; {
+    <span class="kw">const</span> sub = AppState.addEventListener(<span class="str">'change'</span>, (next) =&gt; setState(next));
+    timerRef.current = setInterval(() =&gt; console.log(<span class="str">'Tracking GPS'</span>), 1000);
+
+    <span class="kw">return</span> () =&gt; {
       sub.remove();
-      clearInterval(timerRef.current); // 🛑 Garbage collection cleanup
+      clearInterval(timerRef.current); <span class="cm">// 🛑 Mandatory cleanup prevents memory leaks</span>
     };
   }, []);
+};</div>
+    <div class="crash"><span class="label">Memory Leak Trap</span><p>Timers or subscriptions without cleanup functions keep running after users navigate away, causing battery drain and background crashes.</p></div>
+  </section>
+</div>
 
-  return &lt;Text&gt;Current App State: {appState}&lt;/Text&gt;;
-};</code></pre>
-        </div>
-      </section>
+<!-- ============================================================ LEVEL 4 -->
+<div class="module-panel" id="level4">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 04</span><span class="chip">Phase 2 · Core Architecture</span></div>
+    <h2>Navigation Architecture &amp; Deep Linking</h2>
+    <p>Native Stack navigation, bottom tab persistence, useFocusEffect, and deep link URL schemes.</p>
+  </div>
 
-      <!-- LEVEL 4 -->
-      <section class="level-card" id="level4">
-        <div class="level-header">
-          <div class="level-title">4. Navigation Architecture &amp; Deep Linking</div>
-          <span class="level-badge">Phase 2: Core Architecture</span>
-        </div>
-        <p class="concept-text">
-          <code>createNativeStackNavigator</code> uses real native platform transitions (<code>UINavigationController</code> / Android Fragments). Deep linking maps URL paths (<code>myapp://product/42</code>) to screen routes.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Native Stack Phone OS యొక్క real animations vaaduthundi. Deep linking ante external link click cheyagane specific screen direct ga open cheyadam.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+  <section class="mod" id="l4-1">
+    <div class="mod-head"><span class="mod-num">4.1</span><h3 class="title">Native Stack vs Web Routing</h3></div>
+    <p class="mod-sub">Mobile navigation is a card stack: <code>navigate()</code> pushes a card; <code>goBack()</code> pops it.</p>
+    <div class="code"><span class="kw">import</span> { NavigationContainer } <span class="kw">from</span> <span class="str">'@react-navigation/native'</span>;
+<span class="kw">import</span> { createNativeStackNavigator } <span class="kw">from</span> <span class="str">'@react-navigation/native-stack'</span>;
 
-const Stack = createNativeStackNavigator();
+<span class="kw">const</span> Stack = createNativeStackNavigator();
 
-const linking = {
-  prefixes: ['myapp://', 'https://myapp.com'],
-  config: {
-    screens: {
-      Home: 'home',
-      Details: 'product/:id',
-    },
-  },
+<span class="kw">const</span> linking = {
+  prefixes: [<span class="str">'myapp://'</span>, <span class="str">'https://myapp.com'</span>],
+  config: { screens: { Home: <span class="str">'home'</span>, Product: <span class="str">'product/:id'</span> } }
 };
 
-export const Level4Nav = () => (
-  &lt;NavigationContainer linking={linking}&gt;
-    &lt;Stack.Navigator&gt;
-      &lt;Stack.Screen name="Home" component={HomeScreen} /&gt;
-      &lt;Stack.Screen name="Details" component={DetailsScreen} /&gt;
-    &lt;/Stack.Navigator&gt;
-  &lt;/NavigationContainer&gt;
-);</code></pre>
-        </div>
-      </section>
+<span class="kw">export const</span> AppNavigator = () =&gt; (
+  &lt;<span class="tag">NavigationContainer</span> linking={linking}&gt;
+    &lt;<span class="tag">Stack.Navigator</span>&gt;
+      &lt;<span class="tag">Stack.Screen</span> name=<span class="str">"Home"</span> component={HomeScreen} /&gt;
+      &lt;<span class="tag">Stack.Screen</span> name=<span class="str">"Product"</span> component={ProductScreen} /&gt;
+    &lt;/<span class="tag">Stack.Navigator</span>&gt;
+  &lt;/<span class="tag">NavigationContainer</span>&gt;
+);</div>
+    <div class="safe-zone"><span class="label">Screen Focus</span><p>Use <code>useFocusEffect</code> to re-fetch data whenever a screen gains visual focus on return, as <code>useEffect</code> does not re-run on stack pop.</p></div>
+  </section>
+</div>
 
-      <!-- LEVEL 5 -->
-      <section class="level-card" id="level5">
-        <div class="level-header">
-          <div class="level-title">5. Networking, Interceptors &amp; Hardware Keystores</div>
-          <span class="level-badge">Phase 2: Core Architecture</span>
-        </div>
-        <p class="concept-text">
-          Never store sensitive JWT tokens in unencrypted <code>AsyncStorage</code>. Use <code>expo-secure-store</code> (iOS Keychain & Android Keystore). Axios response interceptors auto-refresh 401 expired tokens silently.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Passwords and Auth JWT tokens eppudu `SecureStore` (Hardware Keychain) lo pettali. 401 Token expire avvagane user ki theliyakunda auto ga new token fetch chesi retry chestham.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+<!-- ============================================================ LEVEL 5 -->
+<div class="module-panel" id="level5">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 05</span><span class="chip">Phase 2 · Core Architecture</span></div>
+    <h2>Networking, Interceptors &amp; Hardware Keystores</h2>
+    <p>Axios interceptors, silent 401 JWT refresh token rotation, and hardware-backed SecureStore.</p>
+  </div>
 
-const api = axios.create({ baseURL: 'https://api.myapp.com' });
+  <section class="mod" id="l5-1">
+    <div class="mod-head"><span class="mod-num">5.1</span><h3 class="title">SecureStore &amp; 401 Auto-Refresh Pipeline</h3></div>
+    <p class="mod-sub">Never store authentication tokens in unencrypted AsyncStorage.</p>
+    <div class="code"><span class="kw">import</span> axios <span class="kw">from</span> <span class="str">'axios'</span>;
+<span class="kw">import</span> * <span class="kw">as</span> SecureStore <span class="kw">from</span> <span class="str">'expo-secure-store'</span>;
 
-api.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('user_jwt');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
+<span class="kw">const</span> api = axios.create({ baseURL: <span class="str">'https://api.myapp.com'</span>, timeout: 10000 });
+
+api.interceptors.request.use(<span class="kw">async</span> (config) =&gt; {
+  <span class="kw">const</span> token = <span class="kw">await</span> SecureStore.getItemAsync(<span class="str">'jwt'</span>);
+  <span class="kw">if</span> (token) config.headers.Authorization = <span class="str">`Bearer ${token}`</span>;
+  <span class="kw">return</span> config;
 });
 
 api.interceptors.response.use(
-  (res) => res,
-  async (err) => {
-    if (err.response?.status === 401) {
-      // Refresh token logic
-      const newToken = await fetchNewToken();
-      await SecureStore.setItemAsync('user_jwt', newToken);
-      return api(err.config); // Retry original request
+  (res) =&gt; res,
+  <span class="kw">async</span> (err) =&gt; {
+    <span class="kw">if</span> (err.response?.status === 401) {
+      <span class="kw">const</span> newToken = <span class="kw">await</span> fetchRefreshToken();
+      <span class="kw">await</span> SecureStore.setItemAsync(<span class="str">'jwt'</span>, newToken);
+      <span class="kw">return</span> api(err.config); <span class="cm">// Retry original request</span>
     }
-    return Promise.reject(err);
+    <span class="kw">return</span> Promise.reject(err);
   }
-);</code></pre>
-        </div>
-      </section>
+);</div>
+  </section>
+</div>
 
-      <!-- LEVEL 6 -->
-      <section class="level-card" id="level6">
-        <div class="level-header">
-          <div class="level-title">6. Global State (Zustand) &amp; MMKV Storage</div>
-          <span class="level-badge">Phase 2: Core Architecture</span>
-        </div>
-        <p class="concept-text">
-          Zustand provides boilerplate-free atomic state selection without context re-render cascades. MMKV provides synchronous, C++ JSI direct memory key-value storage (30x faster than AsyncStorage).
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Redux laga pedda boilerplate lekunda Zustand tho clean global state rayochu. MMKV storage C++ memory vaadi 0ms synchronous speed tho save chesthundi.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import { create } from 'zustand';
-import { MMKV } from 'react-native-mmkv';
+<!-- ============================================================ LEVEL 6 -->
+<div class="module-panel" id="level6">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 06</span><span class="chip">Phase 2 · Core Architecture</span></div>
+    <h2>Global State Management (Zustand) &amp; MMKV Storage</h2>
+    <p>Atomic state selectors avoiding context cascades, synchronous C++ MMKV persistence.</p>
+  </div>
 
-const storage = new MMKV();
+  <section class="mod" id="l6-1">
+    <div class="mod-head"><span class="mod-num">6.1</span><h3 class="title">Zustand Store with Synchronous MMKV</h3></div>
+    <div class="code"><span class="kw">import</span> { create } <span class="kw">from</span> <span class="str">'zustand'</span>;
+<span class="kw">import</span> { MMKV } <span class="kw">from</span> <span class="str">'react-native-mmkv'</span>;
 
-export const useUserStore = create((set) => ({
-  user: null,
-  login: (userData) => {
-    storage.set('user_profile', JSON.stringify(userData));
+<span class="kw">const</span> storage = <span class="kw">new</span> MMKV();
+
+<span class="kw">export const</span> useAuthStore = create((set) =&gt; ({
+  user: <span class="kw">null</span>,
+  login: (userData) =&gt; {
+    storage.set(<span class="str">'user'</span>, JSON.stringify(userData));
     set({ user: userData });
   },
-  logout: () => {
-    storage.delete('user_profile');
-    set({ user: null });
-  },
-}));</code></pre>
-        </div>
-      </section>
+  logout: () =&gt; {
+    storage.delete(<span class="str">'user'</span>);
+    set({ user: <span class="kw">null</span> });
+  }
+}));</div>
+  </section>
+</div>
 
-      <!-- LEVEL 7 -->
-      <section class="level-card" id="level7">
-        <div class="level-header">
-          <div class="level-title">7. Gestures &amp; 60 FPS UI Thread Animations (Reanimated 3)</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          Animations must run on the <strong>UI Thread via Worklets</strong> without crossing the JS bridge. <code>react-native-reanimated</code> + <code>GestureHandler</code> delivers 60–120 FPS buttery smooth physics.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Animations JavaScript thread meeda run aithe phone hang avthundi. Reanimated 3 direct ga Native UI Thread meeda 60 FPS tho animations run chesthundi (`runOnUI`).
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React from 'react';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+<!-- ============================================================ LEVEL 7 -->
+<div class="module-panel" id="level7">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 07</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Gestures &amp; 60 FPS Animations (Reanimated 3)</h2>
+    <p>Worklets executing on the UI thread, spring physics, pan gestures, and interpolation.</p>
+  </div>
 
-export const Level7Gesture = () => {
-  const translateX = useSharedValue(0);
+  <section class="mod" id="l7-1">
+    <div class="mod-head"><span class="mod-num">7.1</span><h3 class="title">Worklets &amp; Pan Gestures on UI Thread</h3></div>
+    <div class="diagram">🐢 JS Thread (busy with state/API) ──▶ Dropped frames (janky)
+🚀 Native UI Thread (60–120 FPS)   ──▶ Reanimated Worklets run here 100% ⚡</div>
+    <div class="code"><span class="kw">import</span> React <span class="kw">from</span> <span class="str">'react'</span>;
+<span class="kw">import</span> Animated, { useSharedValue, useAnimatedStyle, withSpring } <span class="kw">from</span> <span class="str">'react-native-reanimated'</span>;
+<span class="kw">import</span> { Gesture, GestureDetector } <span class="kw">from</span> <span class="str">'react-native-gesture-handler'</span>;
 
-  const pan = Gesture.Pan()
-    .onChange((e) => {
-      translateX.value = e.translationX;
-    })
-    .onEnd(() => {
-      translateX.value = withSpring(0);
-    });
+<span class="kw">export const</span> SwipeCard = () =&gt; {
+  <span class="kw">const</span> translateX = useSharedValue(0);
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }],
+  <span class="kw">const</span> pan = Gesture.Pan()
+    .onChange((e) =&gt; { translateX.value = e.translationX; })
+    .onEnd(() =&gt; { translateX.value = withSpring(0); });
+
+  <span class="kw">const</span> style = useAnimatedStyle(() =&gt; ({
+    transform: [{ translateX: translateX.value }]
   }));
 
-  return (
-    &lt;GestureDetector gesture={pan}&gt;
-      &lt;Animated.View style={animatedStyle}&gt;
-        &lt;Animated.Text&gt;Swipe Me!&lt;/Animated.Text&gt;
-      &lt;/Animated.View&gt;
-    &lt;/GestureDetector&gt;
+  <span class="kw">return</span> (
+    &lt;<span class="tag">GestureDetector</span> gesture={pan}&gt;
+      &lt;<span class="tag">Animated.View</span> style={style}&gt;
+        &lt;<span class="tag">Animated.Text</span>&gt;Swipe Me&lt;/<span class="tag">Animated.Text</span>&gt;
+      &lt;/<span class="tag">Animated.View</span>&gt;
+    &lt;/<span class="tag">GestureDetector</span>&gt;
   );
-};</code></pre>
-        </div>
-      </section>
+};</div>
+  </section>
+</div>
 
-      <!-- LEVEL 8 -->
-      <section class="level-card" id="level8">
-        <div class="level-header">
-          <div class="level-title">8. Device Hardware Access (Camera, GPS, Haptics)</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          Direct hardware bridge access to camera sensors, GPS chips, media libraries, and tactile taptic feedback engines with runtime permission pipelines.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Phone hardware (Camera, GPS, Haptic vibration) vadataniki OS permissions compulsory adagali. Taptic feedback (`Haptics`) user tap chesinappudu premium feel isthundi.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import * as Location from 'expo-location';
-import * as Haptics from 'expo-haptics';
+<!-- ============================================================ LEVEL 8 -->
+<div class="module-panel" id="level8">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 08</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Device Hardware Access &amp; Media</h2>
+    <p>OS permissions, Camera, GPS Geolocation with distanceInterval, and tactile Haptics.</p>
+  </div>
 
-export const triggerHardwareActions = async () => {
-  // 1. Tactile Vibration
-  await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  <section class="mod" id="l8-1">
+    <div class="mod-head"><span class="mod-num">8.1</span><h3 class="title">GPS &amp; Tactile Haptics</h3></div>
+    <div class="code"><span class="kw">import</span> * <span class="kw">as</span> Location <span class="kw">from</span> <span class="str">'expo-location'</span>;
+<span class="kw">import</span> * <span class="kw">as</span> Haptics <span class="kw">from</span> <span class="str">'expo-haptics'</span>;
 
-  // 2. Hardware GPS Coordinates
-  const { status } = await Location.requestForegroundPermissionsAsync();
-  if (status === 'granted') {
-    const loc = await Location.getCurrentPositionAsync({});
-    console.log('User GPS:', loc.coords.latitude, loc.coords.longitude);
+<span class="kw">export const</span> accessHardware = <span class="kw">async</span> () =&gt; {
+  <span class="kw">await</span> Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+  <span class="kw">const</span> { status } = <span class="kw">await</span> Location.requestForegroundPermissionsAsync();
+  <span class="kw">if</span> (status === <span class="str">'granted'</span>) {
+    <span class="kw">const</span> loc = <span class="kw">await</span> Location.getCurrentPositionAsync({});
+    console.log(<span class="str">'GPS:'</span>, loc.coords.latitude, loc.coords.longitude);
   }
-};</code></pre>
-        </div>
-      </section>
+};</div>
+  </section>
+</div>
 
-      <!-- LEVEL 9 -->
-      <section class="level-card" id="level9">
-        <div class="level-header">
-          <div class="level-title">9. Mobile Performance Optimization (16.6ms Budget &amp; FlashList)</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          To maintain 60 FPS, the JS thread has a budget of <strong>16.6ms per frame</strong>. <code>@shopify/flash-list</code> recycles DOM nodes with 5x higher performance than standard FlatList.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Phone screen 60 FPS undalante prathi frame 16.6ms lopala render avvali. Shopify FlashList memory recycling dwara 50,000 items unna sare 0 frame drops tho scroll chesthundi.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import React from 'react';
-import { Text, InteractionManager } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
+<!-- ============================================================ LEVEL 9 -->
+<div class="module-panel" id="level9">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 09</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Mobile Performance Optimization &amp; 16.6ms Budget</h2>
+    <p>Maintaining 60 FPS within 16.6ms frame budgets, Shopify FlashList, InteractionManager.</p>
+  </div>
 
-export const Level9FlashList = ({ data }) => {
-  const onScreenFocus = () => {
-    InteractionManager.runAfterInteractions(() => {
-      // Heavy calculations deferred until animations complete!
-    });
-  };
+  <section class="mod" id="l9-1">
+    <div class="mod-head"><span class="mod-num">9.1</span><h3 class="title">Shopify FlashList &amp; Frame Budget</h3></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Metric</th><th>FlatList</th><th>Shopify FlashList</th></tr></thead>
+        <tbody>
+          <tr><td>Cell Strategy</td><td>Unmounts &amp; creates new components</td><td>Recycles existing native views in-place</td></tr>
+          <tr><td>Memory Footprint</td><td>Fluctuates on scroll</td><td>Constant, up to 5x lower RAM</td></tr>
+          <tr><td>FPS on 10k Items</td><td>30–45 FPS (Blank flashes)</td><td>Stable 60 FPS</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="code"><span class="kw">import</span> { FlashList } <span class="kw">from</span> <span class="str">'@shopify/flash-list'</span>;
+<span class="kw">import</span> { Text, InteractionManager } <span class="kw">from</span> <span class="str">'react-native'</span>;
 
-  return (
-    &lt;FlashList
-      data={data}
-      renderItem={({ item }) =&gt; &lt;Text&gt;{item.name}&lt;/Text&gt;}
+<span class="kw">export const</span> FastFeed = ({ items }) =&gt; {
+  InteractionManager.runAfterInteractions(() =&gt; {
+    <span class="cm">// Defer heavy background calculations until screen transitions finish</span>
+  });
+
+  <span class="kw">return</span> (
+    &lt;<span class="tag">FlashList</span>
+      data={items}
+      renderItem={({ item }) =&gt; &lt;<span class="tag">Text</span>&gt;{item.name}&lt;/<span class="tag">Text</span>&gt;}
       estimatedItemSize={60}
     /&gt;
   );
-};</code></pre>
-        </div>
-      </section>
+};</div>
+  </section>
+</div>
 
-      <!-- LEVEL 10 -->
-      <section class="level-card" id="level10">
-        <div class="level-header">
-          <div class="level-title">10. Native Modules &amp; New Architecture (JSI, Fabric, TurboModules)</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          The Old Bridge serialized data via JSON. The <strong>New Architecture (JSI)</strong> shares memory directly between C++ and JavaScript (0ms JSON parsing). <strong>Fabric</strong> renders UI on host threads. <strong>TurboModules</strong> load native code lazily on-demand.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Patha Architecture lo JSON stringify & parse valla bridge slow ayyedhi. Kotha JSI architecture lo JavaScript direct ga C++ memory pointers ni call chesthundi (Zero JSON lag!).
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>// TurboModule Spec (TypeScript / Codegen)
-import type { TurboModule } from 'react-native';
-import { TurboModuleRegistry } from 'react-native';
+<!-- ============================================================ LEVEL 10 -->
+<div class="module-panel" id="level10">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 10</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Native Modules &amp; New Architecture (JSI, Fabric, TurboModules)</h2>
+    <p>Zero-JSON bridge bottleneck, C++ direct memory pointers, and TurboModule specs.</p>
+  </div>
 
-export interface Spec extends TurboModule {
-  getDeviceId(): string; // Direct C++ JSI invocation
+  <section class="mod" id="l10-1">
+    <div class="mod-head"><span class="mod-num">10.1</span><h3 class="title">Old Bridge vs JSI Shared Memory</h3></div>
+    <div class="diagram">Old Bridge 🐢: JS ──▶ JSON.stringify ──▶ Async Queue ──▶ JSON.parse ──▶ Native
+New Arch ⚡ : JS ──▶ Direct C++ Memory Pointer (JSI: 0ms serialization!) ──▶ Native</div>
+    <div class="code"><span class="cm">// TurboModule Spec (TypeScript / Codegen)</span>
+<span class="kw">import type</span> { TurboModule } <span class="kw">from</span> <span class="str">'react-native'</span>;
+<span class="kw">import</span> { TurboModuleRegistry } <span class="kw">from</span> <span class="str">'react-native'</span>;
+
+<span class="kw">export interface</span> Spec <span class="kw">extends</span> TurboModule {
+  getDeviceId(): string; <span class="cm">// Direct synchronous C++ call</span>
   multiply(a: number, b: number): Promise&lt;number&gt;;
 }
 
-export default TurboModuleRegistry.getEnforcing&lt;Spec&gt;('NativeDeviceModule');</code></pre>
-        </div>
-      </section>
+<span class="kw">export default</span> TurboModuleRegistry.getEnforcing&lt;Spec&gt;(<span class="str">'NativeDeviceModule'</span>);</div>
+  </section>
+</div>
 
-      <!-- LEVEL 11 -->
-      <section class="level-card" id="level11">
-        <div class="level-header">
-          <div class="level-title">11. Real-Time Push Notifications &amp; Deep Linking</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          Dual-layer token architecture (Expo Push Token relays to APNs/FCM). Background tap listeners and cold-start handlers (<code>getLastNotificationResponseAsync</code>) route to screens via top-level <code>navigationRef</code>.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Push token phone address laga. Lock screen nunchi notification tap chesi app open chesinappudu `navigationRef` vaadi direct ga ఆ specific screen ki route chestham.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import * as Notifications from 'expo-notifications';
-import { createNavigationContainerRef } from '@react-navigation/native';
+<!-- ============================================================ LEVEL 11 -->
+<div class="module-panel" id="level11">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 11</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Real-Time Push Notifications &amp; Deep Linking</h2>
+    <p>Dual-layer token architecture (APNs/FCM), background tap handlers, and navigationRef.</p>
+  </div>
 
-export const navigationRef = createNavigationContainerRef();
+  <section class="mod" id="l11-1">
+    <div class="mod-head"><span class="mod-num">11.1</span><h3 class="title">Notification Pipeline &amp; Tap Navigation</h3></div>
+    <div class="code"><span class="kw">import</span> * <span class="kw">as</span> Notifications <span class="kw">from</span> <span class="str">'expo-notifications'</span>;
+<span class="kw">import</span> { createNavigationContainerRef } <span class="kw">from</span> <span class="str">'@react-navigation/native'</span>;
+
+<span class="kw">export const</span> navigationRef = createNavigationContainerRef();
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
+  handleNotification: <span class="kw">async</span> () =&gt; ({
+    shouldShowAlert: <span class="kw">true</span>,
+    shouldPlaySound: <span class="kw">true</span>,
+    shouldSetBadge: <span class="kw">false</span>,
   }),
 });
 
-export const setupNotificationTapListener = () => {
-  Notifications.addNotificationResponseReceivedListener((response) => {
-    const data = response.notification.request.content.data;
-    if (data?.screen && navigationRef.isReady()) {
-      navigationRef.navigate(data.screen, { id: data.id });
+<span class="kw">export const</span> initNotificationListeners = () =&gt; {
+  <span class="cm">// Background Tap Listener</span>
+  Notifications.addNotificationResponseReceivedListener((response) =&gt; {
+    <span class="kw">const</span> { screen, id } = response.notification.request.content.data;
+    <span class="kw">if</span> (screen &amp;&amp; navigationRef.isReady()) {
+      navigationRef.navigate(screen, { id });
     }
   });
-};</code></pre>
-        </div>
-      </section>
+};</div>
+  </section>
+</div>
 
-      <!-- LEVEL 12 -->
-      <section class="level-card" id="level12">
-        <div class="level-header">
-          <div class="level-title">12. Offline-First Architecture &amp; SQLite Databases</div>
-          <span class="level-badge">Phase 3: Native &amp; Polish</span>
-        </div>
-        <p class="concept-text">
-          <code>expo-sqlite</code> stores relational data on disk using B-Trees (~0.5ms queries). Optimistic UI renders actions instantly (⏳), queues requests in SQLite, and drains upon <code>NetInfo</code> reconnection (✅).
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Airplane mode lo unnapudu comment post chesthe: screen meeda instant ga chupistham (⏳), SQLite queue lo store chesi, internet raagane NetInfo detect chesi server ki push chestham (✅).
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import * as SQLite from 'expo-sqlite';
-import NetInfo from '@react-native-community/netinfo';
-
-export const initOfflineDB = async () => {
-  const db = await SQLite.openDatabaseAsync('offline_app.db');
-  await db.execAsync(`
-    CREATE TABLE IF NOT EXISTS queue (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      endpoint TEXT,
-      body TEXT,
-      is_synced INTEGER DEFAULT 0
-    );
-  `);
-  return db;
-};
-
-export const syncQueue = async (db) => {
-  const pending = await db.getAllAsync('SELECT * FROM queue WHERE is_synced = 0;');
-  for (const item of pending) {
-    // Send to backend API
-    await db.runAsync('UPDATE queue SET is_synced = 1 WHERE id = ?;', [item.id]);
-  }
-};</code></pre>
-        </div>
-      </section>
-
-      <!-- LEVEL 13 -->
-      <section class="level-card" id="level13">
-        <div class="level-header">
-          <div class="level-title">13. EAS Build Pipeline &amp; App Store Credentials</div>
-          <span class="level-badge">Phase 4: Production &amp; CI/CD</span>
-        </div>
-        <p class="concept-text">
-          EAS Build compiles native iOS binaries (<code>.ipa</code>) on managed Apple Silicon cloud clusters. Android uses <code>.aab</code> (App Bundles) and Keystores. <code>eas submit</code> automates Google Play and Apple App Store deployments.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> Windows laptop lo Xcode undadu kabatti, EAS cloud Mac servers meeda iPhone app (`.ipa`) and Android (`.aab`) compile chesthundi. `eas submit` command direct ga Play Store loki upload chesthundi.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>// eas.json Configuration Matrix
-{
-  "build": {
-    "development": { "developmentClient": true, "distribution": "internal" },
-    "preview": {
-      "distribution": "internal",
-      "android": { "buildType": "apk" }
-    },
-    "production": {
-      "android": { "buildType": "app-bundle" }
-    }
-  }
-}
-// CLI Commands:
-// 1. Build: eas build --platform all
-// 2. Submit: eas submit --platform all
-// 3. Credentials: eas credentials</code></pre>
-        </div>
-      </section>
-
-      <!-- LEVEL 14 -->
-      <section class="level-card" id="level14">
-        <div class="level-header">
-          <div class="level-title">14. Over-The-Air (OTA) Live Updates &amp; Rollback Strategies</div>
-          <span class="level-badge">Phase 4: Production &amp; CI/CD</span>
-        </div>
-        <p class="concept-text">
-          Decouples the JavaScript bundle from the native binary shell. Push live bug fixes in ~5 seconds via <code>eas update</code>. <code>runtimeVersion</code> locks updates to compatible native binaries. Emergency rollbacks in 1s via <code>eas update:republish</code>.
-        </p>
-        <div class="tenglish-box">
-          <strong>🗣️ Tenglish:</strong> 3-day App Store review delay lekunda, JavaScript bug fixes ni `eas update` dwara 5 seconds lo live ga push cheyochu. Production lo sudden bug vasthe `eas update:republish` dwara 1 second lo rollback chestham.
-        </div>
-        <div class="code-container">
-          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
-<pre><code>import * as Updates from 'expo-updates';
-
-export const checkAndApplyLiveUpdates = async () => {
-  try {
-    const update = await Updates.checkForUpdateAsync();
-    if (update.isAvailable) {
-      await Updates.fetchUpdateAsync();
-      await Updates.reloadAsync(); // ⚡ Instant live update applied!
-    }
-  } catch (err) {
-    console.log('Update error:', err);
-  }
-};
-
-// Emergency CLI Rollback Command:
-// eas update:republish --group-id &lt;stable-working-group-id&gt;</code></pre>
-        </div>
-      </section>
-
-    </main>
+<!-- ============================================================ LEVEL 12 -->
+<div class="module-panel" id="level12">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 12</span><span class="chip">Phase 3 · Native &amp; Polish</span></div>
+    <h2>Offline-First Architecture &amp; SQLite Databases</h2>
+    <p>expo-sqlite B-Trees, WatermelonDB lazy loading, mutation queues, and CRDT sync.</p>
   </div>
 
-  <div id="toast">Copied to clipboard! 📋</div>
+  <section class="mod" id="l12-1">
+    <div class="mod-head"><span class="mod-num">12.1</span><h3 class="title">SQLite Parameterized Queries &amp; Sync Engine</h3></div>
+    <div class="code"><span class="kw">import</span> * <span class="kw">as</span> SQLite <span class="kw">from</span> <span class="str">'expo-sqlite'</span>;
+<span class="kw">import</span> NetInfo <span class="kw">from</span> <span class="str">'@react-native-community/netinfo'</span>;
 
-  <script>
-    // FILTER CARDS BY SEARCH INPUT
-    function filterCards() {
-      const q = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.level-card');
-      cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(q) ? 'block' : 'none';
-      });
-    }
+<span class="kw">export const</span> initDB = <span class="kw">async</span> () =&gt; {
+  <span class="kw">const</span> db = <span class="kw">await</span> SQLite.openDatabaseAsync(<span class="str">'offline.db'</span>);
+  <span class="kw">await</span> db.execAsync(<span class="str">`
+    CREATE TABLE IF NOT EXISTS tasks (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      is_synced INTEGER DEFAULT 0
+    );
+  `</span>);
+  <span class="kw">return</span> db;
+};
 
-    // COPY CODE SNIPPET TO CLIPBOARD
-    function copyCode(btn) {
-      const code = btn.nextElementSibling.innerText;
-      navigator.clipboard.writeText(code).then(() => {
-        const toast = document.getElementById('toast');
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 2000);
-      });
+<span class="kw">export const</span> syncPendingQueue = <span class="kw">async</span> (db) =&gt; {
+  <span class="kw">const</span> pending = <span class="kw">await</span> db.getAllAsync(<span class="str">'SELECT * FROM tasks WHERE is_synced = 0;'</span>);
+  <span class="kw">for</span> (<span class="kw">const</span> task <span class="kw">of</span> pending) {
+    <span class="cm">// Send to server: await axios.post('/api/tasks', task);</span>
+    <span class="kw">await</span> db.runAsync(<span class="str">'UPDATE tasks SET is_synced = 1 WHERE id = ?;'</span>, [task.id]);
+  }
+};</div>
+  </section>
+</div>
+
+<!-- ============================================================ LEVEL 13 -->
+<div class="module-panel" id="level13">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 13</span><span class="chip">Phase 4 · Production &amp; CI/CD</span></div>
+    <h2>EAS Build Pipeline &amp; Store Credentials</h2>
+    <p>Cloud Mac compilation on Windows, Android AAB &amp; Keystores, iOS Provisioning Profiles, EAS Submit.</p>
+  </div>
+
+  <section class="mod" id="l13-1">
+    <div class="mod-head"><span class="mod-num">13.1</span><h3 class="title">Multi-Environment Matrix (eas.json)</h3></div>
+    <div class="code">{
+  <span class="str">"build"</span>: {
+    <span class="str">"development"</span>: { <span class="str">"developmentClient"</span>: <span class="kw">true</span>, <span class="str">"distribution"</span>: <span class="str">"internal"</span> },
+    <span class="str">"preview"</span>: {
+      <span class="str">"distribution"</span>: <span class="str">"internal"</span>,
+      <span class="str">"android"</span>: { <span class="str">"buildType"</span>: <span class="str">"apk"</span> }
+    },
+    <span class="str">"production"</span>: {
+      <span class="str">"android"</span>: { <span class="str">"buildType"</span>: <span class="str">"app-bundle"</span> }
     }
-  </script>
+  }
+}</div>
+    <div class="safe-zone"><span class="label">Production CLI Commands</span><p><code>eas build --platform all</code> (Compiles binaries) · <code>eas credentials</code> (Manages keystores) · <code>eas submit --platform all</code> (Auto-uploads to stores).</p></div>
+  </section>
+</div>
+
+<!-- ============================================================ LEVEL 14 -->
+<div class="module-panel" id="level14">
+  <div class="module-intro">
+    <div class="chip-row"><span class="chip">Module 14</span><span class="chip">Phase 4 · Production &amp; CI/CD</span></div>
+    <h2>Over-The-Air (OTA) Live Updates &amp; Rollbacks</h2>
+    <p>Instant live JS updates in 5s, Apple 2.5.2 legal rules, runtimeVersion locks, and 1s emergency rollbacks.</p>
+  </div>
+
+  <section class="mod" id="l14-1">
+    <div class="mod-head"><span class="mod-num">14.1</span><h3 class="title">Live Update Pipeline &amp; Emergency Rollbacks</h3></div>
+    <div class="code"><span class="kw">import</span> * <span class="kw">as</span> Updates <span class="kw">from</span> <span class="str">'expo-updates'</span>;
+
+<span class="kw">export const</span> checkLiveUpdates = <span class="kw">async</span> () =&gt; {
+  <span class="kw">try</span> {
+    <span class="kw">const</span> update = <span class="kw">await</span> Updates.checkForUpdateAsync();
+    <span class="kw">if</span> (update.isAvailable) {
+      <span class="kw">await</span> Updates.fetchUpdateAsync();
+      <span class="kw">await</span> Updates.reloadAsync(); <span class="cm">// ⚡ Instant live update applied</span>
+    }
+  } <span class="kw">catch</span> (err) {
+    console.log(<span class="str">'Update error:'</span>, err);
+  }
+};
+
+<span class="cm">// Emergency Rollback CLI Command:</span>
+<span class="cm">// eas update:republish --group-id &lt;stable-group-id&gt;</span></div>
+    <div class="crash"><span class="label">Apple &amp; Google Policy Rule</span><p>Bug fixes and UI styling updates are 100% legal. Bypassing native in-app purchases or changing the app's core approved purpose results in an immediate permanent store ban.</p></div>
+  </section>
+</div>
+
+</main>
+
+<footer>react native masterclass · complete 14-level field guide · 2026</footer>
+
+<script>
+  const buttons = document.querySelectorAll('#tabNav button');
+  const panels = document.querySelectorAll('.module-panel');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-target');
+      buttons.forEach((b) => b.classList.remove('active'));
+      panels.forEach((p) => p.classList.remove('active'));
+      btn.classList.add('active');
+      const activePanel = document.getElementById(target);
+      if (activePanel) {
+        activePanel.classList.add('active');
+      }
+      btn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+</script>
+
 </body>
 </html>
