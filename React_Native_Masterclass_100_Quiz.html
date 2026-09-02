@@ -1,0 +1,3068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Native Masterclass — 100 Questions Grand Examination (Levels 1 to 10)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --accent-blue: #0284c7;
+      --accent-emerald: #059669;
+      --accent-red: #dc2626;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --opt-bg: #f8fafc;
+      --opt-hover: #f0f9ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding-bottom: 120px;
+    }
+
+    /* Sticky Header & Score Bar */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 16px 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .header-content {
+      max-width: 1000px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .title-group h1 {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--accent-blue);
+      letter-spacing: -0.5px;
+    }
+
+    .title-group p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .stats-dashboard {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .stat-badge {
+      background: #f8fafc;
+      border: 1px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    .stat-badge .label {
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .stat-badge .value {
+      font-size: 18px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .value.score-val { color: var(--accent-emerald); }
+    .value.answered-val { color: var(--accent-blue); }
+
+    /* Progress Bar */
+    .progress-track {
+      width: 100%;
+      height: 6px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0284c7, #059669);
+      transition: width 0.3s ease;
+    }
+
+    /* Filter Tabs Wrapper with Left/Right Arrows */
+    .filter-wrapper {
+      max-width: 1000px;
+      margin: 16px auto 12px auto;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }
+
+    .filter-scroll-container {
+      flex: 1;
+      padding: 6px 4px 6px 4px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE / Edge */
+      scroll-behavior: smooth;
+    }
+
+    .filter-scroll-container::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    .nav-arrow {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: #334155;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .nav-arrow:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      transform: scale(1.08);
+    }
+
+    .filter-btn {
+      display: inline-flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-right: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      transform: translateY(-1px);
+    }
+
+    /* Main Quiz Container */
+    .quiz-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 10px 20px;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .question-card.answered-card {
+      border-color: #cbd5e1;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .q-number-pill {
+      background: rgba(2, 132, 199, 0.08);
+      border: 1px solid rgba(2, 132, 199, 0.2);
+      color: var(--accent-blue);
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+    }
+
+    .level-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .question-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    /* Options */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .option-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 13px;
+      text-align: left;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: #0284c7;
+      background: #f0f9ff;
+      color: #0369a1;
+    }
+
+    .opt-letter {
+      background: #e2e8f0;
+      color: #475569;
+      font-size: 11px;
+      font-weight: 800;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    /* Instant Feedback Styles */
+    .option-btn.correct-opt {
+      background: #ecfdf5 !important;
+      border-color: #059669 !important;
+      color: #065f46 !important;
+      font-weight: 600;
+    }
+
+    .option-btn.correct-opt .opt-letter {
+      background: #059669;
+      color: #ffffff;
+    }
+
+    .option-btn.wrong-opt {
+      background: #fef2f2 !important;
+      border-color: #dc2626 !important;
+      color: #991b1b !important;
+      font-weight: 600;
+    }
+
+    .option-btn.wrong-opt .opt-letter {
+      background: #dc2626;
+      color: #ffffff;
+    }
+
+    /* Explanation Box */
+    .explanation-box {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .explanation-box.show {
+      display: block;
+    }
+
+    .explanation-box.correct-exp {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid var(--accent-emerald);
+      color: #166534;
+    }
+
+    .explanation-box.wrong-exp {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-left: 4px solid var(--accent-red);
+      color: #991b1b;
+    }
+
+    .exp-header {
+      font-weight: 800;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .exp-tenglish {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
+      font-style: italic;
+      color: #92400e;
+      background: #fffbeb;
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+
+    /* Floating Finish Bar */
+    .floating-finish-bar {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid #cbd5e1;
+      padding: 12px 24px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      z-index: 99;
+    }
+
+    .finish-btn {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff;
+      font-weight: 800;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 999px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+    }
+
+    .finish-btn:hover {
+      transform: scale(1.04);
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+    }
+
+    /* Evaluation Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .eval-modal {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 28px;
+      max-width: 600px;
+      width: 100%;
+      padding: 32px;
+      text-align: center;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+    }
+
+    .eval-modal h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    .big-score {
+      font-size: 64px;
+      font-weight: 900;
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--accent-emerald);
+      margin: 10px 0;
+    }
+
+    .rank-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .level-breakdown-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      text-align: left;
+      margin: 20px 0;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+    }
+
+    .level-breakdown-item {
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+    }
+
+    .level-breakdown-item span:last-child {
+      font-weight: 700;
+      color: #0f172a;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .restart-btn {
+      background: #059669;
+      color: #ffffff;
+      font-weight: 900;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 14px;
+      font-size: 14px;
+      cursor: pointer;
+      margin-top: 10px;
+      box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STICKY SCORE & TELEMETRY HEADER -->
+  <header class="sticky-header">
+    <div class="header-content">
+      <div class="title-group">
+        <h1>React Native Grand Exam 🏆</h1>
+        <p>140 Challenging Architecture Questions (Full 14 Levels • Shuffled)</p>
+      </div>
+
+      <div class="stats-dashboard">
+        <div class="stat-badge">
+          <div class="label">Answered</div>
+          <div class="value answered-val" id="answeredCount">0 / 140</div>
+        </div>
+
+        <div class="stat-badge">
+          <div class="label">Score</div>
+          <div class="value score-val" id="scoreCount">0</div>
+        </div>
+
+        <div class="stat-badge">
+          <div class="label">Accuracy</div>
+          <div class="value" id="accuracyVal" style="color: #0284c7;">0%</div>
+        </div>
+
+        <button 
+          class="nav-arrow" 
+          style="width: auto; height: 38px; padding: 0 14px; border-radius: 12px; font-size: 11px; gap: 6px; background: #fff1f2; border-color: #fecdd3; color: #e11d48;" 
+          onclick="resetQuiz()" 
+          title="Reset All Answers & Reshuffle"
+        >
+          <span>🔄</span> Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progressBar"></div>
+    </div>
+  </header>
+
+  <!-- FILTER BUTTONS WITH NAVIGATION ARROWS -->
+  <div class="filter-wrapper">
+    <button class="nav-arrow" onclick="scrollFilterBar(-250)" title="Scroll Left">‹</button>
+    <div class="filter-scroll-container" id="filterScrollContainer">
+      <button class="filter-btn active" onclick="filterLevel('all')">All Questions (140)</button>
+      <button class="filter-btn" onclick="filterLevel('1')">L1: Primitives & Safe Area</button>
+      <button class="filter-btn" onclick="filterLevel('2')">L2: Lists & Keyboard</button>
+      <button class="filter-btn" onclick="filterLevel('3')">L3: Hooks & Memory</button>
+      <button class="filter-btn" onclick="filterLevel('4')">L4: Navigation & Focus</button>
+      <button class="filter-btn" onclick="filterLevel('5')">L5: Network & SecureStore</button>
+      <button class="filter-btn" onclick="filterLevel('6')">L6: Zustand & Global State</button>
+      <button class="filter-btn" onclick="filterLevel('7')">L7: Gestures & Reanimated 3</button>
+      <button class="filter-btn" onclick="filterLevel('8')">L8: Hardware, GPS & Haptics</button>
+      <button class="filter-btn" onclick="filterLevel('9')">L9: FlashList & 16.6ms Budget</button>
+      <button class="filter-btn" onclick="filterLevel('10')">L10: JSI, TurboModules & Fabric</button>
+      <button class="filter-btn" onclick="filterLevel('11')">L11: Push & Deep Links</button>
+      <button class="filter-btn" onclick="filterLevel('12')">L12: Offline & SQLite</button>
+      <button class="filter-btn" onclick="filterLevel('13')">L13: EAS Build & CI/CD</button>
+      <button class="filter-btn" onclick="filterLevel('14')">L14: OTA & CodePush</button>
+    </div>
+    <button class="nav-arrow" onclick="scrollFilterBar(250)" title="Scroll Right">›</button>
+  </div>
+
+  <!-- QUIZ CONTAINER -->
+  <main class="quiz-container" id="quizContainer">
+    <!-- Generated dynamically via JS -->
+  </main>
+
+  <!-- FLOATING FINISH BUTTON -->
+  <div class="floating-finish-bar">
+    <span style="font-size: 12px; color: #64748b;" id="floatingStatus">0 of 100 Answered</span>
+    <button class="finish-btn" onclick="evaluateFinalScore()">Finish &amp; View Evaluation 📊</button>
+  </div>
+
+  <!-- EVALUATION MODAL -->
+  <div class="modal-overlay" id="evalModal">
+    <div class="eval-modal">
+      <h2>Grand Evaluation Report 🎓</h2>
+      <p style="color: #64748b; font-size: 13px;">React Native Senior Architect Assessment</p>
+
+      <div class="big-score" id="finalScoreDisplay">0 / 100</div>
+      <div class="rank-badge" id="rankBadge" style="background: #059669; color: #ffffff;">Architect</div>
+
+      <div class="level-breakdown-grid" id="breakdownGrid">
+        <!-- Level by Level performance -->
+      </div>
+
+      <button class="restart-btn" onclick="closeModalAndReview()">Review Answers 🔍</button>
+      <button class="restart-btn" style="background: #334155; color: white; margin-left: 8px;" onclick="resetQuiz()">Reshuffle &amp; Retake 🔄</button>
+    </div>
+  </div>
+
+  <!-- QUIZ ENGINE & HARDER JUMBLED DATABASE (100 QUESTIONS) -->
+  <script>
+    const RAW_QUESTIONS = [
+      // ==========================================
+      // LEVEL 1: PRIMITIVES, NOTCHES & FLEXBOX (Q1 - Q10)
+      // ==========================================
+      {
+        id: 1,
+        level: 1,
+        topic: "Level 1.1: Core Primitives",
+        question: "In React Native, what happens under the hood if you render raw text directly inside a <View> without a wrapping <Text> primitive?",
+        options: [
+          "It throws a fatal Invariant Violation runtime exception because the layout engine only mounts native text nodes inside Text wrappers.",
+          "It automatically wraps the string inside a hidden anonymous text span and renders with the parent's default font size.",
+          "The Yoga layout engine renders the text with 0px width and height without crashing.",
+          "It renders on iOS but crashes exclusively on Android devices."
+        ],
+        correctAnswer: "It throws a fatal Invariant Violation runtime exception because the layout engine only mounts native text nodes inside Text wrappers.",
+        explanation: "React Native strictly enforces that text strings cannot exist as direct children of native View containers. Doing so throws an unhandled runtime error.",
+        tenglish: "View lopal direct ga text pedithe app crash aypothundi. Compulsory <Text> tag lopalane text raayali."
+      },
+      {
+        id: 2,
+        level: 1,
+        topic: "Level 1.1: Style Cascade",
+        question: "Which statement accurately describes CSS inheritance and style cascading in React Native?",
+        options: [
+          "Styles cascade to all child components if defined on the top-level SafeAreaView.",
+          "React Native does NOT support CSS cascading from Views to children; text style inheritance is strictly supported ONLY when nesting <Text> inside another <Text>.",
+          "All CSS properties inherit down the tree except for flexbox layout dimensions.",
+          "Style inheritance only works when using StyleSheet.create() and fails with inline style objects."
+        ],
+        correctAnswer: "React Native does NOT support CSS cascading from Views to children; text style inheritance is strictly supported ONLY when nesting <Text> inside another <Text>.",
+        explanation: "React Native deliberately omitted the CSS cascade. Only nested Text primitives (e.g. <Text style={{fontWeight: 'bold'}}><Text>child</Text></Text>) inherit visual properties.",
+        tenglish: "Parent View style child Text ki apply avvadu. Nested Text components lo mathrame text styles inherit avthayi."
+      },
+      {
+        id: 3,
+        level: 1,
+        topic: "Level 1.2: Flexbox Engine",
+        question: "Why does React Native's Yoga flexbox layout engine default to flexDirection: 'column' rather than 'row'?",
+        options: [
+          "Because mobile screens are predominantly vertical viewports with content flowing top-to-bottom.",
+          "Because the C++ Yoga engine is unable to calculate horizontal dimensions without an explicit width.",
+          "Because Android SDK 34 deprecated horizontal flex layouts.",
+          "Because flexDirection: 'row' disables scrolling on Touchables."
+        ],
+        correctAnswer: "Because mobile screens are predominantly vertical viewports with content flowing top-to-bottom.",
+        explanation: "Unlike web browsers which default to horizontal reading flows ('row'), mobile platforms naturally orient view hierarchies vertically ('column').",
+        tenglish: "Mobile screens vertical ga untayi kabatti default ga flexDirection 'column' lo set chesaru."
+      },
+      {
+        id: 4,
+        level: 1,
+        topic: "Level 1.2: Hardware Boundaries",
+        question: "Why is 'react-native-safe-area-context' (SafeAreaProvider & useSafeAreaInsets) preferred over React Native's built-in <SafeAreaView>?",
+        options: [
+          "Built-in SafeAreaView renders synchronously on the UI thread whereas safe-area-context runs on a background worker.",
+          "Built-in SafeAreaView only supports iOS home indicator/notches and fails to handle modern Android dynamic status bars and edge-to-edge gesture navigation insets.",
+          "Built-in SafeAreaView disables keyboard avoiding behavior.",
+          "safe-area-context consumes less battery by disabling GPS."
+        ],
+        correctAnswer: "Built-in SafeAreaView only supports iOS home indicator/notches and fails to handle modern Android dynamic status bars and edge-to-edge gesture navigation insets.",
+        explanation: "React Native's legacy SafeAreaView is iOS-only and static. 'react-native-safe-area-context' provides cross-platform real-time pixel insets for all notches and gesture bars.",
+        tenglish: "Default SafeAreaView Android lo work avvadu. 'react-native-safe-area-context' iOS and Android rendu devices lo perfect insets isthundi."
+      },
+      {
+        id: 5,
+        level: 1,
+        topic: "Level 1.3: Touch Ergonomics",
+        question: "How does <Pressable> achieve better performance and touch customization compared to <TouchableOpacity>?",
+        options: [
+          "Pressable uses CSS pointer-events instead of the native responder system.",
+          "Pressable provides multi-state function children ({ pressed }), custom hitSlop, and pressRetentionOffset without adding extra unneeded opacity wrapper view nodes.",
+          "Pressable runs entirely on the GPU and skips the JavaScript event loop.",
+          "TouchableOpacity has a hard limit of 50 touches per minute."
+        ],
+        correctAnswer: "Pressable provides multi-state function children ({ pressed }), custom hitSlop, and pressRetentionOffset without adding extra unneeded opacity wrapper view nodes.",
+        explanation: "Pressable is the modern unified touch primitive providing fine-grained touch lifecycle hooks without unnecessary opacity view wrappers.",
+        tenglish: "Pressable lo { pressed } state and hitSlop chala smooth ga control cheyochu without extra wrapper views."
+      },
+      {
+        id: 6,
+        level: 1,
+        topic: "Level 1.3: hitSlop Touch Target",
+        question: "When meeting the Apple/Google 48x48dp accessibility standard for a small 16px icon button, which technique expands touchable area WITHOUT altering the visual layout?",
+        options: [
+          "Adding padding: 16 to the outer container.",
+          "Applying hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} on the Pressable.",
+          "Setting touchRadius: 48 on the parent View.",
+          "Using transform: [{ scale: 3 }]."
+        ],
+        correctAnswer: "Applying hitSlop={{ top: 16, bottom: 16, left: 16, right: 16 }} on the Pressable.",
+        explanation: "hitSlop expands the touchable responder boundary outward without shifting adjacent sibling layout elements.",
+        tenglish: "Layout design maarchakunda button touch area ni penchadaniki hitSlop vadatham."
+      },
+      {
+        id: 7,
+        level: 1,
+        topic: "Level 1.4: Screen Adaptation",
+        question: "What is the critical behavioral difference between Dimensions.get('window') and the useWindowDimensions() hook?",
+        options: [
+          "Dimensions.get('window') calculates values in centimeters; useWindowDimensions() returns points.",
+          "Dimensions.get('window') evaluates statically once on module load; useWindowDimensions() automatically re-renders the component when device orientation or split-screen dimensions change.",
+          "Dimensions.get('window') only returns width; useWindowDimensions() returns height and pixel density.",
+          "useWindowDimensions() is restricted to tablet devices."
+        ],
+        correctAnswer: "Dimensions.get('window') evaluates statically once on module load; useWindowDimensions() automatically re-renders the component when device orientation or split-screen dimensions change.",
+        explanation: "useWindowDimensions subscribes to live window dimension changes, preventing stale layout measurements during rotation.",
+        tenglish: "Screen rotate chesinappudu automatic ga re-render ayyi correct dimensions ivvadaniki useWindowDimensions() vadali."
+      },
+      {
+        id: 8,
+        level: 1,
+        topic: "Level 1.4: Style Architecture",
+        question: "Why does StyleSheet.create() improve performance over passing inline style objects (style={{ padding: 12 }}) in large applications?",
+        options: [
+          "It pre-compiles style declarations into numeric IDs registered once in the native bridge table, avoiding garbage collection object churn on every render.",
+          "It converts JavaScript styles into static CSS stylesheets in the native bundle.",
+          "It executes layout computations on a separate thread from the React reconciler.",
+          "It eliminates the need for the Yoga layout engine."
+        ],
+        correctAnswer: "It pre-compiles style declarations into numeric IDs registered once in the native bridge table, avoiding garbage collection object churn on every render.",
+        explanation: "StyleSheet.create registers style objects once and passes numeric IDs across the bridge, preventing memory allocations on every render cycle.",
+        tenglish: "Prathi render lo kotha style objects create avvakunda ID tho memory and garbage collection save chesthundi."
+      },
+      {
+        id: 9,
+        level: 1,
+        topic: "Level 1.2: Flex Wrap",
+        question: "To build a dynamic hashtag tag cloud where tags automatically wrap to the next line when exceeding container width, which flexbox rule is required?",
+        options: [
+          "flexDirection: 'row', flexWrap: 'wrap'",
+          "flexDirection: 'column', flexWrap: 'nowrap'",
+          "overflow: 'scroll', display: 'grid'",
+          "alignContent: 'flex-start', flexWrap: 'reverse'"
+        ],
+        correctAnswer: "flexDirection: 'row', flexWrap: 'wrap'",
+        explanation: "Setting flexWrap: 'wrap' along with a row direction allows child elements to flow into subsequent lines when space is exhausted.",
+        tenglish: "Horizontal tags line aypogane kinda line loki velladaniki flexDirection: 'row' with flexWrap: 'wrap' vadali."
+      },
+      {
+        id: 10,
+        level: 1,
+        topic: "Level 1.1: Pixel Ratio & Dimensions",
+        question: "What unit of measurement does React Native use for layout values like width: 250?",
+        options: [
+          "Physical hardware pixels (px).",
+          "Density-independent points/pixels (dp/pt) scaled automatically against the device's PixelRatio.",
+          "Viewport Width percentages (vw).",
+          "Centimeters scaled to device DPI."
+        ],
+        correctAnswer: "Density-independent points/pixels (dp/pt) scaled automatically against the device's PixelRatio.",
+        explanation: "React Native uses logical density-independent points so that layout dimensions remain visually consistent regardless of screen pixel density.",
+        tenglish: "React Native lo layout values anni Density-independent Points (dp) lo calculate avthayi."
+      },
+
+      // ==========================================
+      // LEVEL 2: LISTS, FORMS & KEYBOARD (Q11 - Q20)
+      // ==========================================
+      {
+        id: 11,
+        level: 2,
+        topic: "Level 2.1: Virtualized Lists",
+        question: "Why will rendering 3,000 cards in a <ScrollView> trigger an Out-Of-Memory (OOM) mobile crash, whereas <FlatList> renders smoothly?",
+        options: [
+          "ScrollView stores image buffers in uncompressed RAW format.",
+          "ScrollView instantiates and mounts all 3,000 native view nodes into memory at once; FlatList virtualizes by only rendering the viewport window and recycling off-screen nodes.",
+          "FlatList compresses list data onto disk using SQLite.",
+          "ScrollView has a hard-coded limit of 100 items."
+        ],
+        correctAnswer: "ScrollView instantiates and mounts all 3,000 native view nodes into memory at once; FlatList virtualizes by only rendering the viewport window and recycling off-screen nodes.",
+        explanation: "FlatList unmounts off-screen components and renders only a dynamic window of items, keeping memory footprint constant.",
+        tenglish: "ScrollView anni 3,000 items ni oke sari RAM lo load chesi crash chesthundi. FlatList screen meeda unnavi mathrame render chesthundi."
+      },
+      {
+        id: 12,
+        level: 2,
+        topic: "Level 2.1: keyExtractor Rule",
+        question: "What happens if your FlatList keyExtractor returns a numeric value (e.g. keyExtractor={item => item.id} where id is 101) instead of a string?",
+        options: [
+          "React Native converts it automatically with zero warnings.",
+          "React Native throws a warning or fails key reconciliation because React keys must be Strings.",
+          "The list reverses its sorting order.",
+          "The items fail to respond to touch events."
+        ],
+        correctAnswer: "React Native throws a warning or fails key reconciliation because React keys must be Strings.",
+        explanation: "React reconciliation requires string identifiers. Always use keyExtractor={item => String(item.id)}.",
+        tenglish: "keyExtractor compulsory string return cheyali, number return chesthe reconciliation warning vasthundi."
+      },
+      {
+        id: 13,
+        level: 2,
+        topic: "Level 2.1: Infinite Pagination Threshold",
+        question: "If onEndReachedThreshold is set to 0.5 on a FlatList, when exactly does onEndReached trigger?",
+        options: [
+          "When the scroll position is exactly at 50% of the entire list.",
+          "When the bottom of the visible content is within half a visible screen length from the end of the list.",
+          "After a 0.5-second delay from reaching the bottom.",
+          "When 50% of total items have been rendered."
+        ],
+        correctAnswer: "When the bottom of the visible content is within half a visible screen length from the end of the list.",
+        explanation: "The threshold is a fraction of the visible viewport length from the end, triggering seamless pre-fetching before the user hits the bottom.",
+        tenglish: "Screen length lo 50% distance remaining unnapude onEndReached trigger ayyi next page pre-fetch chesthundi."
+      },
+      {
+        id: 14,
+        level: 2,
+        topic: "Level 2.2: Pull-to-Refresh",
+        question: "How should you implement standard native pull-to-refresh on a FlatList in React Native?",
+        options: [
+          "By attaching a PanGestureHandler to detect downward scroll velocity.",
+          "By passing <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} /> to the refreshControl prop.",
+          "By listening to onScrollEndDrag events manually.",
+          "By setting pullToRefresh={true} on the View container."
+        ],
+        correctAnswer: "By passing <RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} /> to the refreshControl prop.",
+        explanation: "RefreshControl binds directly to iOS UIRefreshControl and Android SwipeRefreshLayout native platform components.",
+        tenglish: "FlatList ki refreshControl prop dwara <RefreshControl /> component pass cheyali."
+      },
+      {
+        id: 15,
+        level: 2,
+        topic: "Level 2.2: SectionList",
+        question: "When should you choose <SectionList> over <FlatList>?",
+        options: [
+          "When list items contain nested horizontal scrollviews.",
+          "When rendering grouped data sets requiring sticky category section headers (e.g. Contacts A-Z or Chat Date Dividers).",
+          "When you need to render more than 10,000 items.",
+          "When list items have variable dynamic heights."
+        ],
+        correctAnswer: "When rendering grouped data sets requiring sticky category section headers (e.g. Contacts A-Z or Chat Date Dividers).",
+        explanation: "SectionList is optimized for sectioned data ({ title, data: [] }) with out-of-the-box sticky header capabilities.",
+        tenglish: "Sticky category headers tho grouped data (e.g. Contacts A, B, C) unnapudu SectionList vadali."
+      },
+      {
+        id: 16,
+        level: 2,
+        topic: "Level 2.3: KeyboardAvoidingView",
+        question: "What is the standard cross-platform behavior configuration for <KeyboardAvoidingView>?",
+        options: [
+          "behavior={Platform.OS === 'ios' ? 'padding' : 'height'}",
+          "behavior='position' on both platforms",
+          "behavior='padding' on both platforms",
+          "behavior={Platform.OS === 'android' ? 'padding' : 'none'}"
+        ],
+        correctAnswer: "behavior={Platform.OS === 'ios' ? 'padding' : 'height'}",
+        explanation: "iOS requires active padding adjustment to offset the keyboard height, whereas Android handles window resizing natively via height or windowSoftInputMode.",
+        tenglish: "iOS ki 'padding', Android ki 'height' behavior set cheyadam standard pattern."
+      },
+      {
+        id: 17,
+        level: 2,
+        topic: "Level 2.3: Dismiss Keyboard on Backdrop",
+        question: "How do you ensure the software keyboard dismisses when a user taps outside a form input on the background?",
+        options: [
+          "Wrap the screen in a <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>.",
+          "Set autoDismissKeyboard={true} on the TextInput.",
+          "Attach an onBlur listener to the parent View.",
+          "Call Keyboard.hide() inside a useEffect."
+        ],
+        correctAnswer: "Wrap the screen in a <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>.",
+        explanation: "TouchableWithoutFeedback with Keyboard.dismiss captures unhandled backdrop touch events to close the soft keyboard.",
+        tenglish: "Screen meeda ekkada tap chesina keyboard close avvadaniki TouchableWithoutFeedback with Keyboard.dismiss vadatham."
+      },
+      {
+        id: 18,
+        level: 2,
+        topic: "Level 2.4: Controlled vs Uncontrolled Inputs",
+        question: "What distinguishes a Controlled <TextInput> from an Uncontrolled <TextInput> in React Native?",
+        options: [
+          "Controlled inputs store their current string strictly in React state via value and onChangeText; Uncontrolled inputs manage text natively via ref.",
+          "Controlled inputs require a password prop.",
+          "Uncontrolled inputs cannot submit form data.",
+          "Controlled inputs run validation on a background Web Worker."
+        ],
+        correctAnswer: "Controlled inputs store their current string strictly in React state via value and onChangeText; Uncontrolled inputs manage text natively via ref.",
+        explanation: "Controlled components mirror input text synchronously in component state, providing a single source of truth.",
+        tenglish: "Controlled input value ni React state tho sync chesthundi (value & onChangeText)."
+      },
+      {
+        id: 19,
+        level: 2,
+        topic: "Level 2.4: Password Masking",
+        question: "Which prop masks input characters into secure dots in a <TextInput>?",
+        options: [
+          "secureTextEntry={true}",
+          "maskInput='password'",
+          "passwordMode={true}",
+          "type='password'"
+        ],
+        correctAnswer: "secureTextEntry={true}",
+        explanation: "secureTextEntry={true} configures the native iOS/Android text view for masked password entry.",
+        tenglish: "Password field dots laga ravalante secureTextEntry={true} vaadali."
+      },
+      {
+        id: 20,
+        level: 2,
+        topic: "Level 2.1: ItemSeparatorComponent",
+        question: "Why is ItemSeparatorComponent preferred over adding marginBottom to each rendered item card in a FlatList?",
+        options: [
+          "It automatically prevents rendering an unwanted trailing margin/divider after the very last card in the list.",
+          "It renders on the GPU whereas margins render on the CPU.",
+          "It enables swipe-to-delete gestures on dividers.",
+          "It reduces list memory consumption by 50%."
+        ],
+        correctAnswer: "It automatically prevents rendering an unwanted trailing margin/divider after the very last card in the list.",
+        explanation: "ItemSeparatorComponent places dividers strictly BETWEEN adjacent elements, eliminating trailing whitespace bugs.",
+        tenglish: "Last item tarvatha unwanted trailing space rakunda madhyalone divider ravali ante ItemSeparatorComponent vadali."
+      },
+
+      // ==========================================
+      // LEVEL 3: MOBILE HOOKS & MEMORY (Q21 - Q30)
+      // ==========================================
+      {
+        id: 21,
+        level: 3,
+        topic: "Level 3.1: Stack Memory Retention",
+        question: "When navigating from Screen A to Screen B in a React Navigation stack, does Screen A unmount?",
+        options: [
+          "No! Screen A remains fully mounted in device RAM in the stack; active setInterval timers or socket subscriptions will leak memory if not handled properly.",
+          "Yes, Screen A is unmounted and its memory is completely cleared by the garbage collector.",
+          "Screen A is paused and its state is serialized to AsyncStorage.",
+          "Screen A unmounts on Android but stays mounted on iOS."
+        ],
+        correctAnswer: "No! Screen A remains fully mounted in device RAM in the stack; active setInterval timers or socket subscriptions will leak memory if not handled properly.",
+        explanation: "Navigation stacks preserve mounted screen instances so popping back is instantaneous.",
+        tenglish: "Next screen ki vellina munde unna screen unmount avvadu, RAM lo alane mounted ga untundi."
+      },
+      {
+        id: 22,
+        level: 3,
+        topic: "Level 3.1: useEffect Memory Leaks",
+        question: "What happens if you initiate an interval (setInterval) inside a useEffect without returning a cleanup function in React Native?",
+        options: [
+          "The timer continues running indefinitely in memory even after the component unmounts, attempting to update unmounted state and causing memory leaks.",
+          "React automatically cancels the timer when the component loses focus.",
+          "The JavaScript Hermes engine pauses the interval when the screen changes.",
+          "The app throws an instant compiler error."
+        ],
+        correctAnswer: "The timer continues running indefinitely in memory even after the component unmounts, attempting to update unmounted state and causing memory leaks.",
+        explanation: "Failing to clear timers or subscriptions keeps closures alive in memory, creating persistent leaks.",
+        tenglish: "Cleanup function return cheyakapothe timer background lo alane run avthu memory leak chesthundi."
+      },
+      {
+        id: 23,
+        level: 3,
+        topic: "Level 3.2: useMemo vs useCallback",
+        question: "What is the exact distinction between useMemo and useCallback in React Native?",
+        options: [
+          "useMemo memoizes the RETURN VALUE of a computation; useCallback memoizes the FUNCTION DEFINITION reference across renders.",
+          "useMemo is for strings/numbers; useCallback is for objects and arrays.",
+          "useCallback executes synchronously on the UI thread; useMemo runs asynchronously.",
+          "useMemo prevents re-renders; useCallback prevents state updates."
+        ],
+        correctAnswer: "useMemo memoizes the RETURN VALUE of a computation; useCallback memoizes the FUNCTION DEFINITION reference across renders.",
+        explanation: "useMemo(() => compute(), [deps]) caches computed values; useCallback(fn, [deps]) preserves stable function references.",
+        tenglish: "useMemo value ni cache chesthundi, useCallback function reference ni cache chesthundi."
+      },
+      {
+        id: 24,
+        level: 3,
+        topic: "Level 3.3: useRef Mutable References",
+        question: "How does mutating a useRef value (myRef.current = newValue) differ from calling useState's setter?",
+        options: [
+          "Mutating a ref updates its stored reference synchronously WITHOUT triggering a component re-render cycle.",
+          "useRef triggers a re-render only if the value changed deeply.",
+          "useRef updates are scheduled asynchronously in the next frame.",
+          "useRef resets to null on every parent render."
+        ],
+        correctAnswer: "Mutating a ref updates its stored reference synchronously WITHOUT triggering a component re-render cycle.",
+        explanation: "Refs are mutable containers that persist across renders without participating in React's reconciliation cycle.",
+        tenglish: "useRef.current value change chesthe component re-render avvadu (silent instant update)."
+      },
+      {
+        id: 25,
+        level: 3,
+        topic: "Level 3.3: Programmatic Input Focus",
+        question: "How do you programmatically shift focus to the next input box in a 4-digit OTP verification screen?",
+        options: [
+          "Create a ref (const nextInput = useRef(null)), attach it to the input, and call nextInput.current.focus() on change.",
+          "Set autoFocus={true} on all 4 inputs simultaneously.",
+          "Use document.getElementById().focus().",
+          "Call Keyboard.next()."
+        ],
+        correctAnswer: "Create a ref (const nextInput = useRef(null)), attach it to the input, and call nextInput.current.focus() on change.",
+        explanation: "Attaching refs to TextInput components allows imperative invocation of native .focus(), .blur(), and .clear() methods.",
+        tenglish: "useRef create chesi inputRef.current.focus() call chesthe cursor automatic ga next input ki velthundi."
+      },
+      {
+        id: 26,
+        level: 3,
+        topic: "Level 3.4: AppState Lifecycle Subscriptions",
+        question: "Which API accurately detects when a user minimizes the application to the home screen or answers a phone call?",
+        options: [
+          "AppState.addEventListener('change', (nextState) => { ... })",
+          "LifecycleManager.onBackground()",
+          "PhoneState.watch()",
+          "ScreenState.listen()"
+        ],
+        correctAnswer: "AppState.addEventListener('change', (nextState) => { ... })",
+        explanation: "AppState tracks transitions between 'active', 'background', and 'inactive' (iOS app switcher).",
+        tenglish: "User app minimize chesina phone lock chesina AppState listener dwara detect chestham."
+      },
+      {
+        id: 27,
+        level: 3,
+        topic: "Level 3.4: Custom Hooks",
+        question: "What is the primary architectural purpose of building a Custom Hook (e.g. useDebounce, useNetwork)?",
+        options: [
+          "To extract and encapsulate reusable stateful business logic into composable, testable functions starting with 'use'.",
+          "To force React Native to render JSX directly in native C++.",
+          "To bypass React's Rules of Hooks.",
+          "To increase JavaScript thread clock speed."
+        ],
+        correctAnswer: "To extract and encapsulate reusable stateful business logic into composable, testable functions starting with 'use'.",
+        explanation: "Custom hooks share stateful lifecycle logic across components without duplicating code or using higher-order components.",
+        tenglish: "Repeated stateful logic ni reusable ga isolate cheyadaniki Custom Hooks vadatham."
+      },
+      {
+        id: 28,
+        level: 3,
+        topic: "Level 3.2: Referential Equality in React.memo",
+        question: "Why does passing an inline object prop (e.g. config={{ enabled: true }}) cause a React.memo child component to re-render on every parent render?",
+        options: [
+          "JavaScript allocates a brand new object reference in memory on every render, failing shallow reference equality check ({} !== {}).",
+          "React.memo does not support object props.",
+          "Inline objects are serialized into JSON text strings.",
+          "React Native disables memoization when props contain boolean flags."
+        ],
+        correctAnswer: "JavaScript allocates a brand new object reference in memory on every render, failing shallow reference equality check ({} !== {}).",
+        explanation: "In JavaScript, two distinct object literals never share reference equality. Passing inline objects breaks memoization unless wrapped in useMemo.",
+        tenglish: "Inline object prathi render lo kotha memory reference create chesthundi, so React.memo child unnecessarily re-render aypothundi."
+      },
+      {
+        id: 29,
+        level: 3,
+        topic: "Level 3.3: Storing Previous State",
+        question: "What is the idiomatic React hook pattern for tracking the previous value of a state or prop across renders?",
+        options: [
+          "Store the current value in a useRef inside a useEffect that updates after each render cycle.",
+          "Declare a global variable outside the component file.",
+          "Store the previous value in AsyncStorage.",
+          "Pass the previous value back to the parent via callback."
+        ],
+        correctAnswer: "Store the current value in a useRef inside a useEffect that updates after each render cycle.",
+        explanation: "Because useEffect fires after rendering, ref.current reflects the previous render's value during the render phase.",
+        tenglish: "Previous state ni track cheyadaniki useRef inside useEffect vadatham."
+      },
+      {
+        id: 30,
+        level: 3,
+        topic: "Level 3.1: Stale Closure Trap",
+        question: "Why does an un-memoized timer callback inside useEffect capture outdated state values (a Stale Closure)?",
+        options: [
+          "Because the callback closes over the lexical scope of the specific render where it was created when dependencies are omitted from the dependency array.",
+          "Because React Native runs timers in a separate sandbox thread.",
+          "Because setState updates are wiped after 500ms.",
+          "Because Hermes garbage collects state variables."
+        ],
+        correctAnswer: "Because the callback closes over the lexical scope of the specific render where it was created when dependencies are omitted from the dependency array.",
+        explanation: "Omitting dependencies leaves the closure referencing variables from the initial render lifecycle.",
+        tenglish: "Dependency array lo state ivvakapothe closure patha state reference ni patkuni kotha updates choodaledu."
+      },
+
+      // ==========================================
+      // LEVEL 4: NAVIGATION & SCREEN LIFECYCLE (Q31 - Q40)
+      // ==========================================
+      {
+        id: 31,
+        level: 4,
+        topic: "Level 4.1: Native Stack Architecture",
+        question: "Why is @react-navigation/native-stack vastly superior in animation frame rate to legacy @react-navigation/stack?",
+        options: [
+          "native-stack leverages native iOS UINavigationController and Android FragmentManager APIs via react-native-screens for hardware-accelerated 60 FPS transitions.",
+          "native-stack renders screens using HTML5 Canvas.",
+          "legacy stack executes all transitions in C++ WebAssembly.",
+          "native-stack eliminates the need for route params."
+        ],
+        correctAnswer: "native-stack leverages native iOS UINavigationController and Android FragmentManager APIs via react-native-screens for hardware-accelerated 60 FPS transitions.",
+        explanation: "native-stack offloads transition animations directly to native platform screen controllers.",
+        tenglish: "native-stack direct ga iOS and Android native view controllers vaadi buttery smooth transitions isthundi."
+      },
+      {
+        id: 32,
+        level: 4,
+        topic: "Level 4.1: navigate vs push",
+        question: "In an e-commerce app where a product page has a 'Related Products' list, why must you use navigation.push('Product', { id: 2 }) instead of navigation.navigate('Product', { id: 2 })?",
+        options: [
+          "navigate() checks if 'Product' is already on the stack and only updates params without adding a new screen; push() ALWAYS pushes a new screen instance onto the stack.",
+          "navigate() is deprecated in React Navigation v6.",
+          "push() deletes the root navigator.",
+          "navigate() only works on web browsers."
+        ],
+        correctAnswer: "navigate() checks if 'Product' is already on the stack and only updates params without adding a new screen; push() ALWAYS pushes a new screen instance onto the stack.",
+        explanation: "push() unconditionally appends a new screen instance to the navigation stack, essential for infinite recursive flows.",
+        tenglish: "navigate() unna screen ki redirect chesthundi; push() compulsory kotha screen ni stack meeda push chesthundi."
+      },
+      {
+        id: 33,
+        level: 4,
+        topic: "Level 4.2: Route Params Anti-Pattern",
+        question: "Which of the following is considered a severe anti-pattern when passing React Navigation route params?",
+        options: [
+          "Passing non-serializable objects like callback functions, class instances, or 10MB raw image buffers.",
+          "Passing a primitive ID string ({ id: 'prod_123' }).",
+          "Passing a boolean flag ({ isEditing: true }).",
+          "Passing a short query string ({ search: 'shoes' })."
+        ],
+        correctAnswer: "Passing non-serializable objects like callback functions, class instances, or 10MB raw image buffers.",
+        explanation: "Route params should only contain serializable data to preserve deep linking and state persistence support.",
+        tenglish: "Route params lo pedda objects or functions pass cheyakoodadu. Only small IDs pass cheyali."
+      },
+      {
+        id: 34,
+        level: 4,
+        topic: "Level 4.3: useFocusEffect",
+        question: "Why does useEffect(() => { fetchProfile(); }, []) fail to re-fetch data when a user switches back to a Profile Tab in a Bottom Tab Navigator?",
+        options: [
+          "Bottom tabs keep screens mounted in memory; useEffect only fires on initial mount, whereas useFocusEffect fires every time the tab gains user focus.",
+          "Bottom tabs delete the component's state upon blur.",
+          "useEffect is disabled inside tab navigators.",
+          "useFocusEffect is required for network calls."
+        ],
+        correctAnswer: "Bottom tabs keep screens mounted in memory; useEffect only fires on initial mount, whereas useFocusEffect fires every time the tab gains user focus.",
+        explanation: "Because tab screens remain mounted in the background, useFocusEffect is required to trigger lifecycle actions on tab re-entry.",
+        tenglish: "Tab screens unmount avvavu kabatti screen loki vachinappudalla code execute avvalante useFocusEffect vadali."
+      },
+      {
+        id: 35,
+        level: 4,
+        topic: "Level 4.3: useFocusEffect with useCallback",
+        question: "What catastrophic bug happens if you pass an un-memoized callback function directly into useFocusEffect without wrapping it in React.useCallback?",
+        options: [
+          "It triggers an infinite re-execution loop on every component re-render, spamming network requests and freezing the UI.",
+          "The app throws an uncaught syntax error.",
+          "Navigation transitions will freeze at 0 FPS.",
+          "The tab navigator crashes immediately on startup."
+        ],
+        correctAnswer: "It triggers an infinite re-execution loop on every component re-render, spamming network requests and freezing the UI.",
+        explanation: "Without useCallback, a new callback reference is created on every render, causing useFocusEffect to continuously re-fire.",
+        tenglish: "useFocusEffect lopal useCallback vaadakapothe infinite loop lo padipoyi app freeze aypothundi."
+      },
+      {
+        id: 36,
+        level: 4,
+        topic: "Level 4.4: Deep Linking Prefix Config",
+        question: "To support opening your app from both custom schemes (myapp://product/45) and universal HTTPS links (https://myapp.com/product/45), what must you configure in linking.prefixes?",
+        options: [
+          "prefixes: ['myapp://', 'https://myapp.com']",
+          "schemes: { custom: 'myapp', universal: 'https' }",
+          "protocols: ['myapp', 'https']",
+          "deepLinkUrls: 'all'"
+        ],
+        correctAnswer: "prefixes: ['myapp://', 'https://myapp.com']",
+        explanation: "The prefixes array registers all accepted custom URI schemes and universal web domains.",
+        tenglish: "Deep linking handle cheyadaniki prefixes lo custom scheme and domain name config pass chestham."
+      },
+      {
+        id: 37,
+        level: 4,
+        topic: "Level 4.2: Reading Route Params",
+        question: "Which React Navigation hook cleanly extracts params from the current active route?",
+        options: [
+          "const { id } = useRoute().params;",
+          "const { id } = useParams();",
+          "const { id } = useNavigationState();",
+          "const { id } = useScreenProps();"
+        ],
+        correctAnswer: "const { id } = useRoute().params;",
+        explanation: "useRoute() returns the active screen's route object containing name, key, and params.",
+        tenglish: "Route params read cheyadaniki useRoute() hook vadatham."
+      },
+      {
+        id: 38,
+        level: 4,
+        topic: "Level 4.1: Resetting Navigation Stack",
+        question: "After a successful user login, how do you navigate to the MainApp screen while wiping the Auth screens from the back stack history?",
+        options: [
+          "navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });",
+          "navigation.navigate('MainApp', { clearStack: true });",
+          "navigation.popToTop();",
+          "navigation.replace('MainApp', { eraseHistory: true });"
+        ],
+        correctAnswer: "navigation.reset({ index: 0, routes: [{ name: 'MainApp' }] });",
+        explanation: "navigation.reset replaces the entire navigation state with the specified route array, preventing back-navigation to login.",
+        tenglish: "Login tarvatha back nokkithe malli login screen rakunda stack ni reset cheyadaniki navigation.reset() vadatham."
+      },
+      {
+        id: 39,
+        level: 4,
+        topic: "Level 4.1: Android Hardware Back Button",
+        question: "How do you prevent the Android hardware back button from exiting the app when a custom modal is visible?",
+        options: [
+          "Add a BackHandler listener and return true from the callback to consume the event.",
+          "Return false from the BackHandler listener.",
+          "Set android:disableBack='true' in app.json.",
+          "Call event.preventDefault() on the window object."
+        ],
+        correctAnswer: "Add a BackHandler listener and return true from the callback to consume the event.",
+        explanation: "Returning true from the hardwareBackPress event listener signals to the native system that the event was handled.",
+        tenglish: "Android physical back button press ni intercept chesi exit aagadaniki listener lo return true cheyali."
+      },
+      {
+        id: 40,
+        level: 4,
+        topic: "Level 4.4: Nested Tab Navigation",
+        question: "How do you navigate to a specific 'EditProfile' screen located inside a nested 'ProfileTab' navigator from the Home screen?",
+        options: [
+          "navigation.navigate('ProfileTab', { screen: 'EditProfile' });",
+          "navigation.navigate('ProfileTab/EditProfile');",
+          "navigation.push('ProfileTab', { child: 'EditProfile' });",
+          "navigation.openNested('EditProfile');"
+        ],
+        correctAnswer: "navigation.navigate('ProfileTab', { screen: 'EditProfile' });",
+        explanation: "React Navigation resolves nested routes via the { screen: 'TargetScreen', params: { ... } } payload convention.",
+        tenglish: "Nested tab screen ki vellalante navigation.navigate('ProfileTab', { screen: 'EditProfile' }) syntax vadali."
+      },
+
+      // ==========================================
+      // LEVEL 5: NETWORKING & AUTHENTICATION (Q41 - Q50)
+      // ==========================================
+      {
+        id: 41,
+        level: 5,
+        topic: "Level 5.1: Axios Request Interceptors",
+        question: "What is the primary role of an Axios Request Interceptor in a production mobile architecture?",
+        options: [
+          "Reading the JWT Bearer token asynchronously from secure storage and injecting it into the Authorization header before the request leaves the device.",
+          "Compressing the request payload using GZIP on the UI thread.",
+          "Checking if the server database has valid SQL indexes.",
+          "Converting JSON responses into XML for iOS compatibility."
+        ],
+        correctAnswer: "Reading the JWT Bearer token asynchronously from secure storage and injecting it into the Authorization header before the request leaves the device.",
+        explanation: "Request interceptors centralize authentication injection so individual API endpoints don't need manual header logic.",
+        tenglish: "Prathi API call ki Authorization header lo token automatic ga attach cheyadaniki Axios Request Interceptor vadatham."
+      },
+      {
+        id: 42,
+        level: 5,
+        topic: "Level 5.1: Axios 401 Silent Token Refresh",
+        question: "How does a production Axios Response Interceptor handle a 401 Unauthorized response without logging the user out?",
+        options: [
+          "It intercepts the 401, fetches a new access token using the refresh token, updates storage, and automatically replays the original failed request.",
+          "It immediately redirects the user to the login screen without retrying.",
+          "It changes the HTTP method from POST to GET and retries.",
+          "It suppresses the error and returns null to the caller."
+        ],
+        correctAnswer: "It intercepts the 401, fetches a new access token using the refresh token, updates storage, and automatically replays the original failed request.",
+        explanation: "Silent refresh interceptors seamlessly renew expired access tokens and replay pending network calls without user disruption.",
+        tenglish: "401 error raagane refresh token tho kotha access token thechi failed request ni malli retry chesthundi."
+      },
+      {
+        id: 43,
+        level: 5,
+        topic: "Level 5.2: Hardware Keystores vs AsyncStorage",
+        question: "Why is AsyncStorage unsafe for storing authentication tokens or sensitive customer data?",
+        options: [
+          "AsyncStorage writes data in unencrypted plaintext files on the device filesystem, leaving it vulnerable to extraction on rooted or jailbroken devices.",
+          "AsyncStorage is deleted every time the app closes.",
+          "AsyncStorage only supports storing 10 keys total.",
+          "AsyncStorage is synchronous and blocks the native UI thread."
+        ],
+        correctAnswer: "AsyncStorage writes data in unencrypted plaintext files on the device filesystem, leaving it vulnerable to extraction on rooted or jailbroken devices.",
+        explanation: "AsyncStorage has no cryptographic encryption. expo-secure-store uses iOS Keychain and Android Keystore hardware-backed encryption.",
+        tenglish: "AsyncStorage lo data plaintext lo untundi (hackers read cheyochu). SecureStore hardware Keychain/Keystore lo encrypt chesthundi."
+      },
+      {
+        id: 44,
+        level: 5,
+        topic: "Level 5.2: SecureStore Storage Ceiling",
+        question: "What is the maximum payload size per key supported by expo-secure-store?",
+        options: [
+          "2048 bytes (2 KB)",
+          "50 Megabytes",
+          "10 Megabytes",
+          "512 Kilobytes"
+        ],
+        correctAnswer: "2048 bytes (2 KB)",
+        explanation: "Hardware keychains (Keychain / Keystore) are engineered for small cryptographic secrets (tokens, private keys) up to 2KB.",
+        tenglish: "SecureStore lo max 2048 bytes (2KB) mathrame store cheyagalam."
+      },
+      {
+        id: 45,
+        level: 5,
+        topic: "Level 5.3: NetInfo Offline Detection",
+        question: "Which library is the industry standard for monitoring real-time cellular, Wi-Fi, and internet reachability state in React Native?",
+        options: [
+          "@react-native-community/netinfo",
+          "expo-network-monitor",
+          "react-native-wifi-reconnect",
+          "navigator.connection"
+        ],
+        correctAnswer: "@react-native-community/netinfo",
+        explanation: "NetInfo provides event subscriptions for isConnected, isInternetReachable, and connection type (wifi/cellular).",
+        tenglish: "Internet connect ayyinda leda check cheyadaniki @react-native-community/netinfo vadatham."
+      },
+      {
+        id: 46,
+        level: 5,
+        topic: "Level 5.3: Offline Mutation Queues",
+        question: "When building an offline-first app, how should you handle a user creating a new comment while in airplane mode?",
+        options: [
+          "Store the mutation payload in a persistent local queue, update the UI optimistically, and drain/replay the queue when NetInfo reports internet reconnection.",
+          "Show an unhandled error alert and discard the comment.",
+          "Keep the HTTP request in a while(true) blocking loop until internet returns.",
+          "Crash the app."
+        ],
+        correctAnswer: "Store the mutation payload in a persistent local queue, update the UI optimistically, and drain/replay the queue when NetInfo reports internet reconnection.",
+        explanation: "Persistent mutation queues guarantee that offline actions are preserved on disk and replayed in chronological order upon reconnection.",
+        tenglish: "Offline lo unnapudu action ni local queue lo save chesi, net raagane automatic ga server ki sync chestham."
+      },
+      {
+        id: 47,
+        level: 5,
+        topic: "Level 5.4: Multipart Form-Data Uploads",
+        question: "What object structure must you append to FormData when uploading a photo file in React Native?",
+        options: [
+          "{ uri: 'file://...', name: 'upload.jpg', type: 'image/jpeg' }",
+          "new Blob([fileData], { type: 'image/jpeg' })",
+          "A Base64 text string only",
+          "{ path: 'file://...', encoding: 'binary' }"
+        ],
+        correctAnswer: "{ uri: 'file://...', name: 'upload.jpg', type: 'image/jpeg' }",
+        explanation: "React Native's native networking module expects { uri, name, type } to stream files directly from device disk into the HTTP body.",
+        tenglish: "Photo upload cheyadaniki FormData lo { uri, name, type } structure compulsory ga pass cheyali."
+      },
+      {
+        id: 48,
+        level: 5,
+        topic: "Level 5.1: HTTP Client Timeout Configuration",
+        question: "Why should mobile HTTP clients ALWAYS define an explicit timeout (e.g. timeout: 12000)?",
+        options: [
+          "Spotty cellular connections can cause TCP sockets to hang silently for minutes; explicit timeouts allow the app to fail gracefully and trigger retry logic.",
+          "Because mobile OS kills network sockets after 5 seconds.",
+          "Because HTTP/2 requires timeouts.",
+          "To reduce backend server memory usage."
+        ],
+        correctAnswer: "Spotty cellular connections can cause TCP sockets to hang silently for minutes; explicit timeouts allow the app to fail gracefully and trigger retry logic.",
+        explanation: "Mobile networks frequently suffer from packet loss; timeouts prevent endless loading spinners on unresponsive networks.",
+        tenglish: "Weak signal unnapudu API call hang aypokunda 12 seconds lo timeout trigger cheyadaniki timeout configure chestham."
+      },
+      {
+        id: 49,
+        level: 5,
+        topic: "Level 5.2: Biometric Hardware Authentication",
+        question: "Which Expo library provides Face ID and Fingerprint hardware authentication APIs?",
+        options: [
+          "expo-local-authentication",
+          "expo-biometrics-secure",
+          "expo-fingerprint-auth",
+          "expo-crypto-auth"
+        ],
+        correctAnswer: "expo-local-authentication",
+        explanation: "expo-local-authentication exposes authenticateAsync() to trigger native biometric verification prompts.",
+        tenglish: "FaceID and Fingerprint unlock kosam expo-local-authentication vadatham."
+      },
+      {
+        id: 50,
+        level: 5,
+        topic: "Level 5.1: JWT Anatomy",
+        question: "What are the three cryptographic segments of a JSON Web Token (JWT)?",
+        options: [
+          "Header . Payload . Signature",
+          "ClientKey . UserData . Hash",
+          "Algorithm . TokenBody . EncryptionKey",
+          "Domain . Identity . Certificate"
+        ],
+        correctAnswer: "Header . Payload . Signature",
+        explanation: "JWTs consist of three base64url-encoded parts: Header (algorithm), Payload (claims/data), and Signature (verification hash).",
+        tenglish: "JWT token Header, Payload, Signature ane 3 parts tho create avthundi."
+      },
+
+      // ==========================================
+      // LEVEL 6: GLOBAL STATE & ZUSTAND (Q51 - Q60)
+      // ==========================================
+      {
+        id: 51,
+        level: 6,
+        topic: "Level 6.1: Context API Performance Flaw",
+        question: "Why is React's built-in Context API unsuitable for frequent, fine-grained state updates in complex mobile applications?",
+        options: [
+          "Any change to the Context value forces an unconditional re-render of EVERY component consuming the context, even if the component only uses an unrelated property.",
+          "Context API only works on iOS.",
+          "Context API values cannot be stored in AsyncStorage.",
+          "Context API is deprecated in React 19."
+        ],
+        correctAnswer: "Any change to the Context value forces an unconditional re-render of EVERY component consuming the context, even if the component only uses an unrelated property.",
+        explanation: "Context lacks granular selector subscriptions, leading to massive over-rendering cascades across the view tree.",
+        tenglish: "Context lo chinna value marina daanni consume chese anni components unnecessarily re-render aypothayi."
+      },
+      {
+        id: 52,
+        level: 6,
+        topic: "Level 6.1: Zustand Atomic Selectors",
+        question: "How does Zustand completely eliminate unnecessary component re-renders?",
+        options: [
+          "By using Atomic Selectors (e.g. const count = useStore(s => s.cart.length)), subscribing components ONLY to the exact state slices they read.",
+          "By running state updates in a Web Worker.",
+          "By converting all state values into immutable C++ pointers.",
+          "By disabling React's reconciliation engine."
+        ],
+        correctAnswer: "By using Atomic Selectors (e.g. const count = useStore(s => s.cart.length)), subscribing components ONLY to the exact state slices they read.",
+        explanation: "Zustand uses fine-grained subscriptions; components re-render ONLY if the selected output value changes reference.",
+        tenglish: "Zustand Atomic Selectors vaadi manaki kavalsina specific value marina appude component re-render avthundi."
+      },
+      {
+        id: 53,
+        level: 6,
+        topic: "Level 6.2: Zustand Persist Middleware",
+        question: "Which middleware automatically synchronizes Zustand store state with AsyncStorage and handles rehydration on app launch?",
+        options: [
+          "persist() middleware",
+          "devtools() middleware",
+          "immer() middleware",
+          "rehydrateStore() middleware"
+        ],
+        correctAnswer: "persist() middleware",
+        explanation: "The persist middleware automatically writes state diffs to storage and restores them on cold startup.",
+        tenglish: "App restart chesina state alane undadaniki Zustand persist() middleware vadatham."
+      },
+      {
+        id: 54,
+        level: 6,
+        topic: "Level 6.3: Optimistic UI Rollback Pattern",
+        question: "In an Optimistic UI update, what must the store do if the subsequent backend API call rejects with a network error?",
+        options: [
+          "Roll back the local state to the snapshot taken immediately before the optimistic mutation, and display an error notification.",
+          "Retry the API call indefinitely in a blocking loop.",
+          "Delete the item permanently.",
+          "Reload the entire application."
+        ],
+        correctAnswer: "Roll back the local state to the snapshot taken immediately before the optimistic mutation, and display an error notification.",
+        explanation: "Optimistic updates provide instant perceived performance but require deterministic rollback on failure.",
+        tenglish: "Server nunchi error vasthe munde unna snapshot ki state ni rollback chesi toast error chupistham."
+      },
+      {
+        id: 55,
+        level: 6,
+        topic: "Level 6.2: useShallow Selector Optimization",
+        question: "When returning an object from a Zustand selector (useStore(s => ({ a: s.a, b: s.b }))), why must you wrap it in useShallow?",
+        options: [
+          "Without useShallow, a new object reference is created on every store change, causing component re-renders even when 'a' and 'b' haven't changed.",
+          "useShallow encrypts the selected object.",
+          "Zustand throws a runtime error if selectors return objects.",
+          "useShallow converts the object into an array."
+        ],
+        correctAnswer: "Without useShallow, a new object reference is created on every store change, causing component re-renders even when 'a' and 'b' haven't changed.",
+        explanation: "useShallow compares the object's keys shallowly to prevent reference inequality from triggering unwanted re-renders.",
+        tenglish: "Zustand lo multiple items okesari select chesthe useShallow vaadithe reference changes valla extra re-renders aaguthayi."
+      },
+      {
+        id: 56,
+        level: 6,
+        topic: "Level 6.3: Non-React Access via getState",
+        question: "How can a non-React file (such as an Axios error interceptor or background task) trigger a Toast notification in Zustand?",
+        options: [
+          "useToastStore.getState().showToast('Error message');",
+          "useToastStore.useHook().showToast('Error message');",
+          "React.useContext(ToastStore).showToast('Error message');",
+          "window.triggerToast('Error message');"
+        ],
+        correctAnswer: "useToastStore.getState().showToast('Error message');",
+        explanation: "Zustand stores expose .getState() and .setState() methods that can be invoked outside of the React component tree.",
+        tenglish: "React component bayata unna Axios interceptor nunchi direct ga useToastStore.getState().showToast() call cheyochu."
+      },
+      {
+        id: 57,
+        level: 6,
+        topic: "Level 6.2: Enterprise Slice Pattern",
+        question: "What is the Zustand 'Slice Pattern' used for in large-scale mobile applications?",
+        options: [
+          "Dividing a large store into modular domain slices (e.g. AuthSlice, CartSlice) that are merged into a single bound store.",
+          "Splitting array states into pages of 10 items.",
+          "Creating multiple independent Redux stores.",
+          "Compiling state to native Objective-C."
+        ],
+        correctAnswer: "Dividing a large store into modular domain slices (e.g. AuthSlice, CartSlice) that are merged into a single bound store.",
+        explanation: "The slice pattern keeps code organized by domain while retaining a unified global store interface.",
+        tenglish: "Pedda stores ni Auth, Cart, Theme ani alag alag slices ga divide chesi okate root store lo bind chestham."
+      },
+      {
+        id: 58,
+        level: 6,
+        topic: "Level 6.1: Direct setState Invocations",
+        question: "How do you directly update a Zustand store without defining an explicit action inside the store?",
+        options: [
+          "useStore.setState({ user: null });",
+          "useStore.mutate({ user: null });",
+          "useStore.updateState({ user: null });",
+          "useStore.dispatch({ type: 'SET_USER', payload: null });"
+        ],
+        correctAnswer: "useStore.setState({ user: null });",
+        explanation: "Zustand's .setState() performs a shallow merge of the provided object into the active store state.",
+        tenglish: "Store lo action lekunda direct ga state maarchadaniki useStore.setState() vadatham."
+      },
+      {
+        id: 59,
+        level: 6,
+        topic: "Level 6.2: Clearing State on Logout",
+        question: "What is the cleanest way to reset an entire persisted Zustand store when a user logs out?",
+        options: [
+          "Define a reset action that merges the initial state object: reset: () => set(initialState);",
+          "Delete the mobile app's cache directory.",
+          "Call AsyncStorage.clear() and restart the phone.",
+          "Re-import the store module dynamically."
+        ],
+        correctAnswer: "Define a reset action that merges the initial state object: reset: () => set(initialState);",
+        explanation: "Explicit reset actions ensure all in-memory and persisted storage properties revert to clean defaults.",
+        tenglish: "Logout ayinappudu store ni initial state ki reset cheyadaniki set(initialState) action raayali."
+      },
+      {
+        id: 60,
+        level: 6,
+        topic: "Level 6.1: Zustand vs Redux Boilerplate",
+        question: "Why has Zustand largely replaced Redux in modern React Native architectures?",
+        options: [
+          "Zustand eliminates action types, action creators, dispatch wrappers, and reducers, utilizing plain JavaScript functions and React hooks directly.",
+          "Zustand supports C++ multi-threading while Redux is single-threaded.",
+          "Redux is not compatible with Expo SDK 54.",
+          "Zustand stores data on a cloud server."
+        ],
+        correctAnswer: "Zustand eliminates action types, action creators, dispatch wrappers, and reducers, utilizing plain JavaScript functions and React hooks directly.",
+        explanation: "Zustand achieves the same predictable global state management as Redux with over 80% less boilerplate code.",
+        tenglish: "Redux lo unna complex reducers and action types lekunda simple direct state functions tho Zustand pani chesthundi."
+      },
+
+      // ==========================================
+      // LEVEL 7: GESTURES & REANIMATED 3 (Q61 - Q70)
+      // ==========================================
+      {
+        id: 61,
+        level: 7,
+        topic: "Level 7.1: UI Thread Worklets",
+        question: "What is a 'Worklet' in React Native Reanimated 3?",
+        options: [
+          "A tiny JavaScript function marked with the 'worklet' directive that compiles to run synchronously on the native UI/Render thread at 60/120 FPS.",
+          "A background worker thread that performs file downloads.",
+          "A CSS stylesheet containing keyframe animations.",
+          "A native Java class generated by Gradle."
+        ],
+        correctAnswer: "A tiny JavaScript function marked with the 'worklet' directive that compiles to run synchronously on the native UI/Render thread at 60/120 FPS.",
+        explanation: "Worklets bypass the asynchronous JS bridge, computing gesture math and style transforms directly on the UI thread.",
+        tenglish: "'worklet' directive petina JS functions direct ga UI Thread meeda 120 FPS speed tho run avthayi."
+      },
+      {
+        id: 62,
+        level: 7,
+        topic: "Level 7.1: useSharedValue vs useState",
+        question: "Why does driving a continuous Pan gesture animation with React useState cause severe frame drops and UI stutter?",
+        options: [
+          "useState triggers full React component reconciliation and sends bridge messages on every single touch pixel; useSharedValue mutates native memory directly without re-renders.",
+          "useState can only store boolean values.",
+          "useState is disabled inside GestureHandlerRootView.",
+          "useSharedValue executes on a remote server."
+        ],
+        correctAnswer: "useState triggers full React component reconciliation and sends bridge messages on every single touch pixel; useSharedValue mutates native memory directly without re-renders.",
+        explanation: "useSharedValue updates native memory addresses on the UI thread without incurring React render cycles.",
+        tenglish: "Gesture gesture ki useState vadithe app lag aypothundi. useSharedValue direct ga UI memory ni smooth ga update chesthundi."
+      },
+      {
+        id: 63,
+        level: 7,
+        topic: "Level 7.2: Spring Physics vs Timing",
+        question: "What is the core distinction between withSpring() and withTiming() in Reanimated 3?",
+        options: [
+          "withSpring() computes motion dynamically using physics properties (damping, stiffness, mass); withTiming() interpolates values over a rigid duration in milliseconds.",
+          "withSpring() only works on iOS devices.",
+          "withTiming() cannot animate opacity.",
+          "withSpring() is deprecated in Reanimated 3."
+        ],
+        correctAnswer: "withSpring() computes motion dynamically using physics properties (damping, stiffness, mass); withTiming() interpolates values over a rigid duration in milliseconds.",
+        explanation: "withSpring produces natural physical momentum and bounce; withTiming follows predetermined mathematical easing curves.",
+        tenglish: "withSpring natural bounce physics tho animate chesthundi; withTiming fixed duration (e.g. 300ms) tho animate chesthundi."
+      },
+      {
+        id: 64,
+        level: 7,
+        topic: "Level 7.2: useAnimatedStyle Worklet",
+        question: "Which hook binds a useSharedValue to an animated component's visual style?",
+        options: [
+          "useAnimatedStyle(() => ({ transform: [{ translateX: offset.value }] }))",
+          "useNativeStyle(() => ({ offset: offset.value }))",
+          "useReanimatedStyle([offset])",
+          "useStyleWorklet(offset)"
+        ],
+        correctAnswer: "useAnimatedStyle(() => ({ transform: [{ translateX: offset.value }] }))",
+        explanation: "useAnimatedStyle defines a worklet returning dynamic style rules updated in real-time on the UI thread.",
+        tenglish: "Shared value ni UI component style ki link cheyadaniki useAnimatedStyle vadatham."
+      },
+      {
+        id: 65,
+        level: 7,
+        topic: "Level 7.3: Gesture Handler v2 Pan Builder",
+        question: "How do you configure a Pan drag gesture in react-native-gesture-handler v2?",
+        options: [
+          "const pan = Gesture.Pan().onUpdate((e) => { offset.value = e.translationX; });",
+          "const pan = new PanGestureHandler({ onGestureEvent: handleDrag });",
+          "const pan = createPanGesture().listen();",
+          "const pan = usePanResponder();"
+        ],
+        correctAnswer: "const pan = Gesture.Pan().onUpdate((e) => { offset.value = e.translationX; });",
+        explanation: "Gesture Handler v2 uses the declarative Gesture.Pan() builder pattern with chained lifecycle callbacks.",
+        tenglish: "Drag/Swipe gestures handle cheyadaniki Gesture.Pan() builder API vadatham."
+      },
+      {
+        id: 66,
+        level: 7,
+        topic: "Level 7.3: Swipe Snap-Back Threshold",
+        question: "In a Swipe-to-Dismiss notification card, what should happen if a user drags the card 25px and releases it below the dismiss threshold?",
+        options: [
+          "Snap the card back smoothly to its origin: offset.value = withSpring(0);",
+          "Delete the card immediately.",
+          "Leave the card frozen at 25px offset.",
+          "Trigger a fatal error."
+        ],
+        correctAnswer: "Snap the card back smoothly to its origin: offset.value = withSpring(0);",
+        explanation: "If drag displacement does not exceed the threshold (e.g. |translateX| < 120), snap it back using withSpring(0).",
+        tenglish: "Threshold kante thakkuva drag chesi vadilithe withSpring(0) tho card ni malli original position ki thevali."
+      },
+      {
+        id: 67,
+        level: 7,
+        topic: "Level 7.4: Interpolation & Clamping",
+        question: "What is the purpose of interpolate(offset.value, [-150, 0, 150], [0, 1, 0], Extrapolation.CLAMP)?",
+        options: [
+          "It maps horizontal drag displacement between -150 and +150 to an opacity value between 0 and 1, clamping output values outside the range.",
+          "It calculates the geometric distance between two touches.",
+          "It translates English text into binary.",
+          "It compresses the view's pixel data."
+        ],
+        correctAnswer: "It maps horizontal drag displacement between -150 and +150 to an opacity value between 0 and 1, clamping output values outside the range.",
+        explanation: "interpolate scales an input range to an output range with extrapolation boundary controls.",
+        tenglish: "Oka input value range ni (e.g. drag distance) inkoka output value range ki (e.g. opacity) map cheyadaniki interpolate vadatham."
+      },
+      {
+        id: 68,
+        level: 7,
+        topic: "Level 7.4: Layout Transitions",
+        question: "How do you enable smooth automatic layout animations when list items are added or deleted in Reanimated 3?",
+        options: [
+          "<Animated.View entering={FadeIn} exiting={FadeOut} layout={Layout.springify()} />",
+          "Set autoAnimateList={true} on the FlatList.",
+          "Use CSS @keyframes inside global.css.",
+          "Wrap items in a setInterval loop."
+        ],
+        correctAnswer: "<Animated.View entering={FadeIn} exiting={FadeOut} layout={Layout.springify()} />",
+        explanation: "Reanimated's entering, exiting, and layout props automate layout transition animations without boilerplate.",
+        tenglish: "List items add/remove ayinappudu automatic animations kosam entering={FadeIn} and layout={Layout.springify()} vadatham."
+      },
+      {
+        id: 69,
+        level: 7,
+        topic: "Level 7.1: GestureHandlerRootView",
+        question: "Where MUST <GestureHandlerRootView> be positioned in a React Native app?",
+        options: [
+          "Wrapping the very root of the application hierarchy (in index.js or App.jsx).",
+          "Inside every individual Pressable component.",
+          "Only around screens that contain ScrollViews.",
+          "Inside the native Android manifest."
+        ],
+        correctAnswer: "Wrapping the very root of the application hierarchy (in index.js or App.jsx).",
+        explanation: "GestureHandlerRootView initializes the underlying native gesture touch dispatch hierarchy for the entire app.",
+        tenglish: "Gesture Handler pani cheyalante app root lo <GestureHandlerRootView> compulsory ga pettali."
+      },
+      {
+        id: 70,
+        level: 7,
+        topic: "Level 7.2: Animated Primitives",
+        question: "What happens if you pass an animated style created with useAnimatedStyle to a regular React Native <View> instead of <Animated.View>?",
+        options: [
+          "The styles will fail to animate on the UI thread because standard Views lack native Reanimated property bindings.",
+          "The component will crash with an Invariant Violation.",
+          "The styles will animate, but at 30 FPS instead of 60 FPS.",
+          "The app will switch to CPU rendering."
+        ],
+        correctAnswer: "The styles will fail to animate on the UI thread because standard Views lack native Reanimated property bindings.",
+        explanation: "Animated.View (or Animated.createAnimatedComponent) wraps native views with the native direct property manipulation driver.",
+        tenglish: "Normal <View> ki animated styles pani cheyavu. Compulsory <Animated.View> vadali."
+      },
+
+      // ==========================================
+      // LEVEL 8: NATIVE HARDWARE & MEDIA (Q71 - Q80)
+      // ==========================================
+      {
+        id: 71,
+        level: 8,
+        topic: "Level 8.1: Dual-Stage Permissions Architecture",
+        question: "What are the two mandatory stages required by modern iOS and Android to access sensitive device hardware (Camera/GPS)?",
+        options: [
+          "1. Declaring permission permissions in Manifest / Info.plist (Build Config) AND 2. Requesting runtime user approval in JavaScript code.",
+          "Declaring permissions in package.json only.",
+          "Calling requestPermissionsAsync() without manifest configuration.",
+          "Purchasing an Apple Enterprise Developer License."
+        ],
+        correctAnswer: "1. Declaring permission permissions in Manifest / Info.plist (Build Config) AND 2. Requesting runtime user approval in JavaScript code.",
+        explanation: "Both manifest permission declaration and runtime user prompt approval are required by mobile operating systems.",
+        tenglish: "1. App config (app.json) lo declare cheyali AND 2. Runtime lo user ni prompt adagali."
+      },
+      {
+        id: 72,
+        level: 8,
+        topic: "Level 8.1: Permanently Denied Permissions",
+        question: "If a user checks 'Never ask again' on Android or denies a permission twice on iOS, how MUST your application handle it?",
+        options: [
+          "Explain why the permission is required in an alert dialog and redirect them to Phone Settings using Linking.openSettings().",
+          "Continuously loop requestPermissionsAsync() until the dialog appears.",
+          "Crash the application gracefully.",
+          "Bypass the OS permission check."
+        ],
+        correctAnswer: "Explain why the permission is required in an alert dialog and redirect them to Phone Settings using Linking.openSettings().",
+        explanation: "When permanently blocked, the OS silences runtime dialogs; the only way to enable permissions is via device Settings.",
+        tenglish: "User permanent ga block chesthe Linking.openSettings() dwara Phone Settings ki redirect chesi enable cheyinchali."
+      },
+      {
+        id: 73,
+        level: 8,
+        topic: "Level 8.2: File URI vs Base64 Memory Trap",
+        question: "Why should you NEVER store high-resolution photos in React state as Base64 strings in production mobile apps?",
+        options: [
+          "A 48MP photo converted to Base64 creates a 60MB+ string in JS RAM, causing bridge congestion and Out-Of-Memory (OOM) app crashes; File URIs use 0MB JS memory.",
+          "Base64 strings cannot be sent over HTTPS.",
+          "Base64 photos lose color data on Android.",
+          "File URIs delete original images from disk."
+        ],
+        correctAnswer: "A 48MP photo converted to Base64 creates a 60MB+ string in JS RAM, causing bridge congestion and Out-Of-Memory (OOM) app crashes; File URIs use 0MB JS memory.",
+        explanation: "File URIs (file:///...) keep media on disk and pass a 40-character pointer in JS memory, consuming negligible RAM.",
+        tenglish: "Base64 lo photo ni text ga marchithe 60MB RAM consume ayyi app crash avthundi. File URI mathrame vadali."
+      },
+      {
+        id: 74,
+        level: 8,
+        topic: "Level 8.2: Image Compression & Aspect Ratio",
+        question: "Which configuration in expo-image-picker crops an image into a 1:1 square avatar and compresses it for web upload?",
+        options: [
+          "allowsEditing: true, aspect: [1, 1], quality: 0.7",
+          "crop: 'square', compress: 70",
+          "aspectRatio: 1, resize: 'avatar'",
+          "editMode: true, squareCrop: true"
+        ],
+        correctAnswer: "allowsEditing: true, aspect: [1, 1], quality: 0.7",
+        explanation: "allowsEditing launches the native cropping tool; aspect: [1, 1] locks a square viewport; quality: 0.7 compresses the output.",
+        tenglish: "Square crop and image compression kosam allowsEditing: true, aspect: [1, 1], quality: 0.7 vadatham."
+      },
+      {
+        id: 75,
+        level: 8,
+        topic: "Level 8.3: Single Location Snapshot",
+        question: "Which expo-location API retrieves a one-time current GPS coordinate snapshot?",
+        options: [
+          "Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });",
+          "Location.fetchGPSCoordinates();",
+          "Location.watchPositionAsync();",
+          "Location.getDeviceLatitude();"
+        ],
+        correctAnswer: "Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });",
+        explanation: "getCurrentPositionAsync returns a single LocationObject containing latitude, longitude, altitude, and timestamp.",
+        tenglish: "Single GPS location snapshot theskovadaniki Location.getCurrentPositionAsync() vadatham."
+      },
+      {
+        id: 76,
+        level: 8,
+        topic: "Level 8.3: Battery-Optimized Live Tracking",
+        question: "How do you prevent excessive battery drain when live-tracking a delivery driver's GPS location via watchPositionAsync?",
+        options: [
+          "Set distanceInterval: 10 (only fires updates when user moves 10 meters) and timeInterval: 5000.",
+          "Set accuracy to Location.Accuracy.Lowest at all times.",
+          "Poll location using setInterval every 100ms.",
+          "Disable GPS and rely entirely on IP geolocations."
+        ],
+        correctAnswer: "Set distanceInterval: 10 (only fires updates when user moves 10 meters) and timeInterval: 5000.",
+        explanation: "distanceInterval filters out stationary GPS jitter, keeping the hardware in low-power mode until significant movement occurs.",
+        tenglish: "Battery drain avvakunda distanceInterval: 10 petti 10 meters move ayinappude update theskovadaniki configure chestham."
+      },
+      {
+        id: 77,
+        level: 8,
+        topic: "Level 8.3: Reverse Geocoding",
+        question: "What does Location.reverseGeocodeAsync({ latitude, longitude }) accomplish in a mobile application?",
+        options: [
+          "Translates raw GPS coordinates into human-readable street addresses (street, city, region, postalCode).",
+          "Converts a street name into GPS latitude and longitude coordinates.",
+          "Calculates the shortest driving route between two points.",
+          "Reverses the user's travel direction on a map."
+        ],
+        correctAnswer: "Translates raw GPS coordinates into human-readable street addresses (street, city, region, postalCode).",
+        explanation: "Reverse geocoding converts latitude and longitude numbers into structured postal street addresses.",
+        tenglish: "Raw latitude/longitude coordinates ni human address (Street, City, Pincode) ga convert cheyadaniki Reverse Geocoding vadatham."
+      },
+      {
+        id: 78,
+        level: 8,
+        topic: "Level 8.4: Payment Success Haptics",
+        question: "Which expo-haptics method produces the distinct double-pulse physical vibration rhythm for a successful UPI or Apple Pay transaction?",
+        options: [
+          "Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);",
+          "Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);",
+          "Haptics.selectionAsync();",
+          "Vibration.vibrate(500);"
+        ],
+        correctAnswer: "Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);",
+        explanation: "NotificationFeedbackType.Success triggers the standard OS-level success vibration sequence.",
+        tenglish: "Payment success ayinappudu phone double-buzz vibration kosam Haptics.notificationAsync(Success) vadali."
+      },
+      {
+        id: 79,
+        level: 8,
+        topic: "Level 8.4: Micro-Tick Selection Haptics",
+        question: "Which lightweight haptic method is designed for number stepper increments, date-picker wheel ticks, and toggle switches?",
+        options: [
+          "Haptics.selectionAsync();",
+          "Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);",
+          "Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);",
+          "Haptics.vibrateDevice();"
+        ],
+        correctAnswer: "Haptics.selectionAsync();",
+        explanation: "selectionAsync produces the subtle mechanical click used during picker scrolling and stepper increments.",
+        tenglish: "Date picker or quantity counter scroll chesinappudu micro-tick kosam Haptics.selectionAsync() vadatham."
+      },
+      {
+        id: 80,
+        level: 8,
+        topic: "Level 8.1: AppState Return Re-evaluation",
+        question: "Why should you listen for AppState transitions when directing a user to Phone Settings to enable a permission?",
+        options: [
+          "To automatically re-evaluate getPermissionsAsync() the exact second nextState === 'active' when the user switches back to your app.",
+          "To force close the application if they failed to enable it.",
+          "To capture a screenshot of Phone Settings.",
+          "To disable biometric locks."
+        ],
+        correctAnswer: "To automatically re-evaluate getPermissionsAsync() the exact second nextState === 'active' when the user switches back to your app.",
+        explanation: "Listening for the 'active' state automatically updates your UI state without forcing the user to manually restart the app.",
+        tenglish: "User Phone Settings lo permission on chesi malli app loki raagane AppState 'active' detect chesi permission update chestham."
+      },
+
+      // ==========================================
+      // LEVEL 9: PERFORMANCE & OPTIMIZATION (Q81 - Q90)
+      // ==========================================
+      {
+        id: 81,
+        level: 9,
+        topic: "Level 9.1: Frame Rate Mathematics",
+        question: "To achieve smooth 60 FPS scrolling on a mobile display, what is the maximum time window (frame budget) available per frame for JavaScript and layout execution?",
+        options: [
+          "16.67 milliseconds (1000ms / 60 frames)",
+          "8.33 milliseconds",
+          "33.33 milliseconds",
+          "100 milliseconds"
+        ],
+        correctAnswer: "16.67 milliseconds (1000ms / 60 frames)",
+        explanation: "60 FPS requires one frame every 16.67ms. (120 FPS high-refresh displays require 8.33ms).",
+        tenglish: "60 FPS smooth ga undali ante mana JS and render code 16.67 milliseconds lopalane aypovali."
+      },
+      {
+        id: 82,
+        level: 9,
+        topic: "Level 9.1: Dropped Frames & Stutter",
+        question: "What happens when an un-memoized synchronous computation blocks the JavaScript thread for 70ms during a user scroll gesture?",
+        options: [
+          "The display skips approximately 4 frames, resulting in noticeable UI stutter and frozen touch response.",
+          "The app automatically transfers execution to a Web Worker.",
+          "The phone restarts its display driver.",
+          "The frame rate accelerates to 120 FPS to compensate."
+        ],
+        correctAnswer: "The display skips approximately 4 frames, resulting in noticeable UI stutter and frozen touch response.",
+        explanation: "Exceeding the 16.67ms frame budget forces the display to repeat the previous frame, causing jank.",
+        tenglish: "Heavy task 70ms theskunte screen 4 frames skip chesi severe ga lag / stutter avthundi."
+      },
+      {
+        id: 83,
+        level: 9,
+        topic: "Level 9.2: FlashList Cell Recycling",
+        question: "Why does Shopify FlashList perform up to 10x faster than default FlatList with ZERO blank white tiles on fast fling scrolls?",
+        options: [
+          "FlashList recycles a fixed pool of native view cells (repositioning them and swapping data props) instead of continuously creating and unmounting view nodes.",
+          "FlashList renders lists using static server-side HTML.",
+          "FlashList deletes off-screen photos from memory.",
+          "FlashList only supports text items."
+        ],
+        correctAnswer: "FlashList recycles a fixed pool of native view cells (repositioning them and swapping data props) instead of continuously creating and unmounting view nodes.",
+        explanation: "FlashList brings Android RecyclerView and iOS UICollectionView true cell recycling to React Native.",
+        tenglish: "FlashList views ni destroy cheyakunda fixed pool of cells ni recycle chesthundi, so zero blank spaces and 10x speed!"
+      },
+      {
+        id: 84,
+        level: 9,
+        topic: "Level 9.2: estimatedItemSize in FlashList",
+        question: "What mandatory prop must be provided to Shopify FlashList to pre-calculate layout offsets without measuring every item at runtime?",
+        options: [
+          "estimatedItemSize (e.g. estimatedItemSize={84})",
+          "itemHeight='fixed'",
+          "cellDimension={84}",
+          "recycleHeight={84}"
+        ],
+        correctAnswer: "estimatedItemSize (e.g. estimatedItemSize={84})",
+        explanation: "FlashList requires estimatedItemSize to accurately approximate scroll position and recycling pools.",
+        tenglish: "FlashList ki card యొక్క average height munde cheppadaniki estimatedItemSize prop compulsory ga ivvali."
+      },
+      {
+        id: 85,
+        level: 9,
+        topic: "Level 9.3: InteractionManager Task Deferral",
+        question: "What is the primary architectural purpose of InteractionManager.runAfterInteractions() in React Native?",
+        options: [
+          "Deferring heavy JavaScript computations or chart data processing until AFTER active screen slide transitions and touch gestures have finished.",
+          "Running heavy tasks in the background when the phone is locked.",
+          "Encrypting network requests before sending.",
+          "Synchronizing Redux stores across multiple tabs."
+        ],
+        correctAnswer: "Deferring heavy JavaScript computations or chart data processing until AFTER active screen slide transitions and touch gestures have finished.",
+        explanation: "runAfterInteractions queues expensive tasks so that 300ms screen navigation animations glide at 60 FPS without stutter.",
+        tenglish: "Screen navigation animation aagipokunda smooth ga slide ayyaka heavy chart calculations execute cheyadaniki InteractionManager vadatham."
+      },
+      {
+        id: 86,
+        level: 9,
+        topic: "Level 9.4: Stripping console.log in Production",
+        question: "Why MUST console.log statements be stripped from production release builds using Babel's transform-remove-console plugin?",
+        options: [
+          "Every console.log synchronously serializes data objects across the native bridge to Xcode/Logcat, causing severe UI thread frame drops in release builds.",
+          "Google Play Store rejects APKs that contain console statements.",
+          "console.log consumes 100MB of storage space on the device.",
+          "console.log crashes Hermes on 64-bit devices."
+        ],
+        correctAnswer: "Every console.log synchronously serializes data objects across the native bridge to Xcode/Logcat, causing severe UI thread frame drops in release builds.",
+        explanation: "Bridge serialization of logs is synchronous and introduces massive communication latency on the native thread.",
+        tenglish: "Production build lo console.log synchronous bridge lag create chesi app ni lag chesthundi. Babel tho strip cheyali."
+      },
+      {
+        id: 87,
+        level: 9,
+        topic: "Level 9.4: Anonymous Functions in Lists",
+        question: "What performance issue occurs when you write onPress={() => handlePress(item.id)} directly inside a FlatList renderItem?",
+        options: [
+          "Thousands of new anonymous function instances are allocated in memory during scroll, triggering frequent Garbage Collection (GC) pauses that freeze the UI.",
+          "The touch responder fails to capture taps on Android.",
+          "The list reverses its sorting order.",
+          "It causes an infinite component re-render loop."
+        ],
+        correctAnswer: "Thousands of new anonymous function instances are allocated in memory during scroll, triggering frequent Garbage Collection (GC) pauses that freeze the UI.",
+        explanation: "Inline functions trash memory with short-lived objects, causing the JS engine to pause execution while running GC sweeps.",
+        tenglish: "List loop lo inline functions create chesthe phone RAM full ayyi clean cheyadaniki screen freeze (GC pause) avthundi."
+      },
+      {
+        id: 88,
+        level: 9,
+        topic: "Level 9.4: React DevTools Profiler",
+        question: "Which development tool displays flamegraphs detailing which components re-rendered and the exact millisecond duration of each render phase?",
+        options: [
+          "React DevTools Profiler",
+          "Android Studio Memory Heap Inspector",
+          "Xcode Instruments File Activity",
+          "Flipper Network Inspector"
+        ],
+        correctAnswer: "React DevTools Profiler",
+        explanation: "The React Profiler visualizes component render times and pinpoints unnecessary re-rendering cascades.",
+        tenglish: "Ye component re-render ayindi and enni ms theskundo flamegraph lo choodadaniki React DevTools Profiler vadatham."
+      },
+      {
+        id: 89,
+        level: 9,
+        topic: "Level 9.4: In-App Performance Monitor Overlay",
+        question: "What two frame rate metrics are displayed by React Native's In-App Performance Monitor overlay?",
+        options: [
+          "UI Thread FPS (Target: 60) AND JavaScript Thread FPS (Target: 60)",
+          "GPU Temperature and Battery Drain Rate",
+          "Download Bandwidth and Upload Bandwidth",
+          "RAM Consumption and Disk Write Speed"
+        ],
+        correctAnswer: "UI Thread FPS (Target: 60) AND JavaScript Thread FPS (Target: 60)",
+        explanation: "Monitoring both UI and JS FPS distinguishes whether frame drops are caused by complex native view trees or heavy JS calculations.",
+        tenglish: "Performance Monitor overlay UI Thread FPS and JS Thread FPS rendu meters ni live ga chupisthundi."
+      },
+      {
+        id: 90,
+        level: 9,
+        topic: "Level 9.1: Flattening View Hierarchy",
+        question: "Why does deeply nesting 15 empty <View> wrapper containers degrade mobile rendering performance?",
+        options: [
+          "It forces the Yoga flexbox layout engine to traverse and calculate deep tree hierarchies, increasing layout pass times and GPU overdraw.",
+          "It exceeds React Native's 10-tag nesting limit.",
+          "Views consume mobile cellular data.",
+          "It disables touch responder dispatching."
+        ],
+        correctAnswer: "It forces the Yoga flexbox layout engine to traverse and calculate deep tree hierarchies, increasing layout pass times and GPU overdraw.",
+        explanation: "Deep layout trees increase layout measurement computation times and GPU overdraw layers.",
+        tenglish: "Ekkuva unnecessary wrapper Views vesthe Yoga engine calculate cheyadam slow ayyi app performance tagguthundi."
+      },
+
+      // ==========================================
+      // LEVEL 10: JSI, TURBOMODULES & FABRIC (Q91 - Q100)
+      // ==========================================
+      {
+        id: 91,
+        level: 10,
+        topic: "Level 10.1: The Old Bridge Problem",
+        question: "In the Old React Native Architecture, how did JavaScript communicate with native Android Java and iOS Objective-C code?",
+        options: [
+          "By serializing all data into JSON text strings and passing them through an asynchronous message queue (The Bridge).",
+          "Through direct shared C++ memory pointers.",
+          "Using WebSockets and localhost HTTP servers.",
+          "Through SQLite database IPC."
+        ],
+        correctAnswer: "By serializing all data into JSON text strings and passing them through an asynchronous message queue (The Bridge).",
+        explanation: "The legacy bridge converted all function arguments and returns into JSON text strings across an async queue.",
+        tenglish: "Old bridge lo data antha JSON text strings ga convert ayyi async message queue dwara pass ayyedi (slow)."
+      },
+      {
+        id: 92,
+        level: 10,
+        topic: "Level 10.1: What is JSI?",
+        question: "What is JSI (JavaScript Interface) in the New React Native Architecture?",
+        options: [
+          "A C++ layer that allows JavaScript to hold direct memory references to native Host Objects, enabling synchronous, zero-serialization method invocations.",
+          "A new CSS-in-JS styling library.",
+          "A replacement for TypeScript.",
+          "A cloud build system for compiling iOS apps on Windows."
+        ],
+        correctAnswer: "A C++ layer that allows JavaScript to hold direct memory references to native Host Objects, enabling synchronous, zero-serialization method invocations.",
+        explanation: "JSI exposes native C++ objects directly to the JavaScript runtime (Hermes), completely eliminating JSON string serialization.",
+        tenglish: "JSI C++ shared memory dwara JS and Native direct ga matladukune facility isthundi (0ms JSON lag)."
+      },
+      {
+        id: 93,
+        level: 10,
+        topic: "Level 10.1: Synchronous Native Invocations",
+        question: "Can JavaScript call a native method synchronously (e.g. const width = getNativeWidth()) in the New Architecture with JSI?",
+        options: [
+          "Yes! JSI supports true synchronous direct method calls in shared memory without requiring async Promises.",
+          "No, all mobile operating systems forbid synchronous calls.",
+          "Only on iOS devices running iOS 18+.",
+          "Only when the device is offline."
+        ],
+        correctAnswer: "Yes! JSI supports true synchronous direct method calls in shared memory without requiring async Promises.",
+        explanation: "Because JS holds direct C++ pointers via JSI, native methods can execute synchronously and return instant values.",
+        tenglish: "Yes! JSI lo normal function call chesinatte direct ga synchronous ga instant value theskovachu."
+      },
+      {
+        id: 94,
+        level: 10,
+        topic: "Level 10.2: Eager Initialization Flaw",
+        question: "What was the Eager Initialization flaw of Native Modules in the Old Architecture?",
+        options: [
+          "React Native initialized all 50+ native modules (Camera, Bluetooth, Location, Payments) into RAM on app launch, causing slow 3-5s cold startup times.",
+          "Native modules were only loaded when the device was connected to Wi-Fi.",
+          "Modules were deleted from memory after 60 seconds.",
+          "Modules required manual restart on every screen."
+        ],
+        correctAnswer: "React Native initialized all 50+ native modules (Camera, Bluetooth, Location, Payments) into RAM on app launch, causing slow 3-5s cold startup times.",
+        explanation: "Old native modules had to register and allocate memory at startup regardless of whether the user used them.",
+        tenglish: "Old system lo app start avvagane anni modules memory lo load ayyi cold start time 4s ki perigedi."
+      },
+      {
+        id: 95,
+        level: 10,
+        topic: "Level 10.2: TurboModules Lazy Loading",
+        question: "How do TurboModules dramatically reduce app cold startup time in the New Architecture?",
+        options: [
+          "TurboModules use Lazy Loading, initializing native module code into RAM on demand ONLY when first called by the user.",
+          "TurboModules compress the JavaScript bundle by 90%.",
+          "TurboModules disable splash screen animations.",
+          "TurboModules run on a remote server."
+        ],
+        correctAnswer: "TurboModules use Lazy Loading, initializing native module code into RAM on demand ONLY when first called by the user.",
+        explanation: "Lazy loading ensures unused native modules consume 0 MB of RAM on startup, reducing launch time to ~0.3s.",
+        tenglish: "User feature ni touch chesinappude TurboModule RAM loki load avthundi (Lazy loading)."
+      },
+      {
+        id: 96,
+        level: 10,
+        topic: "Level 10.3: Fabric Rendering Engine",
+        question: "What is Fabric in React Native's New Architecture?",
+        options: [
+          "The C++ rendering engine that manages layout and native UI rendering directly in shared memory without the asynchronous bridge.",
+          "A cloth material simulation library for 3D games.",
+          "A relational database engine.",
+          "A testing framework for Jest."
+        ],
+        correctAnswer: "The C++ rendering engine that manages layout and native UI rendering directly in shared memory without the asynchronous bridge.",
+        explanation: "Fabric unifies layout computation (Yoga) and native UI tree updates directly in C++ via JSI.",
+        tenglish: "Fabric ante New Architecture యొక్క C++ rendering engine. Idi direct ga native UI draw chesthundi."
+      },
+      {
+        id: 97,
+        level: 10,
+        topic: "Level 10.3: Synchronous Layout Measurements",
+        question: "How does Fabric prevent UI jumps and flicker when rotating screens or opening the software keyboard?",
+        options: [
+          "By performing layout measurements and screen rendering synchronously in the same frame directly in C++.",
+          "By locking the screen orientation during animations.",
+          "By hiding the keyboard until animations finish.",
+          "By delaying user input by 300ms."
+        ],
+        correctAnswer: "By performing layout measurements and screen rendering synchronously in the same frame directly in C++.",
+        explanation: "Fabric eliminates the 3-thread asynchronous lag, rendering layout updates synchronously without frame jitter.",
+        tenglish: "Layout calculations synchronous ga C++ lo jaragadam valla screen rotation lo zero-flicker untundi."
+      },
+      {
+        id: 98,
+        level: 10,
+        topic: "Level 10.4: Codegen Type Safety",
+        question: "What is the primary role of Codegen in React Native's New Architecture?",
+        options: [
+          "It takes TypeScript specification files (.ts Spec) and automatically generates type-safe C++, Java (JNI), and Swift native boilerplate code at compile time.",
+          "It writes automated unit tests for your components.",
+          "It translates JavaScript into Python.",
+          "It deploys apps directly to the Google Play Console."
+        ],
+        correctAnswer: "It takes TypeScript specification files (.ts Spec) and automatically generates type-safe C++, Java (JNI), and Swift native boilerplate code at compile time.",
+        explanation: "Codegen enforces static type safety across the JS-Native boundary, catching type mismatches at build time.",
+        tenglish: "Manam TypeScript Spec raasthe, Codegen automatic ga type-safe C++, Java, Swift code generate chesthundi."
+      },
+      {
+        id: 99,
+        level: 10,
+        topic: "Level 10.4: Preventing Runtime Crashes",
+        question: "What happens if JavaScript passes a string ('twenty') to a native module expecting an integer in a Codegen-enabled TurboModule?",
+        options: [
+          "The build fails immediately at compile time with a type contract error, preventing a fatal crash on the user's phone.",
+          "The app compiles but crashes with a NullPointerException in production.",
+          "The string is silently coerced to 0.",
+          "The device restarts."
+        ],
+        correctAnswer: "The build fails immediately at compile time with a type contract error, preventing a fatal crash on the user's phone.",
+        explanation: "Codegen validates types at build time, preventing runtime type-cast exceptions in native code.",
+        tenglish: "Wrong type pass chesthe compile time loney build fail avthundi, user phone lo fatal crash aaguthundi."
+      },
+      {
+        id: 100,
+        level: 10,
+        topic: "Level 10.1: Bridgeless Mode",
+        question: "What does it mean when a modern React Native app operates in 'Bridgeless Mode'?",
+        options: [
+          "The legacy JSON message queue is 100% disabled; all native modules run as TurboModules via JSI, and all rendering is handled exclusively by Fabric.",
+          "The app does not use the internet.",
+          "The app has no navigation headers.",
+          "The app runs in a web browser without native components."
+        ],
+        correctAnswer: "The legacy JSON message queue is 100% disabled; all native modules run as TurboModules via JSI, and all rendering is handled exclusively by Fabric.",
+        explanation: "Bridgeless mode completely disables the old message queue, operating exclusively on JSI, TurboModules, and Fabric.",
+        tenglish: "Bridgeless mode ante patha JSON bridge 100% off aypoyi, anni calls pure C++ JSI & Fabric meede run avthayi."
+      },
+
+      // ==========================================
+      // LEVEL 11: PUSH NOTIFICATIONS & DEEP LINKS (Q101 - Q110)
+      // ==========================================
+      {
+        id: 101,
+        level: 11,
+        topic: "Level 11.1: Push Token Definition",
+        question: "In mobile architecture, what is a Push Token (e.g. ExponentPushToken[...] or APNs/FCM token) accurately defined as?",
+        options: [
+          "A temporary, revocable destination token associated with a specific app installation on a device that can rotate or change upon reinstall or OS restore.",
+          "A permanent hardware serial number (IMEI) burned into the device battery.",
+          "The user's encrypted database password.",
+          "The Wi-Fi router's MAC address."
+        ],
+        correctAnswer: "A temporary, revocable destination token associated with a specific app installation on a device that can rotate or change upon reinstall or OS restore.",
+        explanation: "Push tokens identify a specific active app instance and are not permanent hardware identifiers.",
+        tenglish: "Push Token ante phone permanent IMEI number kaadu; app aa phone lo install ayi unnanthavaraku unde temporary destination pass."
+      },
+      {
+        id: 102,
+        level: 11,
+        topic: "Level 11.1: Expo Push Relay vs Direct Native",
+        question: "What is the architectural distinction between an Expo Push Token and a native Apple APNs or Google FCM device token?",
+        options: [
+          "An Expo Push Token is an Expo-level wrapper token that Expo's push service translates and relays to Apple APNs and Google FCM; native tokens talk directly to Apple/Google servers.",
+          "Expo Push Tokens work only when the phone is plugged into a charger.",
+          "Native APNs tokens do not require an Apple Developer Account.",
+          "Expo Push Tokens delete FCM from Android devices."
+        ],
+        correctAnswer: "An Expo Push Token is an Expo-level wrapper token that Expo's push service translates and relays to Apple APNs and Google FCM; native tokens talk directly to Apple/Google servers.",
+        explanation: "Expo Push Service acts as a unified relay gateway, delivering messages to Apple APNs for iPhones and Google FCM for Android.",
+        tenglish: "Expo Push Token Expo service dwaara APNs and FCM ki relay avthundi. Direct native lo server direct ga Apple/Google servers ki pampisthundi."
+      },
+      {
+        id: 103,
+        level: 11,
+        topic: "Level 11.1: Display vs Silent Data Messages",
+        question: "How does the mobile operating system treat Silent / Background Data Push Notifications compared to Display Notifications?",
+        options: [
+          "Display notifications are rendered directly by the OS tray even if the app is closed; Silent data messages wake up JavaScript code in the background and are subject to OS battery throttling and force-quit restrictions.",
+          "Silent notifications are converted into SMS text messages.",
+          "Display notifications require the phone to be rooted.",
+          "Silent notifications can only be sent on Wi-Fi."
+        ],
+        correctAnswer: "Display notifications are rendered directly by the OS tray even if the app is closed; Silent data messages wake up JavaScript code in the background and are subject to OS battery throttling and force-quit restrictions.",
+        explanation: "Display alerts are handled by the native OS tray, whereas silent background data tasks are heavily throttled by mobile OS power managers.",
+        tenglish: "Display notification app close lo unna OS banner chupisthundi. Silent data notification background lo JS run cheyadaniki vadatham (battery limits apply)."
+      },
+      {
+        id: 104,
+        level: 11,
+        topic: "Level 11.2: Deep Link Payload Metadata",
+        question: "Which field in the push notification JSON payload is specifically designed to pass custom metadata (such as orderId or target screen) for client-side deep linking?",
+        options: [
+          "The 'data' object field (e.g. data: { screen: 'OrderTracking', orderId: 'ORD-9821' })",
+          "The 'sound' string field",
+          "The 'badge' number field",
+          "The 'priority' header field"
+        ],
+        correctAnswer: "The 'data' object field (e.g. data: { screen: 'OrderTracking', orderId: 'ORD-9821' })",
+        explanation: "The 'data' object carries structured JSON payloads that your React Native code inspects during notification reception and tap events.",
+        tenglish: "Deep linking metadata (e.g. screen name, order ID) pass cheyadaniki 'data' object field vadatham."
+      },
+      {
+        id: 105,
+        level: 11,
+        topic: "Level 11.2: Handling DeviceNotRegistered",
+        question: "What action must your backend database take when the Push Notification Gateway returns a receipt error with 'DeviceNotRegistered'?",
+        options: [
+          "Deactivate (is_active = false) or delete the invalid token from the database because the app was uninstalled or the token expired.",
+          "Keep resending the same notification in a blocking while(true) loop.",
+          "Restart the database server immediately.",
+          "Send an email to Apple and Google support."
+        ],
+        correctAnswer: "Deactivate (is_active = false) or delete the invalid token from the database because the app was uninstalled or the token expired.",
+        explanation: "DeviceNotRegistered indicates the app was uninstalled; pruning dead tokens prevents wasted API requests and server overhead.",
+        tenglish: "DeviceNotRegistered error vasthe user app delete chesadu ani ardam. Database lo aa token ni deactivate/delete cheyali."
+      },
+      {
+        id: 106,
+        level: 11,
+        topic: "Level 11.3: Default Foreground Banner Suppression",
+        question: "What is the default behavior of iOS and Android when a push notification arrives while the app is actively open in the foreground?",
+        options: [
+          "The operating system suppresses the visual popup banner and plays no sound, assuming the user is already engaged in the app.",
+          "The OS crashes the application immediately.",
+          "The OS automatically minimizes the app to the home screen.",
+          "The OS locks the touch screen for 5 seconds."
+        ],
+        correctAnswer: "The operating system suppresses the visual popup banner and plays no sound, assuming the user is already engaged in the app.",
+        explanation: "Mobile operating systems suppress foreground banners by default to avoid interrupting active user workflows.",
+        tenglish: "User app open chesi chusthunappudu notification vasthe default ga OS banner chupinchadu and sound veyadu."
+      },
+      {
+        id: 107,
+        level: 11,
+        topic: "Level 11.3: setNotificationHandler",
+        question: "How do you configure React Native to force the OS to show visual alert banners and play sounds even when the app is open in the foreground?",
+        options: [
+          "Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: false }) });",
+          "Notifications.enableForegroundMode(true);",
+          "Notifications.forceAlertBanner();",
+          "Platform.setAlertsEnabled(true);"
+        ],
+        correctAnswer: "Notifications.setNotificationHandler({ handleNotification: async () => ({ shouldShowAlert: true, shouldPlaySound: true, shouldSetBadge: false }) });",
+        explanation: "setNotificationHandler defines a global handler instructing the OS to present visual alerts and audio when active.",
+        tenglish: "App foreground lo unna banner and sound ravalante Notifications.setNotificationHandler lo shouldShowAlert: true pettali."
+      },
+      {
+        id: 108,
+        level: 11,
+        topic: "Level 11.4: Received vs Response Listeners",
+        question: "What is the critical distinction between addNotificationReceivedListener and addNotificationResponseReceivedListener?",
+        options: [
+          "addNotificationReceivedListener fires when the notification lands on the device; addNotificationResponseReceivedListener fires ONLY when the user physically taps the notification banner.",
+          "addNotificationReceivedListener only works on iOS; addNotificationResponseReceivedListener is Android only.",
+          "addNotificationResponseReceivedListener is used exclusively for scheduling local alarms.",
+          "addNotificationReceivedListener requires root permissions."
+        ],
+        correctAnswer: "addNotificationReceivedListener fires when the notification lands on the device; addNotificationResponseReceivedListener fires ONLY when the user physically taps the notification banner.",
+        explanation: "Received fires on message delivery; Response fires on user tap/interaction.",
+        tenglish: "Received listener notification raagane fire avthundi; Response listener user banner meeda tap chesinappudu mathrame fire avthundi."
+      },
+      {
+        id: 109,
+        level: 11,
+        topic: "Level 11.4: Cold-Start Killed State Launch",
+        question: "Which API must you invoke on app startup to handle a user tapping a lock-screen notification that launched your app from a completely closed (killed) state?",
+        options: [
+          "Notifications.getLastNotificationResponseAsync()",
+          "Notifications.getPendingNotifications()",
+          "AppState.getInitialState()",
+          "AsyncStorage.getItem('INITIAL_NOTIFICATION')"
+        ],
+        correctAnswer: "Notifications.getLastNotificationResponseAsync()",
+        explanation: "getLastNotificationResponseAsync retrieves the initial notification response that triggered the app's cold launch.",
+        tenglish: "App completely close ayi unnapudu lock screen nunchi tap chesi app open chesthe payload theskodaniki getLastNotificationResponseAsync() vadatham."
+      },
+      {
+        id: 110,
+        level: 11,
+        topic: "Level 11.5: navigationRef Deep Linking",
+        question: "Why is React Navigation's createNavigationContainerRef() used when implementing notification deep linking in enterprise applications?",
+        options: [
+          "It creates a top-level navigation reference that can trigger screen transitions from global background event listeners outside of standard screen components.",
+          "It accelerates screen rendering by 200%.",
+          "It encrypts route params with AES-256.",
+          "It prevents the user from navigating backwards."
+        ],
+        correctAnswer: "It creates a top-level navigation reference that can trigger screen transitions from global background event listeners outside of standard screen components.",
+        explanation: "createNavigationContainerRef provides a global dispatch object enabling imperative navigation from background notification handlers.",
+        tenglish: "React component tree bayata unna notification tap listener nunchi direct ga navigation.navigate() cheyadaniki createNavigationContainerRef vadatham."
+      },
+
+      // ==========================================
+      // LEVEL 12: OFFLINE-FIRST & LOCAL DATABASES (Q111 - Q120)
+      // ==========================================
+      {
+        id: 111,
+        level: 12,
+        topic: "Level 12.1: AsyncStorage JSON Scaling Limit",
+        question: "Why does storing 50,000 chat records in AsyncStorage cause severe performance degradation and Out-Of-Memory (OOM) crashes?",
+        options: [
+          "Because AsyncStorage stores data as a single flat unindexed JSON string, forcing the entire 60MB file to be loaded and parsed into JavaScript RAM on every read query.",
+          "Because AsyncStorage only supports storing numbers and crashes on strings.",
+          "Because mobile operating systems delete AsyncStorage every 24 hours.",
+          "Because AsyncStorage requires continuous Wi-Fi connection."
+        ],
+        correctAnswer: "Because AsyncStorage stores data as a single flat unindexed JSON string, forcing the entire 60MB file to be loaded and parsed into JavaScript RAM on every read query.",
+        explanation: "AsyncStorage lacks disk indexing and b-trees, resulting in massive JSON string serialization overhead.",
+        tenglish: "AsyncStorage lo 50k items unte okka item vethakadaniki kooda full 60MB JSON RAM lo load chesi parse cheyali, so app crash aypothundi."
+      },
+      {
+        id: 112,
+        level: 12,
+        topic: "Level 12.1: SQLite Disk B-Trees",
+        question: "How does an embedded relational database like SQLite retrieve a single record out of 100,000 rows in ~0.5ms with 0% memory waste?",
+        options: [
+          "By using disk-indexed B-Trees to navigate directly to the specific byte offset on disk without loading unneeded rows into memory.",
+          "By caching all 100,000 records in Redux state.",
+          "By compressing the entire table into a zip file.",
+          "By sending the query to a remote cloud server."
+        ],
+        correctAnswer: "By using disk-indexed B-Trees to navigate directly to the specific byte offset on disk without loading unneeded rows into memory.",
+        explanation: "SQLite B-Tree indexes allow O(log N) binary search on disk, reading only requested records into memory.",
+        tenglish: "SQLite B-Tree indexes vaadi disk meeda direct ga aa okka record unna byte offset nunchi 0.5ms lo fetch chesthundi."
+      },
+      {
+        id: 113,
+        level: 12,
+        topic: "Level 12.1: Parameterized SQL Queries in expo-sqlite",
+        question: "Why should you ALWAYS pass query arguments as an array (db.runAsync('INSERT INTO notes (title) VALUES (?);', [userInput])) rather than string template literals?",
+        options: [
+          "To prevent catastrophic SQL Injection security vulnerabilities and ensure safe character escaping across the native C++ boundary.",
+          "To make the text display in bold font.",
+          "Because SQLite does not allow strings in tables.",
+          "To reduce the app bundle download size by 50%."
+        ],
+        correctAnswer: "To prevent catastrophic SQL Injection security vulnerabilities and ensure safe character escaping across the native C++ boundary.",
+        explanation: "Parameterized queries (?) prevent attackers from injecting malicious SQL commands via user input.",
+        tenglish: "SQL Injection security attacks aagadaniki queries lo values eppudu (?) placeholders & array parameters dwara pass cheyali."
+      },
+      {
+        id: 114,
+        level: 12,
+        topic: "Level 12.2: WatermelonDB JSI Multithreading",
+        question: "Why doesn't querying 100,000 records in WatermelonDB freeze or drop frames on the mobile UI thread?",
+        options: [
+          "Because WatermelonDB executes SQLite queries on a separate native C++ background thread via JSI without blocking the JavaScript event loop.",
+          "Because WatermelonDB deletes all records older than 1 hour.",
+          "Because it runs inside a hidden WebAssembly iframe.",
+          "Because it disables gesture animations during queries."
+        ],
+        correctAnswer: "Because WatermelonDB executes SQLite queries on a separate native C++ background thread via JSI without blocking the JavaScript event loop.",
+        explanation: "WatermelonDB offloads database I/O to a dedicated native background thread, leaving the main JS thread free for 60 FPS interactions.",
+        tenglish: "WatermelonDB C++ background thread lo queries run chesthundi, so JS thread freeze avvakunda 60 FPS smooth ga untundi."
+      },
+      {
+        id: 115,
+        level: 12,
+        topic: "Level 12.2: Lazy Loading in Observable Databases",
+        question: "What is 'Lazy Loading' in WatermelonDB architecture?",
+        options: [
+          "Instantiating JavaScript model objects ONLY for the few items currently rendered in the visible viewport, rather than creating 100,000 JS objects in RAM.",
+          "Delaying app cold start by 5 seconds to load database files.",
+          "Loading images at low resolution first.",
+          "Disabling database updates when the battery is low."
+        ],
+        correctAnswer: "Instantiating JavaScript model objects ONLY for the few items currently rendered in the visible viewport, rather than creating 100,000 JS objects in RAM.",
+        explanation: "Lazy loading avoids memory heap bloat by allocating JS models on-demand as list items scroll into view.",
+        tenglish: "100k records unna sare screen meeda kanipinche 10 items ki mathrame JS objects create cheyadam (Lazy Loading)."
+      },
+      {
+        id: 116,
+        level: 12,
+        topic: "Level 12.2: RxJS Observables in Components",
+        question: "How does withObservables in WatermelonDB optimize component re-renders?",
+        options: [
+          "It creates fine-grained reactive subscriptions such that only the exact component tied to a mutated database row re-renders when data changes.",
+          "It forces the entire app to re-render from scratch on every change.",
+          "It converts all React state into global CSS classes.",
+          "It disables React reconciliation."
+        ],
+        correctAnswer: "It creates fine-grained reactive subscriptions such that only the exact component tied to a mutated database row re-renders when data changes.",
+        explanation: "Observables establish direct reactive pipelines between database records and UI components.",
+        tenglish: "Database lo aa okka row maarithe, aa row ki link ayina specific component mathrame re-render avthundi."
+      },
+      {
+        id: 117,
+        level: 12,
+        topic: "Level 12.3: Optimistic UI Updates in Offline Mode",
+        question: "What is the primary user experience advantage of an Optimistic UI update when creating a post in Airplane Mode?",
+        options: [
+          "The post appears on screen instantly with a pending status indicator (⏳), giving the user immediate visual confirmation with zero perceived network latency.",
+          "It forces the device to automatically connect to 5G cellular data.",
+          "It prevents the user from typing any further text.",
+          "It encrypts the post so the user cannot see it until online."
+        ],
+        correctAnswer: "The post appears on screen instantly with a pending status indicator (⏳), giving the user immediate visual confirmation with zero perceived network latency.",
+        explanation: "Optimistic UI eliminates perceived network lag by updating the interface immediately before server acknowledgment.",
+        tenglish: "Offline lo unnapudu comment post chesina instant ga screen meeda ⏳ icon tho chupistham (0ms instant user experience)."
+      },
+      {
+        id: 118,
+        level: 12,
+        topic: "Level 12.3: Persistent Mutation Queue",
+        question: "Why should an offline mutation queue be stored in a local SQLite table rather than in component React state?",
+        options: [
+          "To guarantee persistence on disk so that pending mutations are preserved and can be synced even if the user force-closes the app or restarts the phone.",
+          "Because React state is limited to 10 characters.",
+          "Because SQLite is stored in the cloud.",
+          "Because React state cannot store JavaScript objects."
+        ],
+        correctAnswer: "To guarantee persistence on disk so that pending mutations are preserved and can be synced even if the user force-closes the app or restarts the phone.",
+        explanation: "Disk-backed queues survive app crashes, reboots, and background termination without data loss.",
+        tenglish: "App close chesina phone restart chesina pending offline actions poyakunda undadaniki SQLite table lo queue save chestham."
+      },
+      {
+        id: 119,
+        level: 12,
+        topic: "Level 12.3: NetInfo Auto-Drain Pipeline",
+        question: "How does an offline sync engine process the pending mutation queue when NetInfo reports internet reconnection?",
+        options: [
+          "It sequentially drains pending actions in chronological order, dispatches HTTP requests to the backend, and marks local records as synced (✅) on success.",
+          "It deletes all offline mutations immediately to prevent server overload.",
+          "It sends all 1,000 requests in parallel on the UI thread.",
+          "It restarts the phone operating system."
+        ],
+        correctAnswer: "It sequentially drains pending actions in chronological order, dispatches HTTP requests to the backend, and marks local records as synced (✅) on success.",
+        explanation: "Sequential queue draining ensures mutations execute in the exact order the user performed them.",
+        tenglish: "Internet raagane pending queue lo unna requests ni line ga server ki push chesi database lo `is_synced = 1` (✅) ga mark chestham."
+      },
+      {
+        id: 120,
+        level: 12,
+        topic: "Level 12.4: Conflict Resolution: LWW vs CRDTs",
+        question: "What is the key difference between Last-Write-Wins (LWW) and Conflict-Free Replicated Data Types (CRDTs) during multi-device synchronization?",
+        options: [
+          "LWW resolves conflicts by letting the newest timestamp overwrite older data; CRDTs use commutative mathematical operations to deterministically merge concurrent edits without data loss.",
+          "LWW is for iOS only while CRDTs are Android only.",
+          "CRDTs delete both conflicting files immediately.",
+          "LWW requires a blockchain network."
+        ],
+        correctAnswer: "LWW resolves conflicts by letting the newest timestamp overwrite older data; CRDTs use commutative mathematical operations to deterministically merge concurrent edits without data loss.",
+        explanation: "LWW can overwrite concurrent edits, whereas CRDTs mathematically merge concurrent edits (used in Google Docs/Figma).",
+        tenglish: "LWW latest timestamp unna edit tho overwrite chesthundi; CRDTs math equations vaadi 100% data loss lekunda merge chesthundi."
+      },
+
+      // ==========================================
+      // LEVEL 13: EAS BUILD & STORE CI/CD (Q121 - Q130)
+      // ==========================================
+      {
+        id: 121,
+        level: 13,
+        topic: "Level 13.1: EAS Build Cloud Mac Compilation",
+        question: "How does EAS Build enable a developer on a Windows PC to compile native Apple iOS (.ipa) app binaries?",
+        options: [
+          "By offloading source code compilation to Expo's managed cloud server clusters running native macOS and Xcode.",
+          "By running an iOS simulator inside an Android emulator on Windows.",
+          "By translating JavaScript into Swift in the browser.",
+          "By compiling iOS binaries directly in Windows PowerShell."
+        ],
+        correctAnswer: "By offloading source code compilation to Expo's managed cloud server clusters running native macOS and Xcode.",
+        explanation: "EAS Build provisions cloud-hosted Apple Silicon Mac runners with Xcode to build iOS binaries remotely.",
+        tenglish: "Windows laptop lo Xcode undadu kabatti, EAS mana code ni cloud లోని Apple Mac servers meeda compile chesi `.ipa` file ichesthundi."
+      },
+      {
+        id: 122,
+        level: 13,
+        topic: "Level 13.1: Build Profiles in eas.json",
+        question: "In eas.json, what is the architectural distinction between the 'preview' build profile and the 'production' build profile?",
+        options: [
+          "'preview' builds an internal testing binary (e.g. direct standalone APK or Ad-Hoc IPA) for QA testers; 'production' compiles store-ready packages (AAB for Google Play / App Store IPA).",
+          "'preview' profile deletes the app database.",
+          "'production' profile only works on local emulators.",
+          "'preview' builds can only run for 10 minutes."
+        ],
+        correctAnswer: "'preview' builds an internal testing binary (e.g. direct standalone APK or Ad-Hoc IPA) for QA testers; 'production' compiles store-ready packages (AAB for Google Play / App Store IPA).",
+        explanation: "Preview profiles target internal distribution channels while production profiles build optimized store release bundles.",
+        tenglish: "`preview` profile testing kosam direct APK isthundi; `production` profile Google Play Store & Apple App Store submission bundles isthundi."
+      },
+      {
+        id: 123,
+        level: 13,
+        topic: "Level 13.2: .apk vs .aab Dynamic Delivery",
+        question: "Why does Google Play strictly require the Android App Bundle (.aab) format instead of traditional .apk files?",
+        options: [
+          "Google Play uses the .aab to generate split, optimized APKs containing only the specific CPU architecture and screen density needed for each user's device, cutting download size by ~50%.",
+          "Because .apk files cannot connect to the internet.",
+          "Because .aab files are stored in the user's Google Drive.",
+          "Because Google Play deprecated Android Studio."
+        ],
+        correctAnswer: "Google Play uses the .aab to generate split, optimized APKs containing only the specific CPU architecture and screen density needed for each user's device, cutting download size by ~50%.",
+        explanation: "Dynamic Delivery builds device-specific split APKs from a single AAB upload, drastically reducing user bandwidth and storage.",
+        tenglish: "AAB format vaadithe Google Play Store user యొక్క phone model ki kavalsina optimized chinna APK ni download chesthundi (App size 50% tagguthundi)."
+      },
+      {
+        id: 124,
+        level: 13,
+        topic: "Level 13.2: Android Keystore Security",
+        question: "What happens if a developer permanently loses their Android Keystore (.keystore/.jks) file for an app published without Google Play App Signing?",
+        options: [
+          "Google Play will permanently reject all future app updates because it cannot cryptographically verify the developer's identity, forcing a brand new app upload.",
+          "Google Play will automatically recreate the keystore.",
+          "The app will continue updating without security signatures.",
+          "The phone operating system will reset."
+        ],
+        correctAnswer: "Google Play will permanently reject all future app updates because it cannot cryptographically verify the developer's identity, forcing a brand new app upload.",
+        explanation: "Keystores prove authorship; losing a legacy upload key blocks all subsequent update packages.",
+        tenglish: "Keystore poyithe Google Play Store lo kotha updates (v2.0) upload cheyadam kudaradu. Keystore eppudu safe ga cloud lo backup undali."
+      },
+      {
+        id: 125,
+        level: 13,
+        topic: "Level 13.2: EAS Credentials Cloud Vault",
+        question: "Which CLI command allows developers to view, backup, and configure encrypted Android Keystores and Apple Certificates stored in Expo's Cloud vault?",
+        options: [
+          "eas credentials",
+          "expo doctor --keys",
+          "npm run secure-vault",
+          "npx keystore-sync"
+        ],
+        correctAnswer: "eas credentials",
+        explanation: "The `eas credentials` command opens the interactive credential manager for iOS and Android signing assets.",
+        tenglish: "Cloud lo unna Android Keystores and iOS Certificates ni manage/backup cheyadaniki `eas credentials` CLI command vadatham."
+      },
+      {
+        id: 126,
+        level: 13,
+        topic: "Level 13.3: iOS 3-Tier Security Chain",
+        question: "What are the three essential cryptographic security assets required by Apple to sign and distribute an iOS application?",
+        options: [
+          "Bundle Identifier (App ID), Apple Distribution Certificate (.p12), and Provisioning Profile (.mobileprovision).",
+          "HTML5 Manifest, Google Service Account, and SHA-1 checksum.",
+          "Git SSH Key, Stripe Public Key, and Android JKS.",
+          "Xcode License, macOS Serial Number, and Safari Cookies."
+        ],
+        correctAnswer: "Bundle Identifier (App ID), Apple Distribution Certificate (.p12), and Provisioning Profile (.mobileprovision).",
+        explanation: "Apple's security handshake mandates a unique Bundle ID, a verified Distribution Certificate, and an active Provisioning Profile.",
+        tenglish: "iPhone lo app run avvalante: 1. Bundle ID (Unique name), 2. Distribution Certificate (ID passport), 3. Provisioning Profile (Security permit) kavali."
+      },
+      {
+        id: 127,
+        level: 13,
+        topic: "Level 13.3: Role of Provisioning Profile",
+        question: "What is the primary role of an Apple Provisioning Profile (.mobileprovision) on an iPhone?",
+        options: [
+          "It acts as the security permit linking the app's Bundle ID, the developer's certificate, and allowed device entitlements/UDIDs.",
+          "It accelerates graphic card rendering.",
+          "It handles push notification banner layout.",
+          "It sets the default wallpaper on the device."
+        ],
+        correctAnswer: "It acts as the security permit linking the app's Bundle ID, the developer's certificate, and allowed device entitlements/UDIDs.",
+        explanation: "Provisioning profiles embed entitlement rules and device authorizations allowing iOS to trust the application.",
+        tenglish: "Provisioning Profile ante Apple iche 'Security Permit / Entry Pass'; idi Bundle ID and Developer Certificate ni phone tho link chesthundi."
+      },
+      {
+        id: 128,
+        level: 13,
+        topic: "Level 13.4: Environment Isolation",
+        question: "Why must enterprise mobile apps configure separate 'development', 'preview', and 'production' build environments in eas.json?",
+        options: [
+          "To prevent test data and staging API mutations from polluting live customer databases and real payment gateway accounts.",
+          "To increase app download speeds on 5G.",
+          "To bypass Apple App Store Review guidelines.",
+          "Because Expo limits applications to a single environment."
+        ],
+        correctAnswer: "To prevent test data and staging API mutations from polluting live customer databases and real payment gateway accounts.",
+        explanation: "Environment matrix isolation prevents QA testing actions from modifying production databases and live payment gateways.",
+        tenglish: "Test data and fake transactions live production customer database lo padakunda undadaniki Dev, Staging, Prod isolate chestham."
+      },
+      {
+        id: 129,
+        level: 13,
+        topic: "Level 13.4: EAS Cloud Secrets Security",
+        question: "Why should sensitive backend tokens like STRIPE_SECRET_KEY be stored using EAS Secrets rather than committed to a .env file in GitHub?",
+        options: [
+          "Committing secret keys to version control exposes private keys publicly, allowing attackers to decompile apps and compromise production services.",
+          "Because .env files delete JavaScript source code.",
+          "Because GitHub only accepts Markdown files.",
+          "Because Stripe blocks .env files."
+        ],
+        correctAnswer: "Committing secret keys to version control exposes private keys publicly, allowing attackers to decompile apps and compromise production services.",
+        explanation: "EAS Secrets encrypt private variables in cloud CI/CD environments, preventing credential leakage in public repositories.",
+        tenglish: "Private API keys ni GitHub lo push chesthe hackers steal chestaru; anduke EAS Cloud Secrets vault lo encrypted ga store chestham."
+      },
+      {
+        id: 130,
+        level: 13,
+        topic: "Level 13.4: EAS Submit Automation",
+        question: "What does the eas submit --platform all command accomplish in a production CI/CD pipeline?",
+        options: [
+          "It automatically uploads compiled .aab binaries directly to the Google Play Console and .ipa binaries to Apple App Store Connect / TestFlight without manual browser file uploads.",
+          "It deletes the app from all user devices.",
+          "It formats the developer's hard drive.",
+          "It shuts down Expo cloud servers."
+        ],
+        correctAnswer: "It automatically uploads compiled .aab binaries directly to the Google Play Console and .ipa binaries to Apple App Store Connect / TestFlight without manual browser file uploads.",
+        explanation: "EAS Submit automates store distribution by uploading compiled build artifacts directly to Google Play and Apple TestFlight.",
+        tenglish: "`eas submit` command terminal nunchi direct ga Google Play Console and Apple App Store / TestFlight loki apps ni 2 mins lo upload chesthundi."
+      },
+
+      // ==========================================
+      // LEVEL 14: OVER-THE-AIR (OTA) UPDATES (Q131 - Q140)
+      // ==========================================
+      {
+        id: 131,
+        level: 14,
+        topic: "Level 14.1: OTA Bundle vs Native Binary",
+        question: "Why can React Native deliver instant bug fixes over-the-air in seconds without going through Apple or Google App Store review?",
+        options: [
+          "Because React Native decouples the native binary shell from the JavaScript bundle, allowing the app to download and execute updated JavaScript bundles dynamically.",
+          "Because Expo pays Apple a premium monthly bypass fee.",
+          "Because OTA updates only work when the user's phone is jailbroken.",
+          "Because JavaScript code runs on a remote server without touching the phone."
+        ],
+        correctAnswer: "Because React Native decouples the native binary shell from the JavaScript bundle, allowing the app to download and execute updated JavaScript bundles dynamically.",
+        explanation: "The JavaScript bundle is separate from native binaries and can be replaced dynamically over the network.",
+        tenglish: "React Native lo Native shell and JavaScript bundle alag alag untayi; so JS code ni 5 seconds lo OTA dwara live ga update cheyochu."
+      },
+      {
+        id: 132,
+        level: 14,
+        topic: "Level 14.1: expo-updates API",
+        question: "Which expo-updates API method retrieves the latest published JavaScript bundle from the Expo cloud in the background?",
+        options: [
+          "Updates.fetchUpdateAsync()",
+          "Updates.downloadAppStoreBinary()",
+          "Updates.rebootPhone()",
+          "Updates.syncGitBranch()"
+        ],
+        correctAnswer: "Updates.fetchUpdateAsync()",
+        explanation: "fetchUpdateAsync downloads the newest published update bundle and caches it locally on device disk.",
+        tenglish: "Cloud nunchi latest JavaScript update bundle ni background lo download cheyadaniki `Updates.fetchUpdateAsync()` vadatham."
+      },
+      {
+        id: 133,
+        level: 14,
+        topic: "Level 14.2: Apple Store Guideline 2.5.2 Legal Scope",
+        question: "Under Apple App Store Review Guideline 2.5.2, what is fully permissible to deliver via an OTA update?",
+        options: [
+          "Bug fixes, UI styling adjustments, React components, and business logic that do not alter the primary purpose of the app.",
+          "Converting a calculator app into a real-money casino app.",
+          "Installing rootkit system drivers.",
+          "Bypassing Apple In-App Purchases for digital subscriptions."
+        ],
+        correctAnswer: "Bug fixes, UI styling adjustments, React components, and business logic that do not alter the primary purpose of the app.",
+        explanation: "Apple explicitly permits dynamic JavaScript updates provided they do not modify the app's core approved category or functionality.",
+        tenglish: "Bug fixes, UI styling, and business logic updates OTA dwara pampadam Apple & Google rules prakaram 100% legal."
+      },
+      {
+        id: 134,
+        level: 14,
+        topic: "Level 14.2: Bypassing Native In-App Purchases Ban",
+        question: "Which OTA update action will cause Apple and Google to immediately terminate your developer account and remove your app from the store?",
+        options: [
+          "Bypassing native In-App Purchases (IAP) to sell digital goods through hidden external payment links or turning the app into an unlicensed gambling service.",
+          "Changing a button color from blue to indigo.",
+          "Fixing a spelling typo in a form label.",
+          "Updating an API endpoint URL."
+        ],
+        correctAnswer: "Bypassing native In-App Purchases (IAP) to sell digital goods through hidden external payment links or turning the app into an unlicensed gambling service.",
+        explanation: "Circumventing store billing guidelines or changing app category to gambling triggers immediate store bans.",
+        tenglish: "Apple/Google IAP bypass chesi hidden payment links petti digital goods ammithe, account immediate ga permanent ban aypothundi."
+      },
+      {
+        id: 135,
+        level: 14,
+        topic: "Level 14.2: Native Module OTA Limitation",
+        question: "What happens if an OTA update introduces JavaScript code requiring a newly installed native C++/Java/Swift module that is not compiled into the installed binary?",
+        options: [
+          "The app will throw an unhandled native invocation runtime error or fatal crash when calling the missing native module.",
+          "The phone will automatically compile native Swift code on the device.",
+          "Expo cloud will push native C++ binary libraries via Bluetooth.",
+          "The phone operating system will restart in recovery mode."
+        ],
+        correctAnswer: "The app will throw an unhandled native invocation runtime error or fatal crash when calling the missing native module.",
+        explanation: "OTA cannot push native compiled binaries; invoking missing native modules causes fatal runtime exceptions.",
+        tenglish: "Kotha Camera native module binary lo lekapothe, JS nunchi call cheyagane app crash aypothundi (Native code OTA tho update avvadu)."
+      },
+      {
+        id: 136,
+        level: 14,
+        topic: "Level 14.3: runtimeVersion Compatibility Lock",
+        question: "What is the primary architectural purpose of the runtimeVersion field in app.json for OTA updates?",
+        options: [
+          "It creates a cryptographic compatibility lock ensuring that an OTA update is only delivered to devices with the exact matching native binary fingerprint.",
+          "It speeds up Wi-Fi download bandwidth.",
+          "It sets the screen refresh rate to 120 FPS.",
+          "It deletes SQLite records on app boot."
+        ],
+        correctAnswer: "It creates a cryptographic compatibility lock ensuring that an OTA update is only delivered to devices with the exact matching native binary fingerprint.",
+        explanation: "runtimeVersion prevents runtime crashes by delivering updates strictly to binaries with compatible native code.",
+        tenglish: "`runtimeVersion` lock pettadam valla, exact matching native code unna phones ki mathrame update velthundi (zero crashes)."
+      },
+      {
+        id: 137,
+        level: 14,
+        topic: "Level 14.3: Fingerprint Policy in runtimeVersion",
+        question: "In modern Expo SDK projects, how does the 'fingerprint' runtimeVersion policy calculate compatibility?",
+        options: [
+          "It generates a cryptographic hash based on the exact native code, package dependencies, and config plugins in your project.",
+          "It scans the user's physical fingerprint on the home button.",
+          "It counts the number of lines of JavaScript code.",
+          "It records the developer's IP address."
+        ],
+        correctAnswer: "It generates a cryptographic hash based on the exact native code, package dependencies, and config plugins in your project.",
+        explanation: "The fingerprint policy hashes native source directories, dependencies, and plugins to determine binary compatibility.",
+        tenglish: "Fingerprint policy native code, plugins, and dependencies యొక్క exact hash ని calculate chesi binary match check chesthundi."
+      },
+      {
+        id: 138,
+        level: 14,
+        topic: "Level 14.4: Deployment Channel Segregation",
+        question: "Why should teams maintain distinct 'preview' and 'production' deployment channels in eas update?",
+        options: [
+          "To test live OTA updates on internal QA test devices before exposing the update to millions of live App Store customers.",
+          "Because Expo limits updates to 10 users per channel.",
+          "To bypass Google Play store policies.",
+          "To increase app frame rate."
+        ],
+        correctAnswer: "To test live OTA updates on internal QA test devices before exposing the update to millions of live App Store customers.",
+        explanation: "Channel segregation isolates unstable QA testing updates from live production end-users.",
+        tenglish: "Testing updates internal QA phones kosam `preview` channel lo, live real users kosam `production` channel lo isolate chestham."
+      },
+      {
+        id: 139,
+        level: 14,
+        topic: "Level 14.4: 1-Second Emergency Rollback via eas update:republish",
+        question: "If a critical bug is discovered in a live production OTA update, how can the engineering team revert millions of users to the previous working state in 1 second?",
+        options: [
+          "By running eas update:republish with the group ID of the previous stable update to instantly redirect production traffic.",
+          "By asking Apple to delete the App Store.",
+          "By sending an email to all users asking them to uninstall the app.",
+          "By restarting the company's Wi-Fi router."
+        ],
+        correctAnswer: "By running eas update:republish with the group ID of the previous stable update to instantly redirect production traffic.",
+        explanation: "Republishing a known stable update group instantly points production channels back to safe JavaScript bundles.",
+        tenglish: "Production lo bug vasthe `eas update:republish` dwara 1 second lo patha stable good version ki rollback (undo) cheyochu!"
+      },
+      {
+        id: 140,
+        level: 14,
+        topic: "Level 14.4: Canary Phased Deployments",
+        question: "What is the primary benefit of deploying an OTA update as a Canary release (e.g. 10% rollout first)?",
+        options: [
+          "It limits user exposure and allows monitoring error telemetry in real time before expanding the rollout to 100% of devices.",
+          "It reduces server electricity consumption.",
+          "It hides the app from competitors.",
+          "It deletes unused photos on test phones."
+        ],
+        correctAnswer: "It limits user exposure and allows monitoring error telemetry in real time before expanding the rollout to 100% of devices.",
+        explanation: "Canary rollouts allow real-time crash monitoring on a small audience before full production exposure.",
+        tenglish: "Mundu 10% users ki update release chesi Sentry lo crashes lekapothe 100% users ki safely live chestham (Canary rollout)."
+      }
+    ];
+
+    // DYNAMIC FISHER-YATES SHUFFLE FOR OPTIONS & QUESTIONS
+    let QUESTIONS = [];
+    let currentFilter = 'all';
+    let userAnswers = {}; // { qId: selectedOptionIndex }
+
+    const STORAGE_KEY_QUESTIONS = 'RN_MASTERCLASS_EXAM_QUESTIONS_V5';
+    const STORAGE_KEY_ANSWERS = 'RN_MASTERCLASS_EXAM_ANSWERS_V5';
+
+    function prepareAndJumbleQuestions() {
+      QUESTIONS = RAW_QUESTIONS.map(q => {
+        const optionsCopy = [...q.options];
+        // Fisher-Yates shuffle
+        for (let i = optionsCopy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [optionsCopy[i], optionsCopy[j]] = [optionsCopy[j], optionsCopy[i]];
+        }
+        const correctIndex = optionsCopy.indexOf(q.correctAnswer);
+        return {
+          ...q,
+          options: optionsCopy,
+          correct: correctIndex
+        };
+      });
+
+      // Save generated question layout to localStorage
+      try {
+        localStorage.setItem(STORAGE_KEY_QUESTIONS, JSON.stringify(QUESTIONS));
+      } catch (e) {
+        console.warn('LocalStorage save error', e);
+      }
+    }
+
+    function initOrRestoreExamState() {
+      // 1. Restore Questions Layout
+      const savedQuestions = localStorage.getItem(STORAGE_KEY_QUESTIONS);
+      if (savedQuestions) {
+        try {
+          QUESTIONS = JSON.parse(savedQuestions);
+          // If previous cache had fewer questions, re-prepare
+          if (QUESTIONS.length !== RAW_QUESTIONS.length) {
+            prepareAndJumbleQuestions();
+          }
+        } catch (e) {
+          prepareAndJumbleQuestions();
+        }
+      } else {
+        prepareAndJumbleQuestions();
+      }
+
+      // 2. Restore User Answers
+      const savedAnswers = localStorage.getItem(STORAGE_KEY_ANSWERS);
+      if (savedAnswers) {
+        try {
+          userAnswers = JSON.parse(savedAnswers);
+        } catch (e) {
+          userAnswers = {};
+        }
+      } else {
+        userAnswers = {};
+      }
+    }
+
+    // HTML ESCAPE HELPER TO PREVENT JSX TAGS LIKE <Pressable> FROM BEING SWALLOWED AS HTML
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return text;
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // RENDER QUESTIONS
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      const filtered = currentFilter === 'all' 
+        ? QUESTIONS 
+        : QUESTIONS.filter(q => q.level.toString() === currentFilter);
+
+      filtered.forEach((q) => {
+        const isAnswered = userAnswers[q.id] !== undefined;
+        const selectedOpt = userAnswers[q.id];
+        const isCorrect = isAnswered && selectedOpt === q.correct;
+
+        const card = document.createElement('div');
+        card.className = `question-card ${isAnswered ? 'answered-card' : ''}`;
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        const letters = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((optText, optIdx) => {
+          let optClass = 'option-btn';
+          if (isAnswered) {
+            if (optIdx === q.correct) {
+              optClass += ' correct-opt';
+            } else if (optIdx === selectedOpt) {
+              optClass += ' wrong-opt';
+            }
+          }
+
+          optionsHtml += `
+            <button 
+              class="${optClass}" 
+              ${isAnswered ? 'disabled' : ''} 
+              onclick="handleSelectOption(${q.id}, ${optIdx})"
+            >
+              <div class="opt-letter">${letters[optIdx]}</div>
+              <div>${escapeHtml(optText)}</div>
+            </button>
+          `;
+        });
+
+        let expHtml = '';
+        if (isAnswered) {
+          expHtml = `
+            <div class="explanation-box show ${isCorrect ? 'correct-exp' : 'wrong-exp'}">
+              <div class="exp-header">
+                ${isCorrect ? '✅ 100% Correct!' : '❌ Incorrect! Correct Answer: Option ' + letters[q.correct]}
+              </div>
+              <div><strong>Architecture Insight:</strong> ${escapeHtml(q.explanation)}</div>
+              <div class="exp-tenglish">🗣️ <strong>Tenglish:</strong> ${escapeHtml(q.tenglish)}</div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="card-meta">
+            <span class="q-number-pill">Question #${q.id}</span>
+            <span class="level-tag">${escapeHtml(q.topic)}</span>
+          </div>
+          <div class="question-title">${escapeHtml(q.question)}</div>
+          <div class="options-grid">${optionsHtml}</div>
+          <div id="exp-${q.id}">${expHtml}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateStats();
+    }
+
+    // HANDLE INSTANT OPTION SELECT & PERSIST TO LOCAL STORAGE
+    function handleSelectOption(qId, selectedIdx) {
+      if (userAnswers[qId] !== undefined) return;
+
+      userAnswers[qId] = selectedIdx;
+
+      try {
+        localStorage.setItem(STORAGE_KEY_ANSWERS, JSON.stringify(userAnswers));
+      } catch (e) {
+        console.warn('Failed to save answers', e);
+      }
+
+      renderQuiz();
+    }
+
+    // UPDATE STATS & PROGRESS BAR
+    function updateStats() {
+      const answeredKeys = Object.keys(userAnswers);
+      const totalAnswered = answeredKeys.length;
+      
+      let correctCount = 0;
+      answeredKeys.forEach(qId => {
+        const q = QUESTIONS.find(item => item.id === parseInt(qId));
+        if (q && userAnswers[qId] === q.correct) {
+          correctCount++;
+        }
+      });
+
+      const totalQuestions = QUESTIONS.length || 140;
+      const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      const progressPercent = Math.round((totalAnswered / totalQuestions) * 100);
+
+      document.getElementById('answeredCount').innerText = `${totalAnswered} / ${totalQuestions}`;
+      document.getElementById('scoreCount').innerText = `${correctCount}`;
+      document.getElementById('accuracyVal').innerText = `${accuracy}%`;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+      document.getElementById('floatingStatus').innerText = `${totalAnswered} of ${totalQuestions} Answered`;
+    }
+
+    // FILTER BY LEVEL
+    function filterLevel(lvl) {
+      currentFilter = lvl;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderQuiz();
+    }
+
+    // FINAL EVALUATION MODAL
+    function evaluateFinalScore() {
+      const answeredKeys = Object.keys(userAnswers);
+      let correctCount = 0;
+      const levelStats = {};
+
+      for (let i = 1; i <= 14; i++) {
+        levelStats[i] = { correct: 0, total: 10 };
+      }
+
+      QUESTIONS.forEach(q => {
+        if (userAnswers[q.id] === q.correct) {
+          correctCount++;
+          if (levelStats[q.level]) {
+            levelStats[q.level].correct++;
+          }
+        }
+      });
+
+      const totalQuestions = QUESTIONS.length || 140;
+      document.getElementById('finalScoreDisplay').innerText = `${correctCount} / ${totalQuestions}`;
+
+      // Rank Badges
+      const rankBadge = document.getElementById('rankBadge');
+      if (correctCount >= 126) {
+        rankBadge.innerText = '🏆 Principal Mobile Architect';
+        rankBadge.style.background = '#059669';
+        rankBadge.style.color = '#ffffff';
+      } else if (correctCount >= 110) {
+        rankBadge.innerText = '🥇 Senior React Native Engineer';
+        rankBadge.style.background = '#0284c7';
+        rankBadge.style.color = '#ffffff';
+      } else if (correctCount >= 95) {
+        rankBadge.innerText = '🥈 Mid-Level Mobile Developer';
+        rankBadge.style.background = '#d97706';
+        rankBadge.style.color = '#ffffff';
+      } else {
+        rankBadge.innerText = '📚 Junior Developer (Review Recommended)';
+        rankBadge.style.background = '#dc2626';
+        rankBadge.style.color = '#ffffff';
+      }
+
+      // Breakdown Grid
+      const grid = document.getElementById('breakdownGrid');
+      grid.innerHTML = '';
+      const levelNames = [
+        "",
+        "L1: Primitives & Flexbox",
+        "L2: Virtualized Lists",
+        "L3: Hooks & Memory",
+        "L4: Navigation & Focus",
+        "L5: Networking & Keystores",
+        "L6: Zustand & Global State",
+        "L7: Gestures & Reanimated 3",
+        "L8: Hardware & Haptics",
+        "L9: Performance & FlashList",
+        "L10: JSI, TurboModules & Fabric",
+        "L11: Push & Deep Links",
+        "L12: Offline & SQLite",
+        "L13: EAS Build & CI/CD",
+        "L14: OTA & CodePush"
+      ];
+
+      for (let i = 1; i <= 14; i++) {
+        const item = document.createElement('div');
+        item.className = 'level-breakdown-item';
+        item.innerHTML = `
+          <span>${levelNames[i]}</span>
+          <span>${levelStats[i].correct} / 10</span>
+        `;
+        grid.appendChild(item);
+      }
+
+      document.getElementById('evalModal').classList.add('open');
+    }
+
+    function closeModalAndReview() {
+      document.getElementById('evalModal').classList.remove('open');
+    }
+
+    function resetQuiz() {
+      if (confirm('Are you sure you want to reset all answers and reshuffle questions to start a completely fresh exam?')) {
+        try {
+          localStorage.removeItem('RN_MASTERCLASS_EXAM_ANSWERS_V5');
+          localStorage.removeItem('RN_MASTERCLASS_EXAM_QUESTIONS_V5');
+        } catch (e) {}
+
+        userAnswers = {};
+        document.getElementById('evalModal').classList.remove('open');
+        prepareAndJumbleQuestions();
+        renderQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // FILTER BAR HORIZONTAL NAVIGATION ARROWS & MOUSE WHEEL
+    function scrollFilterBar(offset) {
+      const container = document.getElementById('filterScrollContainer');
+      if (container) {
+        container.scrollBy({ left: offset, behavior: 'smooth' });
+      }
+    }
+
+    // Enable smooth mouse wheel horizontal scrolling over the filter bar
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('filterScrollContainer');
+      if (container) {
+        container.addEventListener('wheel', (evt) => {
+          if (evt.deltaY !== 0) {
+            evt.preventDefault();
+            container.scrollLeft += evt.deltaY;
+          }
+        }, { passive: false });
+      }
+    });
+
+    // INITIAL LOAD WITH LOCAL STORAGE PERSISTENCE RESTORATION
+    initOrRestoreExamState();
+    renderQuiz();
+  </script>
+</body>
+</html>
