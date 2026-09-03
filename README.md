@@ -43,7 +43,21 @@ Looking for a quick code reference across all 14 levels?
 
 ---
 
-## 🏆 Interactive 140-Question Grand Examination App
+## ⚡ Interactive JavaScript 100-Question Grand Examination (60-Min Timer)
+
+Looking to test your core and advanced JavaScript fundamentals?
+
+📂 **[`JavaScript_Masterclass_100_Quiz.html`](JavaScript_Masterclass_100_Quiz.html)**
+- ⏱️ **Live 60-Minute Countdown Timer** with persistent countdown state across browser reloads.
+- 🎯 **100 Comprehensive Questions** covering Phase 2 (Fundamentals Days 1–7) & Phase 3 (Advanced JS Chapters 1–7).
+- 🏷️ **14-Section Filter Bar** with smooth left/right navigation arrows and mouse-wheel scrolling.
+- 🎲 **Dynamic Fisher-Yates Randomization** for options and question order.
+- 🗣️ **Side-by-side Technical Explanations & Tenglish Insights**.
+- 📊 **Detailed 14-Section Evaluation Modal & Principal Architect Ranking**.
+
+---
+
+## 🏆 Interactive 140-Question React Native Grand Examination App
 
 This repository includes a fully offline, self-contained examination web application:
 

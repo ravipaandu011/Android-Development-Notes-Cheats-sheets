@@ -1,0 +1,2222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JavaScript Masterclass 100-Question Grand Examination (60-Min Timer)</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --primary: #0284c7;
+      --primary-light: #e0f2fe;
+      --success: #059669;
+      --success-light: #d1fae5;
+      --error: #dc2626;
+      --error-light: #fee2e2;
+      --amber: #d97706;
+      --amber-light: #fef3c7;
+      --border: #e2e8f0;
+      --card-shadow: 0 4px 14px rgba(0, 0, 0, 0.04);
+      --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-family);
+      line-height: 1.55;
+      padding-bottom: 90px;
+    }
+
+    /* STICKY SCORE & TIMER HEADER */
+    .sticky-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    }
+    .header-content {
+      max-width: 1200px; margin: 0 auto;
+      padding: 12px 20px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px;
+    }
+    .title-group h1 { font-size: 19px; font-weight: 800; color: var(--primary); }
+    .title-group p { font-size: 12px; color: var(--text-muted); }
+
+    .stats-dashboard { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .stat-badge {
+      background: #f1f5f9; border: 1px solid var(--border);
+      border-radius: 10px; padding: 6px 12px;
+      display: flex; flex-direction: column; align-items: center; min-width: 70px;
+    }
+    .stat-badge .label { font-size: 9.5px; text-transform: uppercase; font-weight: 700; color: var(--text-muted); }
+    .stat-badge .value { font-size: 15px; font-weight: 800; }
+    .timer-val { color: #2563eb; font-family: monospace; font-size: 16px; }
+    .timer-warning { color: #d97706 !important; animation: pulse 1s infinite; }
+    .timer-danger { color: #dc2626 !important; animation: pulse 0.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
+    .answered-val { color: var(--text-main); }
+    .score-val { color: var(--success); }
+
+    .progress-track { width: 100%; height: 5px; background: #e2e8f0; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #0284c7, #059669); transition: width 0.3s; }
+
+    /* FILTER BAR */
+    .filter-wrapper {
+      max-width: 1200px; margin: 14px auto 0;
+      padding: 0 16px; display: flex; align-items: center; gap: 8px;
+    }
+    .nav-arrow {
+      background: #ffffff; border: 1px solid var(--border);
+      border-radius: 8px; width: 34px; height: 34px;
+      font-size: 16px; font-weight: bold; color: var(--primary);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .nav-arrow:hover { background: var(--primary-light); border-color: var(--primary); }
+    .filter-scroll-container {
+      display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none;
+      padding: 4px 0; scroll-behavior: smooth;
+    }
+    .filter-scroll-container::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      white-space: nowrap; font-size: 11.5px; font-weight: 700;
+      padding: 6px 13px; border-radius: 9999px;
+      background: #f1f5f9; color: #475569;
+      border: 1px solid var(--border); cursor: pointer; transition: all 0.2s;
+    }
+    .filter-btn:hover { background: #e2e8f0; }
+    .filter-btn.active { background: var(--primary); color: #ffffff; border-color: var(--primary); }
+
+    /* QUIZ MAIN CONTAINER */
+    .quiz-container { max-width: 1000px; margin: 20px auto; padding: 0 16px; display: flex; flex-direction: column; gap: 20px; }
+
+    .question-card {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 22px;
+      box-shadow: var(--card-shadow); transition: transform 0.2s;
+    }
+    .question-card.answered-card { border-left: 4px solid var(--primary); }
+    .card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .q-number-pill { font-size: 11px; font-weight: 800; background: #e0f2fe; color: #0369a1; padding: 3px 9px; border-radius: 6px; }
+    .level-tag { font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px; }
+
+    .question-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 14px; line-height: 1.5; }
+    .question-title code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13.5px; color: #0369a1; }
+
+    .options-grid { display: grid; grid-template-columns: 1fr; gap: 9px; }
+    .option-btn {
+      text-align: left; background: #ffffff; border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 11px 15px;
+      font-size: 13.5px; color: #334155; cursor: pointer;
+      display: flex; align-items: flex-start; gap: 10px; transition: all 0.15s;
+    }
+    .option-btn:hover:not(:disabled) { border-color: var(--primary); background: #f8fafc; }
+    .option-btn .opt-letter {
+      background: #f1f5f9; border-radius: 6px; width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; flex-shrink: 0; color: #475569;
+    }
+
+    .option-btn.correct-opt { background: var(--success-light) !important; border-color: var(--success) !important; color: #065f46 !important; font-weight: 700; }
+    .option-btn.correct-opt .opt-letter { background: var(--success); color: #ffffff; }
+    .option-btn.wrong-opt { background: var(--error-light) !important; border-color: var(--error) !important; color: #991b1b !important; }
+    .option-btn.wrong-opt .opt-letter { background: var(--error); color: #ffffff; }
+
+    .explanation-box {
+      margin-top: 14px; padding: 12px 16px; border-radius: 10px;
+      font-size: 13px; line-height: 1.5; display: none;
+    }
+    .explanation-box.show { display: block; }
+    .explanation-box.correct-exp { background: #ecfdf5; border-left: 4px solid var(--success); color: #065f46; }
+    .explanation-box.wrong-exp { background: #fef2f2; border-left: 4px solid var(--error); color: #991b1b; }
+    .exp-header { font-weight: 800; margin-bottom: 4px; font-size: 13.5px; }
+    .exp-tenglish { margin-top: 6px; background: rgba(0,0,0,0.03); padding: 6px 10px; border-radius: 6px; font-size: 12.5px; }
+
+    /* FLOATING FINISH BAR */
+    .floating-finish-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: rgba(255, 255, 255, 0.97); backdrop-filter: blur(10px);
+      border-top: 1px solid var(--border);
+      padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+      max-width: 1000px; margin: 0 auto; border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06); z-index: 90;
+    }
+    .finish-btn {
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      color: #ffffff; border: none; border-radius: 10px;
+      padding: 10px 22px; font-size: 13.5px; font-weight: 800; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3); transition: all 0.2s;
+    }
+    .finish-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4); }
+
+    /* EVALUATION MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center;
+      z-index: 200; padding: 16px;
+    }
+    .modal-overlay.open { display: flex; }
+    .eval-modal {
+      background: #ffffff; border-radius: 18px; max-width: 680px; width: 100%;
+      max-height: 90vh; overflow-y: auto; padding: 28px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2); text-align: center;
+    }
+    .score-circle {
+      width: 110px; height: 110px; border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7, #059669);
+      color: #ffffff; margin: 16px auto; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; font-size: 26px; font-weight: 900;
+      box-shadow: 0 8px 24px rgba(2, 132, 199, 0.3);
+    }
+    .score-circle span { font-size: 11px; font-weight: 600; text-transform: uppercase; opacity: 0.9; }
+
+    .rank-badge {
+      display: inline-block; padding: 6px 18px; border-radius: 9999px;
+      font-size: 13px; font-weight: 800; margin-bottom: 20px;
+    }
+    .breakdown-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px; text-align: left; margin: 16px 0; font-size: 12px;
+    }
+    .breakdown-item {
+      background: #f8fafc; border: 1px solid var(--border);
+      padding: 8px 12px; border-radius: 8px; display: flex; justify-content: space-between; font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- STICKY SCORE & TIMER HEADER -->
+  <header class="sticky-header">
+    <div class="header-content">
+      <div class="title-group">
+        <h1>JavaScript Masterclass Exam ⚡</h1>
+        <p>100 Architecture & Core Questions (Fundamentals + Advanced JS)</p>
+      </div>
+
+      <div class="stats-dashboard">
+        <div class="stat-badge">
+          <div class="label">Time Left</div>
+          <div class="value timer-val" id="timerDisplay">60:00</div>
+        </div>
+
+        <div class="stat-badge">
+          <div class="label">Answered</div>
+          <div class="value answered-val" id="answeredCount">0 / 100</div>
+        </div>
+
+        <div class="stat-badge">
+          <div class="label">Score</div>
+          <div class="value score-val" id="scoreCount">0</div>
+        </div>
+
+        <div class="stat-badge">
+          <div class="label">Accuracy</div>
+          <div class="value" id="accuracyVal" style="color: #0284c7;">0%</div>
+        </div>
+
+        <button 
+          class="nav-arrow" 
+          style="width: auto; height: 38px; padding: 0 14px; border-radius: 10px; font-size: 11px; gap: 6px; background: #fff1f2; border-color: #fecdd3; color: #e11d48;" 
+          onclick="resetQuiz()" 
+          title="Reset All Answers & Timer"
+        >
+          <span>🔄</span> Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="progress-track">
+      <div class="progress-fill" id="progressBar"></div>
+    </div>
+  </header>
+
+  <!-- FILTER BUTTONS WITH NAVIGATION ARROWS -->
+  <div class="filter-wrapper">
+    <button class="nav-arrow" onclick="scrollFilterBar(-250)" title="Scroll Left">‹</button>
+    <div class="filter-scroll-container" id="filterScrollContainer">
+      <button class="filter-btn active" onclick="filterSection('all')">All Questions (100)</button>
+      <button class="filter-btn" onclick="filterSection('1')">Day 1: Variables & Types</button>
+      <button class="filter-btn" onclick="filterSection('2')">Day 2: Control Flow & Loops</button>
+      <button class="filter-btn" onclick="filterSection('3')">Day 3: Functions & Scope</button>
+      <button class="filter-btn" onclick="filterSection('4')">Day 4: Arrays & Mutations</button>
+      <button class="filter-btn" onclick="filterSection('5')">Day 5: Objects & Methods</button>
+      <button class="filter-btn" onclick="filterSection('6')">Day 6: ES6 Destructuring & Rest</button>
+      <button class="filter-btn" onclick="filterSection('7')">Day 7: Spread, Optional Chaining & ??</button>
+      <button class="filter-btn" onclick="filterSection('8')">Adv Ch 1: Execution & Callbacks</button>
+      <button class="filter-btn" onclick="filterSection('9')">Adv Ch 2: Map, Filter, Reduce, Sort</button>
+      <button class="filter-btn" onclick="filterSection('10')">Adv Ch 3: Promises & Async/Await</button>
+      <button class="filter-btn" onclick="filterSection('11')">Adv Ch 4: Fetch API & HTTP</button>
+      <button class="filter-btn" onclick="filterSection('12')">Adv Ch 5: Error Handling & Status</button>
+      <button class="filter-btn" onclick="filterSection('13')">Adv Ch 6: DOM & Event Handling</button>
+      <button class="filter-btn" onclick="filterSection('14')">Adv Ch 7: Local Storage & Modules</button>
+    </div>
+    <button class="nav-arrow" onclick="scrollFilterBar(250)" title="Scroll Right">›</button>
+  </div>
+
+  <!-- QUIZ CONTAINER -->
+  <main class="quiz-container" id="quizContainer">
+    <!-- Rendered via JS -->
+  </main>
+
+  <!-- FLOATING FINISH BAR -->
+  <div class="floating-finish-bar">
+    <span style="font-size: 13px; color: #64748b; font-weight: 600;" id="floatingStatus">0 of 100 Answered</span>
+    <button class="finish-btn" onclick="evaluateFinalScore()">Finish &amp; View Evaluation 📊</button>
+  </div>
+
+  <!-- EVALUATION MODAL -->
+  <div class="modal-overlay" id="evalModal">
+    <div class="eval-modal">
+      <h2>Grand JavaScript Evaluation Report 🎓</h2>
+      <p style="color: #64748b; font-size: 13px; margin-top: 4px;">Full-Stack JavaScript Mastery Assessment</p>
+
+      <div class="score-circle">
+        <div id="finalScoreDisplay">0 / 100</div>
+        <span>Total Score</span>
+      </div>
+
+      <div id="rankBadge" class="rank-badge">Evaluating...</div>
+      <p id="timeTakenDisplay" style="font-size: 12px; color: #64748b; margin-bottom: 14px;"></p>
+
+      <div class="breakdown-grid" id="breakdownGrid"></div>
+
+      <button 
+        class="finish-btn" 
+        style="width: 100%; margin-top: 16px;" 
+        onclick="closeModalAndReview()"
+      >
+        Close &amp; Review Explanations 🔍
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // ==========================================
+    // 100 MASTER JAVASCRIPT ARCHITECTURE QUESTIONS
+    // ==========================================
+    const RAW_QUESTIONS = [
+      // SECTION 1: DAY 1 — VARIABLES, DATA TYPES & OPERATORS (Q1 - Q7)
+      {
+        id: 1,
+        sectionId: 1,
+        topic: "Day 1: Variable Declarations",
+        question: "What happens when you access a `var` variable vs a `let` variable before its line of declaration?",
+        options: [
+          "`var` returns `undefined` due to hoisting, while `let` throws a `ReferenceError` because it resides in the Temporal Dead Zone (TDZ).",
+          "Both return `undefined`.",
+          "Both throw a fatal `SyntaxError`.",
+          "`let` returns `null` and `var` throws `TypeError`."
+        ],
+        correctAnswer: "`var` returns `undefined` due to hoisting, while `let` throws a `ReferenceError` because it resides in the Temporal Dead Zone (TDZ).",
+        explanation: "`var` variables are hoisted and initialized to `undefined`. `let` and `const` are hoisted without initialization, remaining inaccessible in the TDZ.",
+        tenglish: "`var` declare cheyakamundu access chesthe `undefined` isthundi. `let` access chesthe Temporal Dead Zone (TDZ) valla `ReferenceError` vasthundi."
+      },
+      {
+        id: 2,
+        sectionId: 1,
+        topic: "Day 1: Primitive vs Non-Primitive Types",
+        question: "Which of the following data types in JavaScript is mutable and passed by reference rather than by value?",
+        options: [
+          "Object (including Arrays and Functions)",
+          "Symbol",
+          "BigInt",
+          "String"
+        ],
+        correctAnswer: "Object (including Arrays and Functions)",
+        explanation: "Primitives (String, Number, BigInt, Boolean, Undefined, Symbol, Null) are immutable and stored by value. Objects and Arrays are stored on the memory heap and passed by memory reference.",
+        tenglish: "Primitive types value dwara pass avthayi (immutable). Objects & Arrays memory reference dwara pass avthayi (mutable)."
+      },
+      {
+        id: 3,
+        sectionId: 1,
+        topic: "Day 1: Strict vs Loose Equality",
+        question: "What will `console.log(0 == false)` and `console.log(0 === false)` output respectively?",
+        options: [
+          "`true` and `false`",
+          "`false` and `false`",
+          "`true` and `true`",
+          "`false` and `true`"
+        ],
+        correctAnswer: "`true` and `false`",
+        explanation: "`==` performs implicit type coercion converting `false` to `0` (`0 == 0` is `true`). `===` checks both value and type (`number` !== `boolean`), returning `false`.",
+        tenglish: "`==` type conversion chesi compare chesthundi (0 == 0 -> true). `===` type kooda check chesthundi (number !== boolean -> false)."
+      },
+      {
+        id: 4,
+        sectionId: 1,
+        topic: "Day 1: Type Coercion with `+` vs `-`",
+        question: "What is the output of `'5' + 3` and `'5' - 3` in JavaScript?",
+        options: [
+          "`'53'` (string) and `2` (number)",
+          "`8` and `2`",
+          "`'53'` and `'5-3'`",
+          "`NaN` and `2`"
+        ],
+        correctAnswer: "`'53'` (string) and `2` (number)",
+        explanation: "The `+` operator with a string triggers string concatenation (`'53'`). The `-` operator only exists for numeric subtraction, implicitly coercing `'5'` into `5` (`5 - 3 = 2`).",
+        tenglish: "`+` string unnapudu concatenation chesthundi ('53'). `-` number subtraction mathrame chesthundi kabatti string ni number ga convert chesi 2 isthundi."
+      },
+      {
+        id: 5,
+        sectionId: 1,
+        topic: "Day 1: Template Literals",
+        question: "Which feature of ES6 template literals allows embedding expressions and multi-line strings without newline escape characters (`\\n`)?",
+        options: [
+          "Backtick syntax (`` ` ``) with `${expression}` interpolation.",
+          "Single quotes (`'`) with `#{expression}` syntax.",
+          "Double quotes (`\"`) with `%s` placeholders.",
+          "Brackets (`[]`) with `@value` bindings."
+        ],
+        correctAnswer: "Backtick syntax (`` ` ``) with `${expression}` interpolation.",
+        explanation: "Backticks allow multi-line string creation and expression interpolation using `${}`.",
+        tenglish: "Backticks (`` ` ``) vadadam valla `\n` lekunda direct multi-line strings and `${}` dwara variables embed cheyochu."
+      },
+      {
+        id: 6,
+        sectionId: 1,
+        topic: "Day 1: Typeof Null Quirk",
+        question: "What does `typeof null` evaluate to in JavaScript?",
+        options: [
+          "`'object'` (a historical legacy quirk in JavaScript's type system)",
+          "`'null'`",
+          "`'undefined'`",
+          "`'boolean'`"
+        ],
+        correctAnswer: "`'object'` (a historical legacy quirk in JavaScript's type system)",
+        explanation: "In JavaScript's initial implementation, values were stored with a type tag. Null was represented as a NULL pointer (0x00), which matched the object type tag (0), returning `'object'`.",
+        tenglish: "`typeof null` anedhi JS historical bug valla `'object'` ani return chesthundi."
+      },
+      {
+        id: 7,
+        sectionId: 1,
+        topic: "Day 1: Logical AND/OR Short-Circuiting",
+        question: "What is the evaluation result of `'Hello' && 0 && 'World'` and `'' || 'Fallback'`?",
+        options: [
+          "`0` and `'Fallback'`",
+          "`'World'` and `''`",
+          "`true` and `true`",
+          "`undefined` and `'Fallback'`"
+        ],
+        correctAnswer: "`0` and `'Fallback'`",
+        explanation: "`&&` returns the first falsy value (`0`). `||` returns the first truthy value (`'Fallback'`).",
+        tenglish: "`&&` first kanipinchina falsy value `0` ni return chesthundi. `||` first kanipinchina truthy value `'Fallback'` ni return chesthundi."
+      },
+
+      // SECTION 2: DAY 2 — CONTROL FLOW & LOOPS (Q8 - Q14)
+      {
+        id: 8,
+        sectionId: 2,
+        topic: "Day 2: Ternary Operator",
+        question: "How is a nested ternary expression `status === 'admin' ? 'Full' : status === 'editor' ? 'Edit' : 'View'` evaluated?",
+        options: [
+          "Right-to-left associativity, checking conditions sequentially and returning the matching branch.",
+          "It throws a syntax error because ternary operators cannot be chained.",
+          "All branches are executed simultaneously.",
+          "It always returns the last value ('View')."
+        ],
+        correctAnswer: "Right-to-left associativity, checking conditions sequentially and returning the matching branch.",
+        explanation: "Conditional operators evaluate sequentially and are right-associative in JavaScript.",
+        tenglish: "Nested ternary right-to-left evaluate avthu, match ayina condition branch value ni return chesthundi."
+      },
+      {
+        id: 9,
+        sectionId: 2,
+        topic: "Day 2: Switch Statement Strict Equality",
+        question: "Why won't `case 5:` match in `switch (val)` if `val = '5'`?",
+        options: [
+          "Because `switch` statements use strict equality (`===`) comparison without type coercion.",
+          "Because `switch` only works on booleans.",
+          "Because `case` statements require curly braces.",
+          "Because strings cannot be evaluated in switch cases."
+        ],
+        correctAnswer: "Because `switch` statements use strict equality (`===`) comparison without type coercion.",
+        explanation: "`switch` performs strict `===` comparison, so string `'5'` !== number `5`.",
+        tenglish: "`switch` internal ga `===` (strict equality) vaduthundi, so string `'5'` number `5` tho match avvadu."
+      },
+      {
+        id: 10,
+        sectionId: 2,
+        topic: "Day 2: `break` vs `continue` in Loops",
+        question: "What is the difference between `break` and `continue` inside a `for` loop?",
+        options: [
+          "`break` terminates the entire loop immediately; `continue` skips the remaining code of the current iteration and jumps to the next iteration.",
+          "`break` pauses the loop for 1 second; `continue` restarts the loop from 0.",
+          "`continue` exits the loop; `break` skips one item.",
+          "`break` only works inside switch statements."
+        ],
+        correctAnswer: "`break` terminates the entire loop immediately; `continue` skips the remaining code of the current iteration and jumps to the next iteration.",
+        explanation: "`break` exits loop execution completely. `continue` skips remaining statements in the current cycle and steps to the update expression.",
+        tenglish: "`break` loop ni mottham aapesthundi. `continue` current iteration mathrame skip chesi next round ki velthundi."
+      },
+      {
+        id: 11,
+        sectionId: 2,
+        topic: "Day 2: `while` vs `do...while` Loop",
+        question: "When is a `do...while` loop guaranteed to execute its code block at least once?",
+        options: [
+          "Always, because the condition is evaluated at the end after the first execution.",
+          "Only when the initial condition is `true`.",
+          "Only when running in strict mode.",
+          "Only if the counter starts at 0."
+        ],
+        correctAnswer: "Always, because the condition is evaluated at the end after the first execution.",
+        explanation: "`do...while` is an exit-controlled loop; the body executes once before the condition is ever checked.",
+        tenglish: "`do...while` condition చివర్లో check chesthundi kabatti, condition `false` unna sare loop body కనీసం 1 time execute avthundi."
+      },
+      {
+        id: 12,
+        sectionId: 2,
+        topic: "Day 2: `for` Loop Variable Scope",
+        question: "What is the output of running `for (var i = 0; i < 3; i++) { setTimeout(() => console.log(i), 100); }`?",
+        options: [
+          "`3, 3, 3` (because `var` is function-scoped and shares a single binding across iterations)",
+          "`0, 1, 2`",
+          "`undefined, undefined, undefined`",
+          "`0, 0, 0`"
+        ],
+        correctAnswer: "`3, 3, 3` (because `var` is function-scoped and shares a single binding across iterations)",
+        explanation: "`var` creates a single shared variable in memory. When the callbacks run after 100ms, `i` has already incremented to `3`. Using `let` creates a new lexical binding per iteration (`0, 1, 2`).",
+        tenglish: "`var` function-scoped kabatti single memory share chesthundi (3, 3, 3). `let` vadithe prathi loop ki kotha block scope create ayi (0, 1, 2) vasthundi."
+      },
+      {
+        id: 13,
+        sectionId: 2,
+        topic: "Day 2: Falsy Values in JavaScript",
+        question: "Which of the following contains ONLY falsy values in JavaScript?",
+        options: [
+          "`false`, `0`, `\"\"`, `null`, `undefined`, `NaN`, `-0`, `0n`",
+          "`false`, `0`, `\"0\"`, `[]`, `{}`",
+          "`null`, `undefined`, `\"false\"`, `-1`",
+          "`0`, `\" \"`, `NaN`, `function(){}`"
+        ],
+        correctAnswer: "`false`, `0`, `\"\"`, `null`, `undefined`, `NaN`, `-0`, `0n`",
+        explanation: "Empty strings, `0`, `-0`, `0n`, `null`, `undefined`, `NaN`, and `false` are the only native falsy values. Non-empty strings like `'0'` and empty arrays/objects `[]`, `{}` are truthy.",
+        tenglish: "`false, 0, \"\", null, undefined, NaN` anni falsy values. Kaani `'0'`, `[]`, `{}` truthy values!"
+      },
+      {
+        id: 14,
+        sectionId: 2,
+        topic: "Day 2: Labeled Statements",
+        question: "What is the purpose of label identifiers with `break labelName;` in nested loops?",
+        options: [
+          "It allows breaking out of an outer parent loop directly from inside an inner nested loop.",
+          "It changes the loop counter variable name.",
+          "It speeds up execution by 50%.",
+          "It converts a while loop into a for loop."
+        ],
+        correctAnswer: "It allows breaking out of an outer parent loop directly from inside an inner nested loop.",
+        explanation: "Labels provide a target identifier allowing `break` or `continue` to reference outer loops directly.",
+        tenglish: "Nested loops lo lopala loop nunchi direct ga bayata unna parent loop ni break cheyadaniki loop labels vadatham."
+      },
+
+      // SECTION 3: DAY 3 — FUNCTIONS & SCOPE (Q15 - Q21)
+      {
+        id: 15,
+        sectionId: 3,
+        topic: "Day 3: Function Declarations vs Expressions",
+        question: "Why can a function declaration be called before its definition in code, but a function expression cannot?",
+        options: [
+          "Function declarations are hoisted with their entire body definition to the top of their scope.",
+          "Function expressions are compiled in Web Workers.",
+          "Function declarations run synchronously while expressions run asynchronously.",
+          "JavaScript ignores function expressions."
+        ],
+        correctAnswer: "Function declarations are hoisted with their entire body definition to the top of their scope.",
+        explanation: "Function declarations are hoisted along with their full function body. Function expressions assigned to `var/let/const` variables are hoisted as variables and cannot be invoked before assignment.",
+        tenglish: "Function declaration full body tho hoist avthundi (munde call cheyochu). Function expression variable lo untundi kabatti munde call chesthe error vasthundi."
+      },
+      {
+        id: 16,
+        sectionId: 3,
+        topic: "Day 3: Arrow Functions vs Regular Functions `this`",
+        question: "How do Arrow Functions handle the `this` keyword differently from regular functions?",
+        options: [
+          "Arrow functions do not have their own `this`; they lexically inherit `this` from the enclosing outer execution context.",
+          "Arrow functions always bind `this` to the global `window` object.",
+          "Arrow functions create a dynamic `this` based on how they are called.",
+          "Arrow functions throw an error if `this` is used inside them."
+        ],
+        correctAnswer: "Arrow functions do not have their own `this`; they lexically inherit `this` from the enclosing outer execution context.",
+        explanation: "Arrow functions have lexical `this` binding, meaning `this` retains the value from where the arrow function was defined.",
+        tenglish: "Arrow function ki sontha `this` undadu; surrounding outer scope nunchi `this` ni inherit theskuntundi (Lexical this)."
+      },
+      {
+        id: 17,
+        sectionId: 3,
+        topic: "Day 3: Implicit Return in Arrow Functions",
+        question: "Which of the following arrow functions correctly uses implicit return to return an object literal `{ id: 1 }`?",
+        options: [
+          "`() => ({ id: 1 })`",
+          "`() => { id: 1 }`",
+          "`() => { return: { id: 1 } }`",
+          "`() => [ id: 1 ]`"
+        ],
+        correctAnswer: "`() => ({ id: 1 })`",
+        explanation: "To return an object literal implicitly, wrap the curly braces in parentheses `({ id: 1 })`, otherwise JS interprets `{}` as a function body block.",
+        tenglish: "Arrow function lo object ni implicit return cheyalante `({ id: 1 })` parentheses lopalana wrap cheyali."
+      },
+      {
+        id: 18,
+        sectionId: 3,
+        topic: "Day 3: Rest Parameters vs Arguments Object",
+        question: "Why are ES6 Rest Parameters (`...args`) superior to the legacy `arguments` object in modern JavaScript?",
+        options: [
+          "`...args` produces a real JavaScript Array with array methods (`.map`, `.filter`), works in arrow functions, and captures only remaining arguments.",
+          "`arguments` is faster than arrays in all browsers.",
+          "`arguments` cannot be accessed in regular functions.",
+          "`...args` is limited to 3 arguments."
+        ],
+        correctAnswer: "`...args` produces a real JavaScript Array with array methods (`.map`, `.filter`), works in arrow functions, and captures only remaining arguments.",
+        explanation: "`arguments` is an array-like object lacking array methods and is unavailable in arrow functions. Rest parameters produce true arrays.",
+        tenglish: "`...args` real Array instance isthundi (so `.map()`, `.filter()` direct ga vaadochu), and arrow functions lo kooda pani chesthundi."
+      },
+      {
+        id: 19,
+        sectionId: 3,
+        topic: "Day 3: Default Parameter Evaluation",
+        question: "When are default function parameters evaluated in JavaScript?",
+        options: [
+          "At call time, only when the argument passed is explicitly `undefined` or omitted.",
+          "At compile time once for all calls.",
+          "Whenever the argument is falsy (including `0`, `\"\"`, `null`).",
+          "Only in strict mode."
+        ],
+        correctAnswer: "At call time, only when the argument passed is explicitly `undefined` or omitted.",
+        explanation: "Default parameters only trigger for `undefined` (or missing arguments). Passing `null`, `0`, or `false` will NOT trigger default values.",
+        tenglish: "Default parameter argument pass cheyakapoyina leda `undefined` pass chesina mathrame trigger avthundi. `null` pass chesthe trigger avvadu."
+      },
+      {
+        id: 20,
+        sectionId: 3,
+        topic: "Day 3: Scope Chain & Lexical Environment",
+        question: "What is the Scope Chain in JavaScript?",
+        options: [
+          "The hierarchical mechanism where JavaScript searches for a variable in the local scope, and if not found, travels upward through outer parent scopes to the global scope.",
+          "A chain of linked lists in the V8 garbage collector.",
+          "The sequence in which `setTimeout` callbacks run.",
+          "A method to connect multiple functions with the `.` operator."
+        ],
+        correctAnswer: "The hierarchical mechanism where JavaScript searches for a variable in the local scope, and if not found, travels upward through outer parent scopes to the global scope.",
+        explanation: "When resolving an identifier, JavaScript traverses the lexical environment chain outwards to global scope.",
+        tenglish: "Local scope lo variable lekapothe, parent outer scope loki, akkada kooda lekapothe global scope varaku vethike process ni Scope Chain antaru."
+      },
+      {
+        id: 21,
+        sectionId: 3,
+        topic: "Day 3: Closures",
+        question: "What is a Closure in JavaScript?",
+        options: [
+          "A function that retains access to variables from its outer lexical scope even after that outer parent function has finished executing.",
+          "A function that closes the browser window.",
+          "A method that prevents an object from being modified.",
+          "A tool to convert asynchronous code into synchronous code."
+        ],
+        correctAnswer: "A function that retains access to variables from its outer lexical scope even after that outer parent function has finished executing.",
+        explanation: "Closures bundle a function with its lexical environment references, preserving parent variables even after parent function return.",
+        tenglish: "Outer parent function execute aypoyi close ayina sare, inner function parent variables ni memory lo gurthupettukune capability ni Closure antaru."
+      },
+
+      // SECTION 4: DAY 4 — ARRAYS & MUTATIONS (Q22 - Q28)
+      {
+        id: 22,
+        sectionId: 4,
+        topic: "Day 4: Array Mutation vs Pure Methods",
+        question: "Which of the following groups contains ONLY mutating array methods (modify original array in place)?",
+        options: [
+          "`push()`, `pop()`, `shift()`, `unshift()`, `splice()`, `reverse()`, `sort()`",
+          "`map()`, `filter()`, `slice()`, `concat()`",
+          "`slice()`, `join()`, `reduce()`, `every()`",
+          "`find()`, `findIndex()`, `flat()`, `includes()`"
+        ],
+        correctAnswer: "`push()`, `pop()`, `shift()`, `unshift()`, `splice()`, `reverse()`, `sort()`",
+        explanation: "`push`, `pop`, `shift`, `unshift`, `splice`, `reverse`, `sort` mutate the original array. `slice`, `map`, `filter`, `concat` are non-mutating.",
+        tenglish: "`splice`, `sort`, `reverse`, `push`, `pop` original array ni direct ga marchivesthayi (Mutating). `slice`, `map`, `filter` kotha array return chesthayi."
+      },
+      {
+        id: 23,
+        sectionId: 4,
+        topic: "Day 4: `slice()` vs `splice()`",
+        question: "What is the key difference between `arr.slice(1, 3)` and `arr.splice(1, 3)`?",
+        options: [
+          "`slice()` returns a shallow copy without modifying the original array; `splice()` removes/replaces elements directly in the original array.",
+          "`slice()` mutates the original; `splice()` does not.",
+          "`splice()` only works on strings.",
+          "`slice()` takes no arguments."
+        ],
+        correctAnswer: "`slice()` returns a shallow copy without modifying the original array; `splice()` removes/replaces elements directly in the original array.",
+        explanation: "`slice(start, end)` is pure. `splice(start, deleteCount, ...items)` mutates the array in place and returns removed items.",
+        tenglish: "`slice()` original array ni muttuko-kunda copy thesthundhi. `splice()` original array nunchi items ni delete/replace chesthundi."
+      },
+      {
+        id: 24,
+        sectionId: 4,
+        topic: "Day 4: Array `length` Truncation",
+        question: "What happens when you set `arr.length = 0` on an existing array `let arr = [10, 20, 30]`?",
+        options: [
+          "It empties the array in-place, removing all elements and freeing memory.",
+          "It throws a TypeError because `length` is read-only.",
+          "It leaves the elements unchanged and only sets length to 0.",
+          "It fills the array with zeros `[0, 0, 0]`."
+        ],
+        correctAnswer: "It empties the array in-place, removing all elements and freeing memory.",
+        explanation: "Array `length` is writable. Setting it to `0` truncates and clears the array in-place.",
+        tenglish: "`arr.length = 0` set chesthe array lopala unna items anni direct ga delete aypoyi array empty aypothundi."
+      },
+      {
+        id: 25,
+        sectionId: 4,
+        topic: "Day 4: Finding Objects in Arrays",
+        question: "Why does `[{ id: 1 }].includes({ id: 1 })` return `false`?",
+        options: [
+          "Because `{ id: 1 }` inside `includes()` creates a new object at a distinct memory address, and `includes()` compares by reference equality (`===`).",
+          "Because `includes()` only searches for numbers.",
+          "Because object keys must be strings.",
+          "Because arrays cannot contain objects."
+        ],
+        correctAnswer: "Because `{ id: 1 }` inside `includes()` creates a new object at a distinct memory address, and `includes()` compares by reference equality (`===`).",
+        explanation: "Object comparison checks memory reference, not deep property equality. Use `.some(item => item.id === 1)` or `.find()` instead.",
+        tenglish: "Objects reference dwara compare avthayi. Rendu objects chudataniki oke laga unna memory addresses veru, so `includes()` false isthundi."
+      },
+      {
+        id: 26,
+        sectionId: 4,
+        topic: "Day 4: Array `indexOf` with NaN",
+        question: "What does `[NaN].indexOf(NaN)` and `[NaN].includes(NaN)` return in JavaScript?",
+        options: [
+          "`-1` and `true` (because `NaN !== NaN` in `===`, but `includes()` uses `SameValueZero` algorithm)",
+          "`0` and `true`",
+          "`-1` and `false`",
+          "`0` and `false`"
+        ],
+        correctAnswer: "`-1` and `true` (because `NaN !== NaN` in `===`, but `includes()` uses `SameValueZero` algorithm)",
+        explanation: "`indexOf()` uses strict `===` (`NaN === NaN` is false). `includes()` uses `SameValueZero` which correctly treats `NaN` as equal to `NaN`.",
+        tenglish: "`indexOf` strict `===` vadadam valla NaN ni vethakaledu (-1). `includes` SameValueZero vadadam valla NaN ni find chesthundi (true)."
+      },
+      {
+        id: 27,
+        sectionId: 4,
+        topic: "Day 4: Looping Arrays of Objects",
+        question: "How do you immutably update the price of product `id: 2` in an array of objects `products`?",
+        options: [
+          "`products.map(p => p.id === 2 ? { ...p, price: 999 } : p)`",
+          "`products.forEach(p => { if (p.id === 2) p.price = 999; })`",
+          "`products.filter(p => p.id === 2).price = 999`",
+          "`products.slice(2).price = 999`"
+        ],
+        correctAnswer: "`products.map(p => p.id === 2 ? { ...p, price: 999 } : p)`",
+        explanation: "`.map()` with object spread creates a new array with a new shallow object clone for the modified item, preserving immutability.",
+        tenglish: "Original array ni mutate cheyakunda immutable ga update cheyadaniki `.map()` + object spread (`{ ...p, price: 999 }`) vadatham."
+      },
+      {
+        id: 28,
+        sectionId: 4,
+        topic: "Day 4: `Array.isArray()` vs `typeof`",
+        question: "Why should you use `Array.isArray(arr)` instead of `typeof arr === 'object'` to verify arrays?",
+        options: [
+          "Because `typeof []` returns `'object'`, which cannot distinguish between plain objects, null, and arrays.",
+          "Because `typeof` crashes on arrays.",
+          "Because `Array.isArray()` works on numbers.",
+          "Because `typeof` is deprecated."
+        ],
+        correctAnswer: "Because `typeof []` returns `'object'`, which cannot distinguish between plain objects, null, and arrays.",
+        explanation: "In JavaScript, arrays and null are objects, making `typeof` insufficient. `Array.isArray()` reliably checks the internal `[[Class]]`.",
+        tenglish: "`typeof []` check chesthe `'object'` ani vasthundi (plain object ki array ki theda theliyadu). Anduke `Array.isArray()` vadali."
+      },
+
+      // SECTION 5: DAY 5 — OBJECTS & METHODS (Q29 - Q35)
+      {
+        id: 29,
+        sectionId: 5,
+        topic: "Day 5: Dot vs Bracket Notation",
+        question: "When is Bracket Notation (`obj[key]`) mandatory over Dot Notation (`obj.key`)?",
+        options: [
+          "When the property name is stored in a dynamic variable, contains spaces/hyphens (`'user-name'`), or is a number.",
+          "When accessing methods inside objects.",
+          "When the object has more than 5 properties.",
+          "Only in strict mode."
+        ],
+        correctAnswer: "When the property name is stored in a dynamic variable, contains spaces/hyphens (`'user-name'`), or is a number.",
+        explanation: "Dot notation requires valid JS identifiers. Dynamic variable keys or keys with hyphens/spaces require bracket notation.",
+        tenglish: "Property name variable lo unnapudu leda space/hyphen (`'user-name'`) unnapudu bracket notation `obj[key]` compulsory vadali."
+      },
+      {
+        id: 30,
+        sectionId: 5,
+        topic: "Day 5: `for...in` vs `for...of`",
+        question: "What does a `for...in` loop iterate over compared to a `for...of` loop?",
+        options: [
+          "`for...in` iterates over object enumerable keys (property names); `for...of` iterates over iterable values (Arrays, Strings, Sets, Maps).",
+          "`for...in` iterates over array values; `for...of` iterates over object keys.",
+          "Both are completely identical.",
+          "`for...of` only works on numbers."
+        ],
+        correctAnswer: "`for...in` iterates over object enumerable keys (property names); `for...of` iterates over iterable values (Arrays, Strings, Sets, Maps).",
+        explanation: "`for...in` traverses keys of objects. `for...of` traverses collection values of iterable structures.",
+        tenglish: "`for...in` objects యొక్క keys (property names) meeda loop avthundi. `for...of` arrays & strings యొక్క values meeda loop avthundi."
+      },
+      {
+        id: 31,
+        sectionId: 5,
+        topic: "Day 5: `Object.keys()`, `values()`, and `entries()`",
+        question: "What does `Object.entries({ a: 1, b: 2 })` return?",
+        options: [
+          "`[['a', 1], ['b', 2]]` (an array of `[key, value]` pairs)",
+          "`{ a: 1, b: 2 }`",
+          "`['a', 'b', 1, 2]`",
+          "`['a', 'b']`"
+        ],
+        correctAnswer: "`[['a', 1], ['b', 2]]` (an array of `[key, value]` pairs)",
+        explanation: "`Object.entries()` serializes an object into an array of key-value tuples, perfect for `for...of` iteration.",
+        tenglish: "`Object.entries()` object ni `[key, value]` pairs unna 2D array ga convert chesthundi: `[['a', 1], ['b', 2]]`."
+      },
+      {
+        id: 32,
+        sectionId: 5,
+        topic: "Day 5: Object Method Shorthand & `this`",
+        question: "What is logged when `user.greet()` is called on `const user = { name: 'Ravi', greet() { console.log(this.name); } }`?",
+        options: [
+          "`'Ravi'` (because `this` refers to `user` object when invoked as a method)",
+          "`undefined`",
+          "`window.name`",
+          "`TypeError`"
+        ],
+        correctAnswer: "`'Ravi'` (because `this` refers to `user` object when invoked as a method)",
+        explanation: "When a method is invoked with dot notation (`user.greet()`), `this` dynamically binds to the object to the left of the dot (`user`).",
+        tenglish: "`user.greet()` call chesinappudu dot కి ఎడమ వైపు unna `user` object `this` గా bind avthundi, so `'Ravi'` print avthundi."
+      },
+      {
+        id: 33,
+        sectionId: 5,
+        topic: "Day 5: `delete` Operator",
+        question: "What does the `delete obj.prop` operator do and what does it return?",
+        options: [
+          "It removes the property from the object in-place and returns `true` upon successful deletion.",
+          "It sets the property value to `null` and returns the deleted value.",
+          "It deletes the entire object from memory.",
+          "It marks the property as hidden."
+        ],
+        correctAnswer: "It removes the property from the object in-place and returns `true` upon successful deletion.",
+        explanation: "The `delete` operator deletes the own property key and value from the target object, returning a boolean.",
+        tenglish: "`delete obj.prop` object nunchi aa property ni completely remove chesi `true` return chesthundi."
+      },
+      {
+        id: 34,
+        sectionId: 5,
+        topic: "Day 5: Object Property Existence",
+        question: "How do you check if a property exists directly on an object without checking its prototype chain?",
+        options: [
+          "`Object.hasOwn(obj, 'prop')` or `obj.hasOwnProperty('prop')`",
+          "`'prop' in obj`",
+          "`obj.prop !== undefined`",
+          "`obj.includes('prop')`"
+        ],
+        correctAnswer: "`Object.hasOwn(obj, 'prop')` or `obj.hasOwnProperty('prop')`",
+        explanation: "`Object.hasOwn()` checks direct own properties only. The `in` operator checks both own properties and prototype inheritance chain.",
+        tenglish: "Prototype chain check cheyakunda direct ga object meedane property unda ani check cheyadaniki `Object.hasOwn(obj, 'prop')` vadali."
+      },
+      {
+        id: 35,
+        sectionId: 5,
+        topic: "Day 5: `Object.freeze()` vs `Object.seal()`",
+        question: "What is the difference between `Object.freeze(obj)` and `Object.seal(obj)`?",
+        options: [
+          "`freeze()` prevents adding, deleting, and modifying existing values; `seal()` prevents adding and deleting but allows modifying existing property values.",
+          "`seal()` prevents modifying values; `freeze()` allows modifications.",
+          "Both are identical.",
+          "`freeze()` converts objects into strings."
+        ],
+        correctAnswer: "`freeze()` prevents adding, deleting, and modifying existing values; `seal()` prevents adding and deleting but allows modifying existing property values.",
+        explanation: "`freeze()` makes an object completely immutable. `seal()` allows updating existing properties while blocking key additions/removals.",
+        tenglish: "`freeze()` properties ni modify cheyyanivvadu (100% locked). `seal()` unna properties ni modify cheyyanisthundi kaani kothavi add/delete cheyyanivvadu."
+      },
+
+      // SECTION 6: DAY 6 — ES6 DESTRUCTURING & REST (Q36 - Q42)
+      {
+        id: 36,
+        sectionId: 6,
+        topic: "Day 6: Object Destructuring with Renaming",
+        question: "How do you destructure property `user_name` from `user` and rename it to `name` with a fallback default value of `'Guest'`?",
+        options: [
+          "`const { user_name: name = 'Guest' } = user;`",
+          "`const { user_name as name = 'Guest' } = user;`",
+          "`const { name: user_name = 'Guest' } = user;`",
+          "`const { user_name -> name || 'Guest' } = user;`"
+        ],
+        correctAnswer: "`const { user_name: name = 'Guest' } = user;`",
+        explanation: "Syntax `{ originalProp: newAlias = defaultValue }` renames the extracted variable and provides fallback.",
+        tenglish: "`{ user_name: name = 'Guest' }` syntax vaadi property ni kotha name `name` ga rename chesi default value `'Guest'` ivvochu."
+      },
+      {
+        id: 37,
+        sectionId: 6,
+        topic: "Day 6: Array Destructuring with Skipping",
+        question: "How do you extract the 1st and 3rd elements from `const rgb = [255, 128, 0]` in a single line?",
+        options: [
+          "`const [r, , b] = rgb;`",
+          "`const [r, b] = rgb[0, 2];`",
+          "`const [r, skip, b] = rgb;`",
+          "`const [r, ...b] = rgb;`"
+        ],
+        correctAnswer: "`const [r, , b] = rgb;`",
+        explanation: "Using an empty comma separator `[r, , b]` skips index 1 during array destructuring.",
+        tenglish: "Array destructuring lo madhyalo unna item ni skip cheyadaniki empty comma `[r, , b]` vadatham."
+      },
+      {
+        id: 38,
+        sectionId: 6,
+        topic: "Day 6: Rest Operator in Destructuring",
+        question: "What will `const { a, ...others } = { a: 1, b: 2, c: 3 };` assign to `others`?",
+        options: [
+          "`{ b: 2, c: 3 }`",
+          "`[2, 3]`",
+          "`3`",
+          "`undefined`"
+        ],
+        correctAnswer: "`{ b: 2, c: 3 }`",
+        explanation: "The rest operator (`...`) gathers all remaining unmatched properties into a new object `{ b: 2, c: 3 }`.",
+        tenglish: "Rest operator `...others` migilina unna properties annitini kotha object `{ b: 2, c: 3 }` ga gather chesthundi."
+      },
+      {
+        id: 39,
+        sectionId: 6,
+        topic: "Day 6: Swapping Variables without Temp",
+        question: "How do you swap two variables `let a = 1, b = 2;` using ES6 array destructuring?",
+        options: [
+          "`[a, b] = [b, a];`",
+          "`a, b = b, a;`",
+          "`[a, b] = (b, a);`",
+          "`swap(a, b);`"
+        ],
+        correctAnswer: "`[a, b] = [b, a];`",
+        explanation: "`[a, b] = [b, a]` creates an array `[2, 1]` and immediately unpacks it into `a` and `b` simultaneously.",
+        tenglish: "Third variable lekunda variables swap cheyadaniki `[a, b] = [b, a]` array destructuring vadatham."
+      },
+      {
+        id: 40,
+        sectionId: 6,
+        topic: "Day 6: Nested Object Destructuring",
+        question: "Given `const user = { profile: { address: { city: 'Hyderabad' } } };`, how do you extract `city` directly?",
+        options: [
+          "`const { profile: { address: { city } } } = user;`",
+          "`const { city } = user.profile;`",
+          "`const [profile.address.city] = user;`",
+          "`const { address -> city } = user;`"
+        ],
+        correctAnswer: "`const { profile: { address: { city } } } = user;`",
+        explanation: "Nested destructuring mirrors the object hierarchy to extract deeply nested properties.",
+        tenglish: "Deep nested object lo unna property extract cheyadaniki `{ profile: { address: { city } } }` syntax vadatham."
+      },
+      {
+        id: 41,
+        sectionId: 6,
+        topic: "Day 6: Function Parameter Destructuring",
+        question: "What is the benefit of defining `function renderUser({ name, role = 'User' })`?",
+        options: [
+          "It extracts `name` and `role` directly from the incoming object parameter, allowing named arguments in any order with defaults.",
+          "It prevents the function from accepting objects.",
+          "It speeds up execution by skipping the stack.",
+          "It turns parameters into arrays."
+        ],
+        correctAnswer: "It extracts `name` and `role` directly from the incoming object parameter, allowing named arguments in any order with defaults.",
+        explanation: "Parameter destructuring unpacks object fields directly, providing clear named arguments and automatic default fallback.",
+        tenglish: "Function parameters lo destructuring vadithe, pass chese object nunchi direct ga values extract aypoyi defaults apply avthayi."
+      },
+      {
+        id: 42,
+        sectionId: 6,
+        topic: "Day 6: Rest Parameter Position Rule",
+        question: "Why does `function test(a, ...rest, b) {}` cause a `SyntaxError`?",
+        options: [
+          "Because the rest parameter must ALWAYS be the last parameter in a parameter list.",
+          "Because rest parameters only accept numbers.",
+          "Because `...rest` can only be used with arrays.",
+          "Because functions can have only 2 parameters."
+        ],
+        correctAnswer: "Because the rest parameter must ALWAYS be the last parameter in a parameter list.",
+        explanation: "A rest parameter gathers all remaining arguments and must strictly be the final item in the parameter list.",
+        tenglish: "Rest parameter `...rest` eppudu function parameter list lo చిట్టచివర (last) mathrame undali, madhyalo pedithe `SyntaxError` vasthundi."
+      },
+
+      // SECTION 7: DAY 7 — SPREAD, OPTIONAL CHAINING & ?? (Q43 - Q49)
+      {
+        id: 43,
+        sectionId: 7,
+        topic: "Day 7: Spread Operator Shallow Copy",
+        question: "What type of copy does `const clone = { ...original };` create?",
+        options: [
+          "A shallow copy (top-level properties are copied by value, but nested objects are still copied by memory reference).",
+          "A deep recursive clone of all nested objects.",
+          "A frozen immutable object.",
+          "A reference pointer to the original object."
+        ],
+        correctAnswer: "A shallow copy (top-level properties are copied by value, but nested objects are still copied by memory reference).",
+        explanation: "Spread `{ ...obj }` performs shallow copying. Nested objects inside still point to identical memory addresses.",
+        tenglish: "Spread operator `{ ...original }` shallow copy chesthundi; lopala unna nested objects memory reference mathrame copy avthundi."
+      },
+      {
+        id: 44,
+        sectionId: 7,
+        topic: "Day 7: Real Deep Cloning",
+        question: "Which modern native JavaScript API creates a true, deep recursive clone of complex nested objects without JSON stringification limitations?",
+        options: [
+          "`structuredClone(obj)`",
+          "`Object.assign({}, obj)`",
+          "`{ ...obj }`",
+          "`JSON.stringify(obj)`"
+        ],
+        correctAnswer: "`structuredClone(obj)`",
+        explanation: "`structuredClone()` is the native JS standard for deep cloning objects, circular references, Maps, Sets, and Dates.",
+        tenglish: "Modern JS lo 100% true deep copy cheyadaniki native `structuredClone(obj)` vadatham."
+      },
+      {
+        id: 45,
+        sectionId: 7,
+        topic: "Day 7: Nullish Coalescing (`??`) vs Logical OR (`||`)",
+        question: "What is the output of `0 || 100` and `0 ?? 100`?",
+        options: [
+          "`100` and `0`",
+          "`0` and `100`",
+          "`100` and `100`",
+          "`0` and `0`"
+        ],
+        correctAnswer: "`100` and `0`",
+        explanation: "`||` checks for any falsy value (`0` is falsy -> returns `100`). `??` checks strictly for nullish values (`null` or `undefined`), preserving `0` and `\"\"`.",
+        tenglish: "`||` falsy values (`0`, `\"\"`) ni skip chesi 100 isthundi. `??` strictly `null` and `undefined` unnapudu mathrame fallback isthundi, so `0` safe ga retain avthundi."
+      },
+      {
+        id: 46,
+        sectionId: 7,
+        topic: "Day 7: Optional Chaining (`?.`)",
+        question: "What does `user?.address?.city` return if `user.address` is `undefined`?",
+        options: [
+          "`undefined` (short-circuits gracefully without throwing a TypeError: Cannot read property of undefined)",
+          "Throws a fatal `TypeError`",
+          "`null`",
+          "`\"\"`"
+        ],
+        correctAnswer: "`undefined` (short-circuits gracefully without throwing a TypeError: Cannot read property of undefined)",
+        explanation: "Optional chaining `?.` short-circuits evaluation and immediately returns `undefined` if the reference is `null` or `undefined`.",
+        tenglish: "Optional chaining `?.` mundu unna value `null/undefined` aithe app crash avvakunda silent ga `undefined` return chesthundi."
+      },
+      {
+        id: 47,
+        sectionId: 7,
+        topic: "Day 7: Optional Chaining with Functions",
+        question: "How do you safely invoke an optional callback function `onSuccess` only if it is passed by the caller?",
+        options: [
+          "`onSuccess?.(data);`",
+          "`onSuccess?();`",
+          "`call(onSuccess, data);`",
+          "`onSuccess.call?.(data);`"
+        ],
+        correctAnswer: "`onSuccess?.(data);`",
+        explanation: "`onSuccess?.(data)` evaluates if `onSuccess` is not nullish before executing it as a function.",
+        tenglish: "Callback function pass aithe ne run avvadaniki `onSuccess?.(data)` optional chaining syntax vadatham."
+      },
+      {
+        id: 48,
+        sectionId: 7,
+        topic: "Day 7: Enhanced Object Literals",
+        question: "Which of the following demonstrates all 3 ES6 Enhanced Object Literal features (shorthand property, method definition, computed key)?",
+        options: [
+          "`const obj = { name, greet() {}, [prefix + 'id']: 101 };`",
+          "`const obj = { name: name, greet: function() {} };`",
+          "`const obj = { [name]: 'name' };`",
+          "`const obj = { new: () => {} };`"
+        ],
+        correctAnswer: "`const obj = { name, greet() {}, [prefix + 'id']: 101 };`",
+        explanation: "ES6 introduced: 1. Property shorthand (`name`), 2. Method shorthand (`greet() {}`), and 3. Computed dynamic keys (`[key]: value`).",
+        tenglish: "Enhanced Object Literals: 1. `name` (shorthand), 2. `greet() {}` (method shorthand), 3. `[prefix + 'id']` (dynamic computed key)."
+      },
+      {
+        id: 49,
+        sectionId: 7,
+        topic: "Day 7: Combining `?.` and `??`",
+        question: "What will `const city = user?.address?.city ?? 'Unknown';` evaluate to if `user = { address: null }`?",
+        options: [
+          "`'Unknown'`",
+          "`null`",
+          "`undefined`",
+          "Throws `TypeError`"
+        ],
+        correctAnswer: "`'Unknown'`",
+        explanation: "`user?.address?.city` evaluates safely to `undefined`, which triggers the nullish coalescing fallback to `'Unknown'`.",
+        tenglish: "`user?.address?.city` safe ga `undefined` isthundi, daniki `??` fallback check chesi `'Unknown'` assign chesthundi."
+      },
+
+      // SECTION 8: ADV CHAPTER 1 — EXECUTION & CALLBACKS (Q50 - Q56)
+      {
+        id: 50,
+        sectionId: 8,
+        topic: "Adv Ch 1: JavaScript Execution Context",
+        question: "What are the two distinct phases of a JavaScript Execution Context?",
+        options: [
+          "Memory Creation Phase (allocates memory for variables/functions) and Code Execution Phase (executes line-by-line).",
+          "Compilation Phase and Garbage Collection Phase.",
+          "Synchronous Phase and Asynchronous Phase.",
+          "Call Stack Phase and Web API Phase."
+        ],
+        correctAnswer: "Memory Creation Phase (allocates memory for variables/functions) and Code Execution Phase (executes line-by-line).",
+        explanation: "JS Engine executes in 2 steps: 1. Memory Creation (Hoisting declarations), 2. Code Execution (assigning values & executing operations).",
+        tenglish: "JS Execution Context 2 phases lo pani chesthundi: 1. Memory Creation (variables ki memory allocate cheyadam), 2. Code Execution (line by line execute cheyadam)."
+      },
+      {
+        id: 51,
+        sectionId: 8,
+        topic: "Adv Ch 1: Call Stack Architecture",
+        question: "What data structure does the JavaScript engine use to keep track of active execution contexts?",
+        options: [
+          "Call Stack (LIFO: Last-In, First-Out)",
+          "Queue (FIFO: First-In, First-Out)",
+          "Binary Heap",
+          "Hash Map"
+        ],
+        correctAnswer: "Call Stack (LIFO: Last-In, First-Out)",
+        explanation: "The JavaScript Call Stack manages execution contexts using LIFO (Last-In-First-Out) principle.",
+        tenglish: "Function calls track cheyadaniki JS engine Call Stack (LIFO: Last In First Out) vaduthundi."
+      },
+      {
+        id: 52,
+        sectionId: 8,
+        topic: "Adv Ch 1: What is a Callback Function?",
+        question: "What is a Callback Function in JavaScript?",
+        options: [
+          "A function passed as an argument to another function, intended to be executed at a later time or after an event.",
+          "A function that calls the server directly.",
+          "A function that reverses an array.",
+          "A function that only runs in background threads."
+        ],
+        correctAnswer: "A function passed as an argument to another function, intended to be executed at a later time or after an event.",
+        explanation: "Callbacks are functions passed into higher-order functions to be called synchronously or asynchronously.",
+        tenglish: "Oka function ki inko function ni argument ga pampinchi, tharvatha execute cheyisthe daanini Callback function antaru."
+      },
+      {
+        id: 53,
+        sectionId: 8,
+        topic: "Adv Ch 1: Synchronous vs Asynchronous Callbacks",
+        question: "Which of the following is an example of a synchronous callback vs an asynchronous callback?",
+        options: [
+          "`[1, 2].map(x => x * 2)` (Synchronous) vs `setTimeout(() => {}, 1000)` (Asynchronous)",
+          "`fetch()` (Synchronous) vs `forEach()` (Asynchronous)",
+          "All callbacks in JavaScript are strictly asynchronous.",
+          "All callbacks in JavaScript are strictly synchronous."
+        ],
+        correctAnswer: "`[1, 2].map(x => x * 2)` (Synchronous) vs `setTimeout(() => {}, 1000)` (Asynchronous)",
+        explanation: "Array methods like `.map()` execute callbacks immediately in the Call Stack. Timers and fetch use Web APIs and the Task Queue.",
+        tenglish: "`.map()` callback synchronous ga ventane execute avthundi. `setTimeout()` callback asynchronous ga Web API timer tharvatha queue loki velthundi."
+      },
+      {
+        id: 54,
+        sectionId: 8,
+        topic: "Adv Ch 1: Event Loop Mechanism",
+        question: "What is the primary role of the JavaScript Event Loop?",
+        options: [
+          "It continuously monitors the Call Stack, and if the Call Stack is empty, pushes pending callbacks from the Task Queue to the Call Stack.",
+          "It allocates memory on the heap.",
+          "It parses HTML DOM elements into CSS.",
+          "It stops infinite loops automatically."
+        ],
+        correctAnswer: "It continuously monitors the Call Stack, and if the Call Stack is empty, pushes pending callbacks from the Task Queue to the Call Stack.",
+        explanation: "The Event Loop bridges the Task/Microtask Queue and the Call Stack when the Call Stack becomes clear.",
+        tenglish: "Event Loop Call Stack empty ga undo ledo check chesthu, Task Queue lo unna callback functions ni Call Stack loki push chesthundi."
+      },
+      {
+        id: 55,
+        sectionId: 8,
+        topic: "Adv Ch 1: Callback Hell (Pyramid of Doom)",
+        question: "What is 'Callback Hell' in JavaScript and how does it manifest?",
+        options: [
+          "Deeply nested, unreadable callback functions inside callback functions that make error handling and code maintenance extremely difficult.",
+          "A memory leak caused by too many event listeners.",
+          "When a callback throws an unhandled syntax error.",
+          "When the call stack overflows."
+        ],
+        correctAnswer: "Deeply nested, unreadable callback functions inside callback functions that make error handling and code maintenance extremely difficult.",
+        explanation: "Callback Hell refers to heavily nested pyramids of async callbacks (`})})})`), solved by Promises and Async/Await.",
+        tenglish: "Asynchronous calls okadani lopala inkokati deeply nest chesi code pyramid laga maripoyi maintain cheyadam kashtam avvadam (Callback Hell)."
+      },
+      {
+        id: 56,
+        sectionId: 8,
+        topic: "Adv Ch 1: Microtask vs Macrotask Queue Priority",
+        question: "In what order will the following execute: `console.log('1')`, `setTimeout(() => console.log('2'), 0)`, `Promise.resolve().then(() => console.log('3'))`?",
+        options: [
+          "`1, 3, 2` (Synchronous -> Microtask -> Macrotask)",
+          "`1, 2, 3`",
+          "`3, 1, 2`",
+          "`2, 3, 1`"
+        ],
+        correctAnswer: "`1, 3, 2` (Synchronous -> Microtask -> Macrotask)",
+        explanation: "Synchronous code runs first (`1`). Promise `.then()` enters the high-priority Microtask Queue (`3`). `setTimeout` enters the Macrotask Queue (`2`).",
+        tenglish: "Call Stack synchronous code first run chesthundi (1). Microtask Queue (Promise) mundu run avthundi (3). Macrotask Queue (setTimeout) last lo run avthundi (2)."
+      },
+
+      // SECTION 9: ADV CHAPTER 2 — ARRAY METHODS (Q57 - Q64)
+      {
+        id: 57,
+        sectionId: 9,
+        topic: "Adv Ch 2: `forEach()` vs `map()`",
+        question: "What is the key return value difference between `arr.forEach()` and `arr.map()`?",
+        options: [
+          "`forEach()` always returns `undefined` and is used for side-effects; `map()` returns a brand new transformed array of identical length.",
+          "`forEach()` returns a new array; `map()` returns `undefined`.",
+          "Both return the modified original array.",
+          "`map()` filters out items while `forEach()` does not."
+        ],
+        correctAnswer: "`forEach()` always returns `undefined` and is used for side-effects; `map()` returns a brand new transformed array of identical length.",
+        explanation: "`.map()` is a pure transformation method returning a new array. `forEach()` performs side-effects and returns `undefined`.",
+        tenglish: "`forEach()` eppudu `undefined` return chesthundi (side-effects kosam). `map()` transform chesina kotha array ni return chesthundi."
+      },
+      {
+        id: 58,
+        sectionId: 9,
+        topic: "Adv Ch 2: `filter()` vs `find()`",
+        question: "What is the return value of `filter()` vs `find()` when searching an array?",
+        options: [
+          "`filter()` returns an Array of all matching elements (or `[]`); `find()` returns the first matching Element value (or `undefined`).",
+          "`filter()` returns a single boolean; `find()` returns an array.",
+          "`find()` returns the index number; `filter()` returns the value.",
+          "Both return an array of all matches."
+        ],
+        correctAnswer: "`filter()` returns an Array of all matching elements (or `[]`); `find()` returns the first matching Element value (or `undefined`).",
+        explanation: "`filter()` collects all matching items into a new array. `find()` short-circuits and returns only the first item.",
+        tenglish: "`filter()` match ayina anni elements ni kotha Array lo return chesthundi. `find()` first match ayina single element value ni return chesthundi."
+      },
+      {
+        id: 59,
+        sectionId: 9,
+        topic: "Adv Ch 2: `findIndex()` vs `indexOf()`",
+        question: "Why would you use `findIndex()` instead of `indexOf()`?",
+        options: [
+          "`findIndex()` takes a predicate callback function, allowing complex condition checks like finding an object by property (`x => x.id === 5`).",
+          "`indexOf()` only works on numbers.",
+          "`findIndex()` is 100x faster.",
+          "`indexOf()` mutates the array."
+        ],
+        correctAnswer: "`findIndex()` takes a predicate callback function, allowing complex condition checks like finding an object by property (`x => x.id === 5`).",
+        explanation: "`indexOf()` checks simple primitive values by `===`. `findIndex()` executes custom condition callbacks.",
+        tenglish: "`findIndex()` predicate callback `x => x.id === 5` teesukoni objects unna array lo index ni find cheyagaladhu."
+      },
+      {
+        id: 60,
+        sectionId: 9,
+        topic: "Adv Ch 2: `some()` vs `every()`",
+        question: "What do `arr.some()` and `arr.every()` return?",
+        options: [
+          "Boolean (`true`/`false`): `some()` returns `true` if at least 1 element matches; `every()` returns `true` only if all elements match.",
+          "They return the matched elements.",
+          "They return the count of matching items.",
+          "They return new filtered arrays."
+        ],
+        correctAnswer: "Boolean (`true`/`false`): `some()` returns `true` if at least 1 element matches; `every()` returns `true` only if all elements match.",
+        explanation: "Both return booleans. `some()` checks for any existence (logical OR); `every()` checks universal validity (logical AND).",
+        tenglish: "`some()` okka item match aina `true` isthundi. `every()` array loni anni items match aithe ne `true` isthundi."
+      },
+      {
+        id: 61,
+        sectionId: 9,
+        topic: "Adv Ch 2: `reduce()` Architecture",
+        question: "How does `arr.reduce((acc, curr) => acc + curr.price, 0)` calculate the total sum?",
+        options: [
+          "It starts with initial value `0` as accumulator `acc`, iterates through each element adding `curr.price`, and returns the final accumulated scalar.",
+          "It splits the array into two halves.",
+          "It filters elements whose price is 0.",
+          "It mutates the array into a number."
+        ],
+        correctAnswer: "It starts with initial value `0` as accumulator `acc`, iterates through each element adding `curr.price`, and returns the final accumulated scalar.",
+        explanation: "`reduce()` folds an array into a single accumulated result using an accumulator and an optional initial value.",
+        tenglish: "`reduce()` initial value `0` tho start ayi prathi item price ni accumulator `acc` ki add chesthu single total value ni isthundi."
+      },
+      {
+        id: 62,
+        sectionId: 9,
+        topic: "Adv Ch 2: `sort()` Lexicographical Gotcha",
+        question: "Why does `[10, 5, 100, 2].sort()` produce `[10, 100, 2, 5]` by default?",
+        options: [
+          "Because default `sort()` converts elements to strings and compares their UTF-16 character codes lexicographically.",
+          "Because the array is corrupted.",
+          "Because numbers must be under 10.",
+          "Because `sort()` is an async operation."
+        ],
+        correctAnswer: "Because default `sort()` converts elements to strings and compares their UTF-16 character codes lexicographically.",
+        explanation: "Without a comparator function `(a, b) => a - b`, `sort()` casts numbers to strings (`'10'`, `'100'`, `'2'`, `'5'`).",
+        tenglish: "Default `sort()` numbers ni strings ga marchi alphabetical ga sort chesthundi. Numeric sort kosam `(a, b) => a - b` comparator rayali."
+      },
+      {
+        id: 63,
+        sectionId: 9,
+        topic: "Adv Ch 2: Numeric Comparator in `sort()`",
+        question: "How do you sort an array of numbers in descending numerical order (highest to lowest)?",
+        options: [
+          "`arr.sort((a, b) => b - a)`",
+          "`arr.sort((a, b) => a - b)`",
+          "`arr.sort().reverse()`",
+          "`arr.sort(descending)`"
+        ],
+        correctAnswer: "`arr.sort((a, b) => b - a)`",
+        explanation: "When `b - a > 0`, `b` is sorted before `a`, resulting in descending numerical order.",
+        tenglish: "Numbers ni descending order (peddadi nunchi chinnadi) sort cheyadaniki `arr.sort((a, b) => b - a)` vadali."
+      },
+      {
+        id: 64,
+        sectionId: 9,
+        topic: "Adv Ch 2: Grouping Data with `reduce()`",
+        question: "What structure can `reduce()` create when grouping an array of users by their `role`?",
+        options: [
+          "An object where keys are roles and values are arrays of user objects `{ admin: [...], user: [...] }`.",
+          "Only a single string.",
+          "Only a number.",
+          "A set of booleans."
+        ],
+        correctAnswer: "An object where keys are roles and values are arrays of user objects `{ admin: [...], user: [...] }`.",
+        explanation: "`reduce()` with an initial `{}` can group items into a dictionary object with grouped array values.",
+        tenglish: "`reduce()` tho initial value `{}` petti items ni categories/roles ga `{ admin: [...], user: [...] }` group cheyochu."
+      },
+
+      // SECTION 10: ADV CHAPTER 3 — PROMISES & ASYNC/AWAIT (Q65 - Q72)
+      {
+        id: 65,
+        sectionId: 10,
+        topic: "Adv Ch 3: The 3 Promise States",
+        question: "What are the three mutually exclusive states a JavaScript Promise can exist in?",
+        options: [
+          "`pending`, `fulfilled` (resolved), and `rejected`",
+          "`starting`, `running`, and `completed`",
+          "`waiting`, `successful`, and `error`",
+          "`idle`, `loading`, and `success`"
+        ],
+        correctAnswer: "`pending`, `fulfilled` (resolved), and `rejected`",
+        explanation: "A Promise starts as `pending` and settles into either `fulfilled` (with a value) or `rejected` (with a reason). Once settled, it cannot change.",
+        tenglish: "Promise 3 states lo untundi: `pending` (wait chesthundhi), `fulfilled` (success), `rejected` (failed)."
+      },
+      {
+        id: 66,
+        sectionId: 10,
+        topic: "Adv Ch 3: Promise Chaining",
+        question: "How is data passed from one `.then()` block to the next in a Promise chain?",
+        options: [
+          "Whatever value is returned from the previous `.then()` callback becomes the input argument to the next `.then()` callback.",
+          "Values are stored in a global variable automatically.",
+          "Each `.then()` reads directly from the original promise constructor.",
+          "Data cannot be passed between `.then()` blocks."
+        ],
+        correctAnswer: "Whatever value is returned from the previous `.then()` callback becomes the input argument to the next `.then()` callback.",
+        explanation: "Returning a value or promise from a `.then()` handler resolves the new promise returned by `.then()`, passing it downstream.",
+        tenglish: "Oka `.then()` lo `return` chesina value next `.then(data => ...)` ki argument ga pass avthundi (Promise chaining)."
+      },
+      {
+        id: 67,
+        sectionId: 10,
+        topic: "Adv Ch 3: `async` Function Return Value",
+        question: "What does an `async function getData() { return 42; }` always return when invoked?",
+        options: [
+          "A Promise that resolves with `42` (`Promise.resolve(42)`).",
+          "The raw primitive number `42`.",
+          "`undefined`",
+          "A callback function."
+        ],
+        correctAnswer: "A Promise that resolves with `42` (`Promise.resolve(42)`).",
+        explanation: "Functions marked `async` automatically wrap their return values inside a resolved Promise.",
+        tenglish: "`async` keyword unna function eppudu Promise ni return chesthundi (`Promise.resolve(42)`)."
+      },
+      {
+        id: 68,
+        sectionId: 10,
+        topic: "Adv Ch 3: The `await` Keyword Rule",
+        question: "What does the `await` keyword do inside an async function?",
+        options: [
+          "It pauses the execution of the async function until the Promise settles, returning the resolved value without blocking the main browser thread.",
+          "It freezes the entire operating system.",
+          "It forces code to run inside a Web Worker.",
+          "It converts a rejected promise into null."
+        ],
+        correctAnswer: "It pauses the execution of the async function until the Promise settles, returning the resolved value without blocking the main browser thread.",
+        explanation: "`await` non-blockingly pauses async function execution until the promise fulfills, then resumes with the resolved value.",
+        tenglish: "`await` Promise resolve ayye varaku aa async function execution ni non-blocking ga pause chesi resolved value ni isthundi."
+      },
+      {
+        id: 69,
+        sectionId: 10,
+        topic: "Adv Ch 3: `Promise.all()` Fail-Fast Nature",
+        question: "What happens in `Promise.all([p1, p2, p3])` if `p2` rejects?",
+        options: [
+          "The entire `Promise.all()` immediately rejects with `p2`'s error (Fail-Fast behavior), ignoring other pending promises.",
+          "It waits for `p1` and `p3` and returns an array with null for `p2`.",
+          "It retries `p2` three times.",
+          "It returns an empty array."
+        ],
+        correctAnswer: "The entire `Promise.all()` immediately rejects with `p2`'s error (Fail-Fast behavior), ignoring other pending promises.",
+        explanation: "`Promise.all()` rejects immediately upon the first rejection. Use `Promise.allSettled()` if you want all outcomes regardless of failure.",
+        tenglish: "`Promise.all()` lo okka promise reject aina mottham reject aypothundi (Fail-Fast). Anni results kavali ante `Promise.allSettled()` vadali."
+      },
+      {
+        id: 70,
+        sectionId: 10,
+        topic: "Adv Ch 3: `Promise.allSettled()`",
+        question: "What does `Promise.allSettled([p1, p2])` return?",
+        options: [
+          "An array of objects describing the outcome of every promise: `[{ status: 'fulfilled', value }, { status: 'rejected', reason }]`.",
+          "Only the fulfilled values.",
+          "A single boolean.",
+          "`undefined`"
+        ],
+        correctAnswer: "An array of objects describing the outcome of every promise: `[{ status: 'fulfilled', value }, { status: 'rejected', reason }]`.",
+        explanation: "`allSettled()` never rejects; it waits for all promises to finish and provides status objects for each.",
+        tenglish: "`Promise.allSettled()` eppudu fail avvadu; anni promises complete ayyaka `status: 'fulfilled'` leda `'rejected'` array isthundi."
+      },
+      {
+        id: 71,
+        sectionId: 10,
+        topic: "Adv Ch 3: `Promise.race()` vs `Promise.any()`",
+        question: "What is the difference between `Promise.race()` and `Promise.any()`?",
+        options: [
+          "`race()` settles with the first promise that settles (whether fulfilled or rejected); `any()` waits for the first FULFILLED promise (ignoring rejections).",
+          "`race()` only checks rejections; `any()` checks fulfillment.",
+          "Both are identical.",
+          "`any()` returns an array of all promises."
+        ],
+        correctAnswer: "`race()` settles with the first promise that settles (whether fulfilled or rejected); `any()` waits for the first FULFILLED promise (ignoring rejections).",
+        explanation: "`race()` settles with the fastest promise (success or fail). `any()` settles with the fastest successful promise.",
+        tenglish: "`race()` evaru mundu settle aithe (success or fail) daanini theskuntundi. `any()` first FULFILLED (success) ayina daanini mathrame theskuntundi."
+      },
+      {
+        id: 72,
+        sectionId: 10,
+        topic: "Adv Ch 3: Error Handling in Async/Await",
+        question: "How do you handle promise rejections when using `async/await` syntax?",
+        options: [
+          "Wrap the `await` expression inside a `try...catch` block.",
+          "Use a `.catch()` method on the async function keyword.",
+          "Async/await handles errors automatically without code.",
+          "Use an `if/else` statement."
+        ],
+        correctAnswer: "Wrap the `await` expression inside a `try...catch` block.",
+        explanation: "Rejected promises awaited inside `async` functions throw exceptions caught via standard `try...catch` blocks.",
+        tenglish: "`async/await` lo errors and rejections catch cheyadaniki `try { await ... } catch (error) { ... }` block vadali."
+      },
+
+      // SECTION 11: ADV CHAPTER 4 — FETCH API & HTTP (Q73 - Q79)
+      {
+        id: 73,
+        sectionId: 11,
+        topic: "Adv Ch 4: Fetch API 2-Step Process",
+        question: "Why does `fetch('https://api.com/users')` require two `await` calls (`const res = await fetch(...); const data = await res.json();`)?",
+        options: [
+          "First `await` waits for HTTP headers to arrive; `res.json()` returns a second promise that parses the streaming body into a JavaScript object.",
+          "Because fetch sends two separate HTTP requests.",
+          "Because JSON is an external library.",
+          "To authenticate the user twice."
+        ],
+        correctAnswer: "First `await` waits for HTTP headers to arrive; `res.json()` returns a second promise that parses the streaming body into a JavaScript object.",
+        explanation: "`fetch()` resolves when HTTP response headers are received. Reading the body stream via `.json()` is a separate async read stream.",
+        tenglish: "First `await` server headers kosam wait chesthundi. `res.json()` streaming data ni full JS object ga parse cheyadaniki second promise vaduthundi."
+      },
+      {
+        id: 74,
+        sectionId: 11,
+        topic: "Adv Ch 4: JSON.stringify() vs JSON.parse()",
+        question: "What do `JSON.stringify(obj)` and `JSON.parse(str)` accomplish respectively?",
+        options: [
+          "`stringify` serializes a JS object into a JSON text string; `parse` deserializes a JSON text string back into a JS object.",
+          "`stringify` parses JSON; `parse` creates strings.",
+          "Both encrypt data with AES-256.",
+          "`stringify` sends data to the server automatically."
+        ],
+        correctAnswer: "`stringify` serializes a JS object into a JSON text string; `parse` deserializes a JSON text string back into a JS object.",
+        explanation: "`JSON.stringify()` converts in-memory objects to transportable JSON text. `JSON.parse()` reconstructs live objects from text.",
+        tenglish: "`JSON.stringify()` object ni text string ga marchi network lo pampadaniki vadatham. `JSON.parse()` text string ni malli JS object ga marchadaniki vadatham."
+      },
+      {
+        id: 75,
+        sectionId: 11,
+        topic: "Adv Ch 4: HTTP Request Headers",
+        question: "Which HTTP header is mandatory when sending a JSON payload in a `POST` request using `fetch`?",
+        options: [
+          "`'Content-Type': 'application/json'`",
+          "`'Accept-Encoding': 'gzip'`",
+          "`'Content-Length': 'auto'`",
+          "`'Format': 'json'`"
+        ],
+        correctAnswer: "`'Content-Type': 'application/json'`",
+        explanation: "`Content-Type: application/json` informs the backend server parser how to interpret the incoming request body.",
+        tenglish: "Server ki JSON data pampisthe, server ardham cheskodaniki `'Content-Type': 'application/json'` header compulsory pampali."
+      },
+      {
+        id: 76,
+        sectionId: 11,
+        topic: "Adv Ch 4: PUT vs PATCH HTTP Methods",
+        question: "What is the architectural difference between `PUT` and `PATCH` HTTP methods?",
+        options: [
+          "`PUT` completely replaces the target resource with the new representation; `PATCH` applies partial modifications to specific fields.",
+          "`PUT` is for creating data; `PATCH` is for deleting data.",
+          "`PATCH` replaces the full document; `PUT` modifies a single field.",
+          "`PUT` is read-only."
+        ],
+        correctAnswer: "`PUT` completely replaces the target resource with the new representation; `PATCH` applies partial modifications to specific fields.",
+        explanation: "`PUT` is idempotent full replacement. `PATCH` is partial delta update.",
+        tenglish: "`PUT` mottham document ni replace chesthundi. `PATCH` chinna specific fields (e.g. only phone number) mathrame update chesthundi."
+      },
+      {
+        id: 77,
+        sectionId: 11,
+        topic: "Adv Ch 4: Fetch Sending POST Request",
+        question: "How do you configure a `POST` request with a payload using the Fetch API?",
+        options: [
+          "`fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })`",
+          "`fetch(url, { post: data })`",
+          "`fetch.post(url, data)`",
+          "`fetch(url, data, 'POST')`"
+        ],
+        correctAnswer: "`fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })`",
+        explanation: "Fetch requires an options configuration object specifying `method`, `headers`, and a stringified `body`.",
+        tenglish: "Fetch lo POST request pampalante `{ method: 'POST', headers: {...}, body: JSON.stringify(data) }` options object pass cheyali."
+      },
+      {
+        id: 78,
+        sectionId: 11,
+        topic: "Adv Ch 4: DELETE HTTP Method",
+        question: "What is the primary purpose of the `DELETE` HTTP method in RESTful APIs?",
+        options: [
+          "To remove the resource identified by the specific URI on the server (e.g. `/api/users/42`).",
+          "To delete the database table.",
+          "To remove browser cookies only.",
+          "To cancel ongoing network connections."
+        ],
+        correctAnswer: "To remove the resource identified by the specific URI on the server (e.g. `/api/users/42`).",
+        explanation: "`DELETE` requests the server to delete the resource at the target endpoint.",
+        tenglish: "`DELETE` method server loni specific resource ni (e.g. `/api/users/42`) remove cheyadaniki vadatham."
+      },
+      {
+        id: 79,
+        sectionId: 11,
+        topic: "Adv Ch 4: Fetch Does NOT Reject on 404/500",
+        question: "Why won't a `fetch()` call trigger the `catch` block when the server returns a `404 Not Found` or `500 Server Error`?",
+        options: [
+          "Because `fetch()` only rejects on network failures (e.g. offline, DNS lookup failure); HTTP error status codes resolve normally with `response.ok === false`.",
+          "Because 404 is considered a success status.",
+          "Because catch blocks only handle syntax errors.",
+          "Because fetch suppresses server status codes."
+        ],
+        correctAnswer: "Because `fetch()` only rejects on network failures (e.g. offline, DNS lookup failure); HTTP error status codes resolve normally with `response.ok === false`.",
+        explanation: "A response was successfully received, so the promise fulfills. You must check `if (!response.ok) throw new Error(...)` manually.",
+        tenglish: "Fetch 404/500 errors ki reject avvadu (promise resolve avthundi). Net connection pothe ne reject avthundi. Anduke `if (!res.ok)` check cheyali."
+      },
+
+      // SECTION 12: ADV CHAPTER 5 — ERROR HANDLING & STATUS (Q80 - Q86)
+      {
+        id: 80,
+        sectionId: 12,
+        topic: "Adv Ch 5: The `throw` Statement",
+        question: "What does the `throw` statement do in JavaScript?",
+        options: [
+          "It creates a custom user-defined exception, immediately halting normal execution and transferring control to the nearest `catch` block.",
+          "It deletes a variable.",
+          "It prints text to console.",
+          "It reloads the web page."
+        ],
+        correctAnswer: "It creates a custom user-defined exception, immediately halting normal execution and transferring control to the nearest `catch` block.",
+        explanation: "`throw new Error('msg')` interrupts code flow and passes the error instance to enclosing `catch` handlers.",
+        tenglish: "`throw new Error('msg')` custom error exception ni raise chesi, ventane execution aapi `catch` block ki control isthundi."
+      },
+      {
+        id: 81,
+        sectionId: 12,
+        topic: "Adv Ch 5: The `finally` Block Guarantee",
+        question: "When is the `finally` block executed in a `try...catch...finally` construct?",
+        options: [
+          "Always, regardless of whether an error was thrown, caught, or if a `return` statement was executed inside `try`.",
+          "Only when an error occurs.",
+          "Only when no error occurs.",
+          "Only if catch throws an error."
+        ],
+        correctAnswer: "Always, regardless of whether an error was thrown, caught, or if a `return` statement was executed inside `try`.",
+        explanation: "`finally` is guaranteed to execute cleanup code (e.g. turning off loading spinners) under all outcomes.",
+        tenglish: "`finally` block lo unna code error vachina, raకపోయినా, `return` chesina compulsory 100% execute avthundi (Loading spinner off cheyadaniki best)."
+      },
+      {
+        id: 82,
+        sectionId: 12,
+        topic: "Adv Ch 5: Error Object Properties",
+        question: "Which properties are standard on a JavaScript `new Error('Something failed')` instance?",
+        options: [
+          "`error.message` (the error text) and `error.stack` (the stack trace history).",
+          "`error.code` and `error.status` only.",
+          "`error.body` and `error.header`.",
+          "`error.line` and `error.column`."
+        ],
+        correctAnswer: "`error.message` (the error text) and `error.stack` (the stack trace history).",
+        explanation: "Built-in `Error` instances provide `.name`, `.message`, and `.stack` containing the execution stack trace.",
+        tenglish: "Error object lo `.message` (error description) and `.stack` (ekkadiki error vachindo call stack details) untayi."
+      },
+      {
+        id: 83,
+        sectionId: 12,
+        topic: "Adv Ch 5: HTTP Status Codes Categories",
+        question: "What do HTTP status codes in the `200`, `400`, and `500` ranges represent respectively?",
+        options: [
+          "`2xx` = Success, `4xx` = Client Errors (e.g. 401 Unauthorized, 404 Not Found), `5xx` = Server Errors (e.g. 500 Internal Server Error).",
+          "`2xx` = Redirection, `4xx` = Success, `5xx` = Client Error.",
+          "`2xx` = Server Error, `4xx` = Network Error, `5xx` = Success.",
+          "`2xx` = Informational, `4xx` = Success, `5xx` = Redirection."
+        ],
+        correctAnswer: "`2xx` = Success, `4xx` = Client Errors (e.g. 401 Unauthorized, 404 Not Found), `5xx` = Server Errors (e.g. 500 Internal Server Error).",
+        explanation: "HTTP status ranges: 2xx Success, 3xx Redirection, 4xx Client Request Error, 5xx Server Backend Error.",
+        tenglish: "2xx = Success (200 OK), 4xx = Client Mistake (404 Not Found, 401 Unauthorized), 5xx = Server Crash (500 Server Error)."
+      },
+      {
+        id: 84,
+        sectionId: 12,
+        topic: "Adv Ch 5: `response.ok` Property",
+        question: "What determines if `response.ok` is `true` in a Fetch API response object?",
+        options: [
+          "The HTTP status code is in the 200–299 range.",
+          "The response body is not empty.",
+          "The URL starts with https.",
+          "The server returned a JSON header."
+        ],
+        correctAnswer: "The HTTP status code is in the 200–299 range.",
+        explanation: "`response.ok` is a boolean getter that returns `true` if `response.status` is between 200 and 299.",
+        tenglish: "Server response status code 200 nunchi 299 range lo unte `response.ok` value `true` avthundi."
+      },
+      {
+        id: 85,
+        sectionId: 12,
+        topic: "Adv Ch 5: Handling Network Errors vs HTTP Errors",
+        question: "How should a production API helper properly handle both offline network drops and 4xx/5xx HTTP errors?",
+        options: [
+          "Check `if (!res.ok) throw new Error(res.statusText)` inside the `try` block, while catching connection dropouts in `catch (err)`.",
+          "Only use a `catch` block without checking `res.ok`.",
+          "Ignore 4xx status codes.",
+          "Use a `while` loop until status is 200."
+        ],
+        correctAnswer: "Check `if (!res.ok) throw new Error(res.statusText)` inside the `try` block, while catching connection dropouts in `catch (err)`.",
+        explanation: "Fetch does not reject on HTTP errors. Explicitly checking `!res.ok` converts 4xx/5xx statuses into catchable errors.",
+        tenglish: "`try` block lo `if (!res.ok) throw new Error(...)` rasi, offline connection drops ni `catch (err)` lo handle cheyali."
+      },
+      {
+        id: 86,
+        sectionId: 12,
+        topic: "Adv Ch 5: Custom Error Subclasses",
+        question: "How do you create a custom API Error class in ES6 JavaScript?",
+        options: [
+          "`class ApiError extends Error { constructor(status, message) { super(message); this.status = status; } }`",
+          "`class ApiError { error: true }`",
+          "`function ApiError() { this.type = Error; }`",
+          "`const ApiError = new Error()`"
+        ],
+        correctAnswer: "`class ApiError extends Error { constructor(status, message) { super(message); this.status = status; } }`",
+        explanation: "Inheriting from the built-in `Error` class and calling `super(message)` maintains proper stack traces and prototypes.",
+        tenglish: "Custom Error class rayalante `class ApiError extends Error` rasi `super(message)` call chesi status codes attach chestham."
+      },
+
+      // SECTION 13: ADV CHAPTER 6 — DOM & EVENT HANDLING (Q87 - Q93)
+      {
+        id: 87,
+        sectionId: 13,
+        topic: "Adv Ch 6: `querySelector()` vs `getElementById()`",
+        question: "What is the primary advantage of `document.querySelector('.card > p.highlight')`?",
+        options: [
+          "It allows selecting any DOM element using standard CSS selector syntax (classes, tags, IDs, combinators).",
+          "It only selects elements with ID attributes.",
+          "It returns all elements in the entire document.",
+          "It modifies styles automatically."
+        ],
+        correctAnswer: "It allows selecting any DOM element using standard CSS selector syntax (classes, tags, IDs, combinators).",
+        explanation: "`querySelector()` accepts any valid CSS selector string and returns the first matching element node.",
+        tenglish: "`querySelector()` CSS selector syntax (`.class`, `#id`, `tag > child`) vaadi e element aina select cheyagaladhu."
+      },
+      {
+        id: 88,
+        sectionId: 13,
+        topic: "Adv Ch 6: `textContent` vs `innerHTML` vs `innerText`",
+        question: "Why should you prefer `element.textContent` over `element.innerHTML` when inserting user-provided text?",
+        options: [
+          "To prevent Cross-Site Scripting (XSS) attacks by escaping HTML tags and avoiding HTML parser overhead.",
+          "Because `innerHTML` cannot display numbers.",
+          "Because `textContent` applies bold styles automatically.",
+          "Because `innerHTML` only works on `<input>` tags."
+        ],
+        correctAnswer: "To prevent Cross-Site Scripting (XSS) attacks by escaping HTML tags and avoiding HTML parser overhead.",
+        explanation: "`innerHTML` parses strings as live HTML/scripts (XSS risk). `textContent` safely writes plain text without HTML execution.",
+        tenglish: "User input display chesetappudu XSS hacking attacks aagadaniki `innerHTML` badulu safe `textContent` vadali."
+      },
+      {
+        id: 89,
+        sectionId: 13,
+        topic: "Adv Ch 6: `classList` API",
+        question: "Which methods on `element.classList` allow adding, removing, and toggling CSS classes cleanly?",
+        options: [
+          "`.add('active')`, `.remove('active')`, `.toggle('active')`, `.contains('active')`",
+          "`.push('active')`, `.pop('active')`",
+          "`.set('active')`, `.delete('active')`",
+          "`.appendClass('active')`, `.dropClass('active')`"
+        ],
+        correctAnswer: "`.add('active')`, `.remove('active')`, `.toggle('active')`, `.contains('active')`",
+        explanation: "`classList` provides token methods: `.add()`, `.remove()`, `.toggle()`, and `.contains()` to manipulate classes.",
+        tenglish: "CSS classes add/remove cheyadaniki `classList.add()`, `classList.remove()`, `classList.toggle()` methods vadatham."
+      },
+      {
+        id: 90,
+        sectionId: 13,
+        topic: "Adv Ch 6: `addEventListener` & Cleanup",
+        question: "How do you listen to a click event and prevent memory leaks when removing components?",
+        options: [
+          "`btn.addEventListener('click', handler)` and later `btn.removeEventListener('click', handler)` with the exact same function reference.",
+          "`btn.onclick = null` only.",
+          "`btn.removeListener('click')`",
+          "`btn.clearEvents()`"
+        ],
+        correctAnswer: "`btn.addEventListener('click', handler)` and later `btn.removeEventListener('click', handler)` with the exact same function reference.",
+        explanation: "`removeEventListener()` requires the identical function reference passed to `addEventListener()` to unbind the listener.",
+        tenglish: "Event listener unbind cheyadaniki `removeEventListener('click', handler)` lo exact same function reference pass cheyali."
+      },
+      {
+        id: 91,
+        sectionId: 13,
+        topic: "Adv Ch 6: `event.preventDefault()`",
+        question: "What is the role of `event.preventDefault()` inside a form submit event listener?",
+        options: [
+          "It prevents the browser from refreshing the full page and submitting the form via default HTTP GET/POST.",
+          "It deletes the form inputs.",
+          "It prevents JavaScript errors.",
+          "It stops event bubbling."
+        ],
+        correctAnswer: "It prevents the browser from refreshing the full page and submitting the form via default HTTP GET/POST.",
+        explanation: "`e.preventDefault()` cancels the browser's default behavior, allowing SPA forms to submit asynchronously via fetch.",
+        tenglish: "Form submit chesinappudu page full reload aypokunda aapi, JS fetch call cheyadaniki `e.preventDefault()` vadatham."
+      },
+      {
+        id: 92,
+        sectionId: 13,
+        topic: "Adv Ch 6: Event Bubbling & Delegation",
+        question: "What is Event Delegation and how does it work?",
+        options: [
+          "Attaching a single event listener to a parent container to manage events from all current and future child elements using event bubbling and `e.target`.",
+          "Triggering an event on 10 buttons at the same time.",
+          "Passing events to web workers.",
+          "Deleting child elements on click."
+        ],
+        correctAnswer: "Attaching a single event listener to a parent container to manage events from all current and future child elements using event bubbling and `e.target`.",
+        explanation: "Event delegation leverages bubbling by listening on a common ancestor and inspecting `e.target`, drastically cutting memory use.",
+        tenglish: "Prathi child button ki listener pettakunda, parent element meeda okate listener petti `e.target` tho handle cheyadame Event Delegation."
+      },
+      {
+        id: 93,
+        sectionId: 13,
+        topic: "Adv Ch 6: Creating and Appending DOM Elements",
+        question: "How do you create a new `<div>` element, assign text, and insert it into the DOM?",
+        options: [
+          "`const el = document.createElement('div'); el.textContent = 'Hello'; document.body.appendChild(el);`",
+          "`const el = new HTMLDivElement(); document.body.add(el);`",
+          "`document.create('div', 'Hello')`",
+          "`document.body.insert('<div>Hello</div>')`"
+        ],
+        correctAnswer: "`const el = document.createElement('div'); el.textContent = 'Hello'; document.body.appendChild(el);`",
+        explanation: "`document.createElement()` creates the node in memory, and `appendChild()` or `append()` attaches it into the active DOM tree.",
+        tenglish: "Kotha element create cheyadaniki `document.createElement('div')` rasi, `appendChild()` dwara DOM lo insert chestham."
+      },
+
+      // SECTION 14: ADV CHAPTER 7 — LOCAL STORAGE & ES MODULES (Q94 - Q100)
+      {
+        id: 94,
+        sectionId: 14,
+        topic: "Adv Ch 7: Local Storage API Scope",
+        question: "How long does data stored in browser `localStorage` persist, and what is its domain scope?",
+        options: [
+          "It persists permanently across browser restarts until explicitly cleared, scoped strictly to the origin (protocol + domain + port).",
+          "It clears automatically when the tab is closed.",
+          "It is shared across all websites on the internet.",
+          "It expires after 24 hours."
+        ],
+        correctAnswer: "It persists permanently across browser restarts until explicitly cleared, scoped strictly to the origin (protocol + domain + port).",
+        explanation: "`localStorage` persists across sessions without expiration, governed strictly by the Same-Origin Policy.",
+        tenglish: "`localStorage` browser close chesina permanently persist avthundi (Same-Origin protocol + domain + port ki mathrame accessible)."
+      },
+      {
+        id: 95,
+        sectionId: 14,
+        topic: "Adv Ch 7: Storing Objects in `localStorage`",
+        question: "Why must objects and arrays be serialized with `JSON.stringify()` before saving to `localStorage.setItem('user', ...)`?",
+        options: [
+          "Because `localStorage` only stores strings; passing a raw object calls `.toString()` which saves `'[object Object]'`.",
+          "Because localStorage compresses JSON.",
+          "Because objects crash localStorage.",
+          "Because localStorage only accepts binary files."
+        ],
+        correctAnswer: "Because `localStorage` only stores strings; passing a raw object calls `.toString()` which saves `'[object Object]'`.",
+        explanation: "`localStorage` keys and values are strings. Direct objects are cast to `'[object Object]'` unless converted with `JSON.stringify()`.",
+        tenglish: "`localStorage` kevalam strings ni mathrame store chesthundi. Object ni direct ga pedithe `'[object Object]'` aypothundi, so `JSON.stringify()` cheyali."
+      },
+      {
+        id: 96,
+        sectionId: 14,
+        topic: "Adv Ch 7: Reading Objects from `localStorage`",
+        question: "How do you safely retrieve and parse an object from `localStorage` with a fallback?",
+        options: [
+          "`const user = JSON.parse(localStorage.getItem('user')) || {};`",
+          "`const user = localStorage.getItem('user').toObject();`",
+          "`const user = JSON.stringify(localStorage.getItem('user'));`",
+          "`const user = localStorage.getObject('user');`"
+        ],
+        correctAnswer: "`const user = JSON.parse(localStorage.getItem('user')) || {};`",
+        explanation: "`localStorage.getItem()` returns `null` if missing. `JSON.parse(null)` returns `null`, falling back to `{}` via `||`.",
+        tenglish: "`localStorage.getItem('user')` nunchi theskoni `JSON.parse()` dwara malli object ga convert chestham."
+      },
+      {
+        id: 97,
+        sectionId: 14,
+        topic: "Adv Ch 7: `removeItem()` vs `clear()`",
+        question: "What is the difference between `localStorage.removeItem('token')` and `localStorage.clear()`?",
+        options: [
+          "`removeItem('token')` deletes that single specific key; `clear()` wipes all keys and data for the entire domain origin.",
+          "`removeItem()` deletes the domain.",
+          "`clear()` only removes expired items.",
+          "Both delete the entire localStorage."
+        ],
+        correctAnswer: "`removeItem('token')` deletes that single specific key; `clear()` wipes all keys and data for the entire domain origin.",
+        explanation: "`removeItem(key)` is key-specific. `clear()` purges all storage entries for that web origin.",
+        tenglish: "`removeItem('token')` aa okka key ni mathrame delete chesthundi. `clear()` origin lo unna full localStorage data ni wipe chesthundi."
+      },
+      {
+        id: 98,
+        sectionId: 14,
+        topic: "Adv Ch 7: Named Exports vs Default Exports",
+        question: "How do Named Exports and Default Exports differ in ES Modules?",
+        options: [
+          "A file can have multiple Named Exports imported using curly braces `{ a, b }`; but can only have ONE Default Export imported without curly braces `import anyName from './file.js'`.",
+          "Named exports require `require()`; default exports use `import`.",
+          "A file can have 10 default exports.",
+          "Named exports cannot be functions."
+        ],
+        correctAnswer: "A file can have multiple Named Exports imported using curly braces `{ a, b }`; but can only have ONE Default Export imported without curly braces `import anyName from './file.js'`.",
+        explanation: "Named exports allow multiple exports imported by exact identifier `{ name }`. Default export allows one primary export per module.",
+        tenglish: "Named exports enni aina undochu (`import { a, b }`). Default export file ki okate untundi (`import myCustomName from './file'`)."
+      },
+      {
+        id: 99,
+        sectionId: 14,
+        topic: "Adv Ch 7: Renaming Named Imports",
+        question: "How do you rename a named import `add` to `sum` to avoid name collisions?",
+        options: [
+          "`import { add as sum } from './math.js';`",
+          "`import { add: sum } from './math.js';`",
+          "`import { add -> sum } from './math.js';`",
+          "`import { sum = add } from './math.js';`"
+        ],
+        correctAnswer: "`import { add as sum } from './math.js';`",
+        explanation: "The `as` keyword provides alias renaming for named module imports.",
+        tenglish: "Import chesetappudu name conflict aagadaniki `import { add as sum } from './math.js'` ani `as` keyword vadatham."
+      },
+      {
+        id: 100,
+        sectionId: 14,
+        topic: "Adv Ch 7: Combining Default and Named Imports",
+        question: "How do you import both the default export `React` and the named export `useState` from the `'react'` package in one statement?",
+        options: [
+          "`import React, { useState } from 'react';`",
+          "`import { React, useState } from 'react';`",
+          "`import React & { useState } from 'react';`",
+          "`import [ React, useState ] from 'react';`"
+        ],
+        correctAnswer: "`import React, { useState } from 'react';`",
+        explanation: "Default export is written first before the comma, followed by destructured named exports inside `{}`.",
+        tenglish: "Default export `React` ni mundu rasi, comma petti named exports `{ useState }` ni curly braces lo import chestham."
+      }
+    ];
+
+    // DYNAMIC FISHER-YATES SHUFFLE FOR OPTIONS & QUESTIONS
+    let QUESTIONS = [];
+    let currentSection = 'all';
+    let userAnswers = {}; // { qId: selectedOptionIndex }
+
+    const STORAGE_KEY_QUESTIONS = 'JS_MASTERCLASS_EXAM_QUESTIONS_V1';
+    const STORAGE_KEY_ANSWERS = 'JS_MASTERCLASS_EXAM_ANSWERS_V1';
+    const STORAGE_KEY_TIMER = 'JS_MASTERCLASS_EXAM_TIMER_V1';
+
+    const TOTAL_EXAM_SECONDS = 60 * 60; // 60 Minutes (3600 seconds)
+    let secondsLeft = TOTAL_EXAM_SECONDS;
+    let timerInterval = null;
+    let examSubmitted = false;
+
+    function prepareAndJumbleQuestions() {
+      QUESTIONS = RAW_QUESTIONS.map(q => {
+        const optionsCopy = [...q.options];
+        for (let i = optionsCopy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [optionsCopy[i], optionsCopy[j]] = [optionsCopy[j], optionsCopy[i]];
+        }
+        const correctIndex = optionsCopy.indexOf(q.correctAnswer);
+        return {
+          ...q,
+          options: optionsCopy,
+          correct: correctIndex
+        };
+      });
+
+      try {
+        localStorage.setItem(STORAGE_KEY_QUESTIONS, JSON.stringify(QUESTIONS));
+      } catch (e) {
+        console.warn('LocalStorage save error', e);
+      }
+    }
+
+    function initOrRestoreExamState() {
+      // 1. Restore Questions Layout
+      const savedQuestions = localStorage.getItem(STORAGE_KEY_QUESTIONS);
+      if (savedQuestions) {
+        try {
+          QUESTIONS = JSON.parse(savedQuestions);
+          if (QUESTIONS.length !== RAW_QUESTIONS.length) {
+            prepareAndJumbleQuestions();
+          }
+        } catch (e) {
+          prepareAndJumbleQuestions();
+        }
+      } else {
+        prepareAndJumbleQuestions();
+      }
+
+      // 2. Restore User Answers
+      const savedAnswers = localStorage.getItem(STORAGE_KEY_ANSWERS);
+      if (savedAnswers) {
+        try {
+          userAnswers = JSON.parse(savedAnswers);
+        } catch (e) {
+          userAnswers = {};
+        }
+      } else {
+        userAnswers = {};
+      }
+
+      // 3. Restore Timer
+      const savedTimer = localStorage.getItem(STORAGE_KEY_TIMER);
+      if (savedTimer !== null) {
+        secondsLeft = parseInt(savedTimer, 10);
+        if (isNaN(secondsLeft) || secondsLeft <= 0) {
+          secondsLeft = TOTAL_EXAM_SECONDS;
+        }
+      } else {
+        secondsLeft = TOTAL_EXAM_SECONDS;
+      }
+    }
+
+    // TIMER MANAGEMENT
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        if (examSubmitted) {
+          clearInterval(timerInterval);
+          return;
+        }
+
+        if (secondsLeft > 0) {
+          secondsLeft--;
+          updateTimerDisplay();
+          try {
+            localStorage.setItem(STORAGE_KEY_TIMER, secondsLeft.toString());
+          } catch (e) {}
+        } else {
+          clearInterval(timerInterval);
+          alert('⏰ 60 Minutes Time is Up! Submitting your examination automatically...');
+          evaluateFinalScore();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(secondsLeft / 60);
+      const secs = secondsLeft % 60;
+      const displayStr = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      const timerEl = document.getElementById('timerDisplay');
+      if (timerEl) {
+        timerEl.innerText = displayStr;
+        if (secondsLeft <= 120) {
+          timerEl.className = 'value timer-val timer-danger';
+        } else if (secondsLeft <= 600) {
+          timerEl.className = 'value timer-val timer-warning';
+        } else {
+          timerEl.className = 'value timer-val';
+        }
+      }
+    }
+
+    // HTML ESCAPE HELPER
+    function escapeHtml(text) {
+      if (typeof text !== 'string') return text;
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // RENDER QUESTIONS
+    function renderQuiz() {
+      const container = document.getElementById('quizContainer');
+      container.innerHTML = '';
+
+      const filtered = currentSection === 'all' 
+        ? QUESTIONS 
+        : QUESTIONS.filter(q => q.sectionId.toString() === currentSection);
+
+      filtered.forEach((q) => {
+        const isAnswered = userAnswers[q.id] !== undefined;
+        const selectedOpt = userAnswers[q.id];
+        const isCorrect = isAnswered && selectedOpt === q.correct;
+
+        const card = document.createElement('div');
+        card.className = `question-card ${isAnswered ? 'answered-card' : ''}`;
+        card.id = `card-${q.id}`;
+
+        let optionsHtml = '';
+        const letters = ['A', 'B', 'C', 'D'];
+
+        q.options.forEach((optText, optIdx) => {
+          let optClass = 'option-btn';
+          if (isAnswered) {
+            if (optIdx === q.correct) {
+              optClass += ' correct-opt';
+            } else if (optIdx === selectedOpt) {
+              optClass += ' wrong-opt';
+            }
+          }
+
+          optionsHtml += `
+            <button 
+              class="${optClass}" 
+              ${isAnswered ? 'disabled' : ''} 
+              onclick="handleSelectOption(${q.id}, ${optIdx})"
+            >
+              <div class="opt-letter">${letters[optIdx]}</div>
+              <div>${escapeHtml(optText)}</div>
+            </button>
+          `;
+        });
+
+        let expHtml = '';
+        if (isAnswered) {
+          expHtml = `
+            <div class="explanation-box show ${isCorrect ? 'correct-exp' : 'wrong-exp'}">
+              <div class="exp-header">
+                ${isCorrect ? '✅ 100% Correct!' : '❌ Incorrect! Correct Answer: Option ' + letters[q.correct]}
+              </div>
+              <div><strong>Core Insight:</strong> ${escapeHtml(q.explanation)}</div>
+              <div class="exp-tenglish">🗣️ <strong>Tenglish:</strong> ${escapeHtml(q.tenglish)}</div>
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="card-meta">
+            <span class="q-number-pill">Question #${q.id}</span>
+            <span class="level-tag">${escapeHtml(q.topic)}</span>
+          </div>
+          <div class="question-title">${escapeHtml(q.question)}</div>
+          <div class="options-grid">${optionsHtml}</div>
+          <div id="exp-${q.id}">${expHtml}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      updateStats();
+    }
+
+    // HANDLE OPTION SELECTION
+    function handleSelectOption(qId, selectedIdx) {
+      if (userAnswers[qId] !== undefined) return;
+
+      userAnswers[qId] = selectedIdx;
+
+      try {
+        localStorage.setItem(STORAGE_KEY_ANSWERS, JSON.stringify(userAnswers));
+      } catch (e) {
+        console.warn('Failed to save answers', e);
+      }
+
+      renderQuiz();
+    }
+
+    // UPDATE STATS & PROGRESS BAR
+    function updateStats() {
+      const answeredKeys = Object.keys(userAnswers);
+      const totalAnswered = answeredKeys.length;
+      
+      let correctCount = 0;
+      answeredKeys.forEach(qId => {
+        const q = QUESTIONS.find(item => item.id === parseInt(qId));
+        if (q && userAnswers[qId] === q.correct) {
+          correctCount++;
+        }
+      });
+
+      const totalQuestions = QUESTIONS.length || 100;
+      const accuracy = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : 0;
+      const progressPercent = Math.round((totalAnswered / totalQuestions) * 100);
+
+      document.getElementById('answeredCount').innerText = `${totalAnswered} / ${totalQuestions}`;
+      document.getElementById('scoreCount').innerText = `${correctCount}`;
+      document.getElementById('accuracyVal').innerText = `${accuracy}%`;
+      document.getElementById('progressBar').style.width = `${progressPercent}%`;
+      document.getElementById('floatingStatus').innerText = `${totalAnswered} of ${totalQuestions} Answered`;
+    }
+
+    // FILTER BY SECTION
+    function filterSection(secId) {
+      currentSection = secId;
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+      renderQuiz();
+    }
+
+    // FINAL EVALUATION MODAL
+    function evaluateFinalScore() {
+      examSubmitted = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      const answeredKeys = Object.keys(userAnswers);
+      let correctCount = 0;
+      const sectionStats = {};
+
+      for (let i = 1; i <= 14; i++) {
+        sectionStats[i] = { correct: 0, total: 0 };
+      }
+
+      QUESTIONS.forEach(q => {
+        if (sectionStats[q.sectionId]) {
+          sectionStats[q.sectionId].total++;
+        }
+        if (userAnswers[q.id] === q.correct) {
+          correctCount++;
+          if (sectionStats[q.sectionId]) {
+            sectionStats[q.sectionId].correct++;
+          }
+        }
+      });
+
+      const totalQuestions = QUESTIONS.length || 100;
+      document.getElementById('finalScoreDisplay').innerText = `${correctCount} / ${totalQuestions}`;
+
+      // Time Spent Calculation
+      const timeSpentSecs = TOTAL_EXAM_SECONDS - secondsLeft;
+      const spentMin = Math.floor(timeSpentSecs / 60);
+      const spentSec = timeSpentSecs % 60;
+      document.getElementById('timeTakenDisplay').innerText = `⏱️ Time Elapsed: ${spentMin}m ${spentSec}s (out of 60m)`;
+
+      // Rank Badges
+      const rankBadge = document.getElementById('rankBadge');
+      if (correctCount >= 90) {
+        rankBadge.innerText = '🏆 Principal JavaScript Architect';
+        rankBadge.style.background = '#059669';
+        rankBadge.style.color = '#ffffff';
+      } else if (correctCount >= 75) {
+        rankBadge.innerText = '🥇 Senior Full-Stack JS Engineer';
+        rankBadge.style.background = '#0284c7';
+        rankBadge.style.color = '#ffffff';
+      } else if (correctCount >= 60) {
+        rankBadge.innerText = '🥈 Mid-Level JS Developer';
+        rankBadge.style.background = '#d97706';
+        rankBadge.style.color = '#ffffff';
+      } else {
+        rankBadge.innerText = '📚 Junior JS Developer (Review Recommended)';
+        rankBadge.style.background = '#dc2626';
+        rankBadge.style.color = '#ffffff';
+      }
+
+      // Breakdown Grid
+      const grid = document.getElementById('breakdownGrid');
+      grid.innerHTML = '';
+      const sectionNames = [
+        "",
+        "Day 1: Variables & Types",
+        "Day 2: Control Flow & Loops",
+        "Day 3: Functions & Scope",
+        "Day 4: Arrays & Mutations",
+        "Day 5: Objects & Methods",
+        "Day 6: ES6 Destructuring & Rest",
+        "Day 7: Spread, Optional Chaining & ??",
+        "Adv Ch 1: Execution & Callbacks",
+        "Adv Ch 2: Map, Filter, Reduce, Sort",
+        "Adv Ch 3: Promises & Async/Await",
+        "Adv Ch 4: Fetch API & HTTP",
+        "Adv Ch 5: Error Handling & Status",
+        "Adv Ch 6: DOM & Event Handling",
+        "Adv Ch 7: Local Storage & Modules"
+      ];
+
+      for (let i = 1; i <= 14; i++) {
+        const item = document.createElement('div');
+        item.className = 'breakdown-item';
+        item.innerHTML = `
+          <span>${sectionNames[i]}</span>
+          <span>${sectionStats[i].correct} / ${sectionStats[i].total}</span>
+        `;
+        grid.appendChild(item);
+      }
+
+      document.getElementById('evalModal').classList.add('open');
+    }
+
+    function closeModalAndReview() {
+      document.getElementById('evalModal').classList.remove('open');
+    }
+
+    function resetQuiz() {
+      if (confirm('Are you sure you want to reset all answers, reshuffle all 100 questions, and restart the 60-minute timer?')) {
+        try {
+          localStorage.removeItem(STORAGE_KEY_ANSWERS);
+          localStorage.removeItem(STORAGE_KEY_QUESTIONS);
+          localStorage.removeItem(STORAGE_KEY_TIMER);
+        } catch (e) {}
+
+        userAnswers = {};
+        secondsLeft = TOTAL_EXAM_SECONDS;
+        examSubmitted = false;
+        document.getElementById('evalModal').classList.remove('open');
+        prepareAndJumbleQuestions();
+        startTimer();
+        renderQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // FILTER BAR NAVIGATION
+    function scrollFilterBar(offset) {
+      const container = document.getElementById('filterScrollContainer');
+      if (container) {
+        container.scrollBy({ left: offset, behavior: 'smooth' });
+      }
+    }
+
+    // ENABLE MOUSE WHEEL HORIZONTAL SCROLLING
+    document.addEventListener('DOMContentLoaded', () => {
+      const container = document.getElementById('filterScrollContainer');
+      if (container) {
+        container.addEventListener('wheel', (evt) => {
+          if (evt.deltaY !== 0) {
+            evt.preventDefault();
+            container.scrollLeft += evt.deltaY;
+          }
+        }, { passive: false });
+      }
+    });
+
+    // INITIALIZATION
+    initOrRestoreExamState();
+    startTimer();
+    renderQuiz();
+  </script>
+</body>
+</html>
