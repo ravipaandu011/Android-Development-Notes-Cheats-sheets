@@ -109,7 +109,27 @@
     .level-tag { font-size: 11px; font-weight: 700; color: #64748b; background: #f1f5f9; padding: 3px 9px; border-radius: 6px; }
 
     .question-title { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 14px; line-height: 1.5; }
-    .question-title code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 13.5px; color: #0369a1; }
+    
+    code, .code-pill {
+      background: #f1f5f9;
+      color: #0369a1;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: 'JetBrains Mono', 'Fira Code', 'IBM Plex Mono', Menlo, monospace;
+      font-size: 0.9em;
+      font-weight: 600;
+      border: 1px solid #e2e8f0;
+    }
+    .option-btn.correct-opt .code-pill {
+      background: rgba(5, 150, 105, 0.12);
+      color: #065f46;
+      border-color: rgba(5, 150, 105, 0.25);
+    }
+    .option-btn.wrong-opt .code-pill {
+      background: rgba(220, 38, 38, 0.12);
+      color: #991b1b;
+      border-color: rgba(220, 38, 38, 0.25);
+    }
 
     .options-grid { display: grid; grid-template-columns: 1fr; gap: 9px; }
     .option-btn {
@@ -1951,15 +1971,18 @@
       }
     }
 
-    // HTML ESCAPE HELPER
-    function escapeHtml(text) {
+    // HTML ESCAPE & MARKDOWN BACKTICK FORMATTER
+    function formatMarkdown(text) {
       if (typeof text !== 'string') return text;
-      return text
+      // 1. Escape dangerous HTML
+      const escaped = text
         .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
+      // 2. Convert `code` into styled <code class="code-pill">code</code> badges
+      return escaped.replace(/`([^`]+)`/g, '<code class="code-pill">$1</code>');
     }
 
     // RENDER QUESTIONS
@@ -2000,7 +2023,7 @@
               onclick="handleSelectOption(${q.id}, ${optIdx})"
             >
               <div class="opt-letter">${letters[optIdx]}</div>
-              <div>${escapeHtml(optText)}</div>
+              <div>${formatMarkdown(optText)}</div>
             </button>
           `;
         });
@@ -2012,8 +2035,8 @@
               <div class="exp-header">
                 ${isCorrect ? '✅ 100% Correct!' : '❌ Incorrect! Correct Answer: Option ' + letters[q.correct]}
               </div>
-              <div><strong>Core Insight:</strong> ${escapeHtml(q.explanation)}</div>
-              <div class="exp-tenglish">🗣️ <strong>Tenglish:</strong> ${escapeHtml(q.tenglish)}</div>
+              <div><strong>Core Insight:</strong> ${formatMarkdown(q.explanation)}</div>
+              <div class="exp-tenglish">🗣️ <strong>Tenglish:</strong> ${formatMarkdown(q.tenglish)}</div>
             </div>
           `;
         }
@@ -2021,9 +2044,9 @@
         card.innerHTML = `
           <div class="card-meta">
             <span class="q-number-pill">Question #${q.id}</span>
-            <span class="level-tag">${escapeHtml(q.topic)}</span>
+            <span class="level-tag">${formatMarkdown(q.topic)}</span>
           </div>
-          <div class="question-title">${escapeHtml(q.question)}</div>
+          <div class="question-title">${formatMarkdown(q.question)}</div>
           <div class="options-grid">${optionsHtml}</div>
           <div id="exp-${q.id}">${expHtml}</div>
         `;
